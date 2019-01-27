@@ -1,0 +1,47 @@
+//
+// Copyright (c) 2019 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg
+// GPLv3, see LICENSE
+//
+// @author Fred Neumann <fred.neumann@fau.de>
+// @version $Id$
+//
+
+<!-- language file start -->
+basic_configuration#:#Grund-Konfiguration
+config_base#:#Grundfunktionen
+config_base_info#:#Hier stellen Sie die Grundfunktionen des Plugins ein
+exam_admin_tab#:#Prüfung
+user_overview#:#Personen
+category#:#Kategorie
+active#:#Aktiv
+inactive#:#Inaktiv
+listUsers#:#Auflisten
+activateUsers#:#Aktivieren
+deactivateUsers#:#Deaktivieren
+synchronizeUsers#:#Synchronisieren
+activateUser#:#Aktivieren
+deactivateUser#:#Deaktivieren
+synchronizeUser#:#Synchronisieren
+actions#:#Aktionen
+cat_global_admin#:#Administratoren
+cat_global_lecturer#:#Dozenten
+cat_global_participant#:#Teilnehmer
+cat_global_testaccounts#:#Testaccounts
+cat_global_registered#:#Selbstregistrierte Nutzer
+cat_local_member_testaccount#:#Teilnehmer (Testaccounts)
+cat_local_admin_lecturer#:#Dozenten
+cat_local_member_testaccount#:#Testaccounts
+cat_local_member_standard#:#Teilnehmer (Standard)
+cat_local_member_registered#:#Teilnehmer (selbstregistriert)
+cat_global_admin_role#:#Globale Administratoren-Rolle
+cat_global_admin_info#:#Die Administratoren werden in der Prüfungs-Übersicht nicht zu den Dozenten gezählt.
+cat_global_lecturer_role#:#Globale Dozenten-Rolle
+cat_global_lecturer_info#:#Die Dozenten werden nicht aktiviert / deaktiviert.
+cat_global_participant_role#:#Globale Teilnehmer-Rolle
+cat_global_participant_info#:#Die Teilnehmer sollen zur zu ihrer Prüfung aktiviert werden.
+password_change#:#Passwortänderung
+addLecturer#:#Dozent hinzufügen
+login_or_name#:#Login oder Name
+internal_lecturers#:#Dozenten in Exam
+external_users#:#Nutzer in StudOn
+lecturer_added_to_group#:#Der Dozenten-Account wurde samt Testacounts in die Gruppe aufgenommen.
