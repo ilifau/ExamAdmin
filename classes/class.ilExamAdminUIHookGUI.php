@@ -63,7 +63,9 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
 				elseif ($this->parent_type = 'grp')
 				{
 				    // Group can be edited
-                    if ($this->access->checkAccess('write','', $_GET['ref_id']))
+                    // if ($this->access->checkAccess('write','', $_GET['ref_id']))
+                    // System administrator
+                    if ($this->plugin_object->hasAdminAccess())
                     {
                         // add exam admin tab
                         $this->ctrl->setParameterByClass('ilExamAdminGroupGUI', 'ref_id', $this->parent_ref_id);

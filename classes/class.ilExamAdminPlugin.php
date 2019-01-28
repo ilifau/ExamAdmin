@@ -88,6 +88,16 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
         return in_array($type, array('grp'));
     }
 
+    /**
+     * Check if the user has administrative access
+     * @return bool
+     */
+    public function hasAdminAccess()
+    {
+        global $DIC;
+        return $DIC->rbac()->system()->checkAccess("visible", SYSTEM_FOLDER_ID);
+    }
+
 
     /**
 	 * Get a user preference

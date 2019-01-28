@@ -75,7 +75,9 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 	{
 		$fallback_url = "goto.php?target=".$this->parent_type.'_'.$this->parent_ref_id;
 
-		if (!$this->access->checkAccess('write','', $_GET['ref_id']))
+        // Only System administrators
+        if (!$this->plugin->hasAdminAccess())
+		//if (!$this->access->checkAccess('write','', $_GET['ref_id']))
 		{
             ilUtil::sendFailure($this->lng->txt("permission_denied"), true);
             $this->ctrl->redirectToURL($fallback_url);
