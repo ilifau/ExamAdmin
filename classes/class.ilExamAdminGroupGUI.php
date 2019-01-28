@@ -86,8 +86,15 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 				{
                     case 'showOverview':
                     case 'listUsers':
-                    case 'showLecturerSearch':
+                    case 'showUserSearch':
                     case 'addLecturer':
+                    case 'addMember':
+                    case 'activateUser':
+                    case 'activateUsers':
+                    case 'deactivateUser':
+                    case 'deactivateUsers':
+                    case 'synchronizeUser':
+                    case 'synchronizeUsers':
                         $this->$cmd();
                         break;
 
@@ -117,21 +124,131 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     }
 
 
-    protected function showLecturerSearch()
+    /**
+     * Show an overview screen of the exam
+     */
+    protected function listUsers()
     {
         $this->prepareObjectOutput();
-        $this->ctrl->setParameter($this, 'category', ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER);
 
-        $form = $this->initLecturerSearchForm();
-        $form->checkInput();
-        $form->setValuesByPost();
-        $content = $form->getHTML();
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this,'showOverview'));
+        $button->setCaption($this->plugin->txt('overview'), false);
+        $this->toolbar->addButtonInstance($button);
 
-        $pattern = $form->getInput('pattern');
+        $this->ctrl->saveParameter($this, 'category');
+        switch ($_GET['category'])
+        {
+            case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
+                $this->addToolbarSearch($this->plugin->txt('addLecturer'));
+                break;
+
+            case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
+                $this->addToolbarSearch($this->plugin->txt('addMember'));
+                break;
+        }
+
+        $usersObj = $this->getUsersObj();
+        $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
+        $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
+        $table->setTitle($this->plugin->txt($_GET['category']));
+        $table->setData($usersObj->getCategoryUserData($_GET['category']));
+        $table->setRowCommands($usersObj->getUserCommands($_GET['category']));
+        $this->ctrl->saveParameter($this, 'category');
+
+        $this->tpl->setContent($table->getHTML());
+        $this->tpl->show();
+    }
+
+    /**
+     * Add the user search to the toolba
+     * @param $caption
+     */
+    protected function addToolbarSearch($caption)
+    {
+        $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
+        $this->toolbar->addSeparator();
+
+        $input = new ilTextInputGUI($this->plugin->txt('login_or_name'), 'pattern');
+        $input->setDataSource($this->getAutocompleteUrl());
+        $input->setDisableHtmlAutoComplete(true);
+        $input->setSize(15);
+        $this->toolbar->addInputItem($input);
+
+        $button = ilSubmitButton::getInstance();
+        $button->setCommand('showUserSearch');
+        $button->setCaption($caption, false);
+        $this->toolbar->addButtonInstance($button);
+    }
+
+
+    /**
+     * Initialize the search form for lecturers
+     * @param string $title
+     * @param string $pattern
+     * @return ilPropertyFormGUI
+     */
+    protected function initSearchForm($title, $pattern)
+    {
+        $form = new ilPropertyFormGUI();
+        $form->setFormAction($this->ctrl->getFormAction($this));
+        $form->setTitle($title);
+
+        $input = new ilTextInputGUI($this->plugin->txt('login_or_name'), 'pattern');
+        $input->setValue($pattern);
+        $input->setDataSource($this->getAutocompleteUrl());
+        $input->setDisableHtmlAutoComplete(true);
+        $input->setSize(15);
+
+        $form->addItem($input);
+
+        $form->addCommandButton('showUserSearch', $this->lng->txt('search'));
+        $form->addCommandButton('listUsers', $this->lng->txt('cancel'));
+
+        return $form;
+    }
+
+
+    /**
+     * Show the search form and search result for lecturers
+     */
+    protected function showUserSearch()
+    {
+        $this->prepareObjectOutput();
+
+        // POST has precedence but GET is needed for table navigation
+        $pattern = '';
+        if (!empty($_POST['pattern']))
+        {
+            $pattern = $_POST['pattern'];
+        }
+        elseif (!empty($_GET['pattern']))
+        {
+            $pattern = $_GET['pattern'];
+        }
+
+        $this->ctrl->saveParameter($this, 'category');
+        $this->ctrl->setParameter($this, 'pattern', urlencode($pattern));
+
+        switch ($_GET['category'])
+        {
+            case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
+                $form = $this->initSearchForm($this->plugin->txt('addLecturer'), $pattern);
+                $content = $form->getHTML();
+                $commands = ['addLecturer'];
+                break;
+
+            case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
+                $form = $this->initSearchForm($this->plugin->txt('addMember'), $pattern);
+                $content = $form->getHTML();
+                $commands = ['addMember'];
+                break;
+        }
+
         if ($pattern)
         {
             $usersObj = $this->getUsersObj();
-            $internal = $usersObj->getUserDataByPattern($pattern, false, ilExamAdminUsers::CAT_GLOBAL_LECTURER);
+            $internal = $usersObj->getUserDataByPattern($pattern, false, $_GET['category']);
 
             // only one user found: add directly
             if (count($internal) == 1)
@@ -141,20 +258,20 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
             }
 
             $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
-            $table1 = new ilExamAdminUserListTableGUI($this, 'showLecturerSearch');
-            $table1->setTitle($this->plugin->txt('internal_lecturers'));
+            $table1 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
+            $table1->setTitle($this->plugin->txt('internal'));
             $table1->setData($internal);
             $table1->setIdParameter('usr_id');
-            $table1->setRowCommands(['addLecturer']);
+            $table1->setRowCommands($commands);
             $content .= $table1->getHTML();
 
             $connObj = $this->plugin->getConnector();
             $external = $connObj->getUserDataByPattern($pattern, false);
-            $table2 = new ilExamAdminUserListTableGUI($this, 'showLecturerSearch');
-            $table2->setTitle($this->plugin->txt('external_users'));
+            $table2 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
+            $table2->setTitle($this->plugin->txt('external'));
             $table2->setData($external);
             $table2->setIdParameter('conn_usr_id');
-            $table2->setRowCommands(['addLecturer']);
+            $table2->setRowCommands($commands);
             $content .= $table2->getHTML();
         }
 
@@ -163,6 +280,10 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     }
 
 
+    /**
+     * Addd a lecturer
+     * @throws Exception
+     */
     protected function addLecturer()
     {
         $added = [];
@@ -189,12 +310,12 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
             $user = $connObj->getSingleUserDataById((int) $_GET['conn_usr_id']);
             if ($user)
             {
-                $user = $usersObj->getMatchingUser($user, true);
+                $user = $usersObj->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
                 $this->parent_obj->getMembersObject()->add($user['usr_id'], IL_GRP_ADMIN);
                 $added[] = $user['login'];
                 foreach ($connObj->getTestaccountData($user['login']) as $test)
                 {
-                    $test = $usersObj->getMatchingUser($test, true);
+                    $test = $usersObj->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
                     $this->parent_obj->getMembersObject()->add($test['usr_id'], IL_GRP_MEMBER);
                     $added[] = $test['login'];
                 }
@@ -205,74 +326,49 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         {
             ilUtil::sendSuccess($this->plugin->txt('lecturer_added_to_group'). '<br />' . implode('<br />', $added), true);
         }
-        $this->ctrl->setParameter($this, 'category', ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER);
+        $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
     }
 
 
-    protected function initLecturerSearchForm()
-    {
-        $form = new ilPropertyFormGUI();
-        $form->setFormAction($this->ctrl->getFormAction($this));
-        $form->setTitle($this->plugin->txt('addLecturer'));
-
-        $input = new ilTextInputGUI($this->plugin->txt('login_or_name'), 'pattern');
-        $input->setDataSource($this->getAutocompleteUrl());
-        $input->setDisableHtmlAutoComplete(true);
-        $input->setSize(15);
-        $form->addItem($input);
-
-        $form->addCommandButton('showLecturerSearch', $this->lng->txt('search'));
-        $form->addCommandButton('listUsers', $this->lng->txt('cancel'));
-
-        return $form;
-    }
-
-
     /**
-     * Show an overview screen of the exam
+     * Addd a member
+     * @throws Exception
      */
-    protected function listUsers()
+    protected function addMember()
     {
-        $this->prepareObjectOutput();
+        $added = [];
 
-        $button = ilLinkButton::getInstance();
-        $button->setUrl($this->ctrl->getLinkTarget($this,'showOverview'));
-        $button->setCaption('back');
-        $this->toolbar->addButtonInstance($button);
-
-
-        switch ($_GET['category'])
+        if ($_GET['usr_id'])
         {
-            case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
-
-                $this->ctrl->saveParameter($this, 'category');
-                $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
-                $this->toolbar->addSeparator();
-
-                $input = new ilTextInputGUI($this->plugin->txt('login_or_name'), 'pattern');
-                $input->setDataSource($this->getAutocompleteUrl());
-                $input->setDisableHtmlAutoComplete(true);
-                $input->setSize(15);
-                $this->toolbar->addInputItem($input);
-
-                $button = ilSubmitButton::getInstance();
-                $button->setCommand('showLecturerSearch');
-                $button->setCaption($this->plugin->txt('addLecturer'), false);
-                $this->toolbar->addButtonInstance($button);
-                break;
+            $usersObj = $this->getUsersObj();
+            $user = $usersObj->getSingleUserDataById((int) $_GET['usr_id']);
+            if ($user)
+            {
+                $this->parent_obj->getMembersObject()->add($user['usr_id'], IL_GRP_MEMBER);
+                $added[] = $user['login'];
+            }
+        }
+        elseif ($_GET['conn_usr_id'])
+        {
+            $usersObj = $this->getUsersObj();
+            $connObj = $this->plugin->getConnector();
+            $user = $connObj->getSingleUserDataById((int) $_GET['conn_usr_id']);
+            if ($user)
+            {
+                $user = $usersObj->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_participant_role'));
+                $this->parent_obj->getMembersObject()->add($user['usr_id'], IL_GRP_MEMBER);
+                $added[] = $user['login'];
+            }
         }
 
-        $usersObj = $this->getUsersObj();
-        $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
-        $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
-        $table->setTitle($this->plugin->txt($_GET['category']));
-        $table->setData($usersObj->getCategoryUserData($_GET['category']));
-        $table->setRowCommands($usersObj->getUserCommands($_GET['category']));
-        $this->ctrl->saveParameter($this, 'category');
+        if ($added)
+        {
+            ilUtil::sendSuccess($this->plugin->txt('member_added_to_group'). '<br />' . implode('<br />', $added), true);
+        }
 
-        $this->tpl->setContent($table->getHTML());
-        $this->tpl->show();
+        $this->ctrl->saveParameter($this, 'category');
+        $this->ctrl->redirect($this, 'listUsers');
     }
 
 
@@ -286,6 +382,17 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     }
 
     /**
+     * Activate the users of a category
+     */
+    protected function activateUser()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+        $this->getUsersObj()->setActiveByUserId($_GET['usr_id'], 1);
+        $this->ctrl->redirect($this, 'listUsers');
+    }
+
+
+    /**
      * Deactivate the users of a category
      */
     protected function deactivateUsers()
@@ -293,6 +400,39 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $this->getUsersObj()->setActiveByCategory($_GET['category'], 0);
         $this->ctrl->redirect($this, 'showOverview');
     }
+
+    /**
+     * Deativate the users of a category
+     */
+    protected function deactivateUser()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+        $this->getUsersObj()->setActiveByUserId($_GET['usr_id'], 0);
+        $this->ctrl->redirect($this, 'listUsers');
+    }
+
+
+    /**
+     * Synchronize the users of a category
+     * @throws ilException
+     */
+    protected function synchronizeUsers()
+    {
+        $this->getUsersObj()->synchronizeByCategory($_GET['category']);
+        $this->ctrl->redirect($this, 'showOverview');
+    }
+
+    /**
+     * Synchronize a single user
+     * @throws ilException
+     */
+    protected function synchronizeUser()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+        $this->getUsersObj()->synchronizeByUserId($_GET['usr_id']);
+        $this->ctrl->redirect($this, 'listUsers');
+    }
+
 
     /**
      * Get the users object

@@ -11,6 +11,7 @@ basic_configuration#:#Grund-Konfiguration
 config_base#:#Grundfunktionen
 config_base_info#:#Hier stellen Sie die Grundfunktionen des Plugins ein
 exam_admin_tab#:#Prüfung
+overview#:#Übersicht
 user_overview#:#Personen
 category#:#Kategorie
 active#:#Aktiv
@@ -41,7 +42,9 @@ cat_global_participant_role#:#Globale Teilnehmer-Rolle
 cat_global_participant_info#:#Die Teilnehmer sollen zur zu ihrer Prüfung aktiviert werden.
 password_change#:#Passwortänderung
 addLecturer#:#Dozent hinzufügen
-login_or_name#:#Login oder Name
-internal_lecturers#:#Dozenten in Exam
-external_users#:#Nutzer in StudOn
+addMember#:#Teilnehmer hinzufügen
+login_or_name#:#Login, Name oder Matrikelnummer
+internal#:#Prüfungsplattform
+external#:#Lernplattform
 lecturer_added_to_group#:#Der Dozenten-Account wurde samt Testacounts in die Gruppe aufgenommen.
+member_added_to_group#:#Der Teilnehmer-Account wurde in die Gruppe aufgenommen.

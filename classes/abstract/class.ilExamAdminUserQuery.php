@@ -112,7 +112,14 @@ abstract class ilExamAdminUserQuery
 
         if (count($parts) == 1)
         {
-            return 'login = ' . $this->db->quote($parts[0]) . ' OR lastname = ' .  $this->db->quote($parts[0]);
+            if (is_numeric($parts[0]))
+            {
+                return 'matriculation = ' . $this->db->quote($parts[0]);
+            }
+            else
+            {
+                return 'login = ' . $this->db->quote($parts[0]) . ' OR lastname = ' .  $this->db->quote($parts[0]);
+            }
         }
         elseif (count($parts) == 2 && !$flip_names)
         {

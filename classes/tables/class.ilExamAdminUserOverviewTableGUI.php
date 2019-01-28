@@ -62,14 +62,14 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
 
     protected function fillRow($a_set)
     {
+        $this->ctrl->setParameter($this->parent_obj, 'category', $a_set['category']);
+
         // prepare action menu
         $list = new ilAdvancedSelectionListGUI();
         $list->setSelectionHeaderClass('small');
         $list->setItemLinkClass('small');
         $list->setId('actl_'. rand(0, 999999));
         $list->setListTitle($this->lng->txt('actions'));
-
-        $this->ctrl->setParameter($this->parent_obj, 'category', $a_set['category']);
         foreach ($a_set['commands'] as $command)
         {
             $list->addItem($this->plugin->txt($command), '', $this->ctrl->getLinkTarget($this->parent_obj, $command));
@@ -80,9 +80,9 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
         $title = '<a href="' . $link . '">' .$title . '</a>';
 
         $this->tpl->setVariable('CATEGORY', $title);
-        $this->tpl->setVariable('ACTIVE', $a_set['active']);
-        $this->tpl->setVariable('INACTIVE', $a_set['inactive']);
-        $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
+        $this->tpl->setVariable('ACTIVE', empty($a_set['active']) ? '' : $a_set['active']);
+        $this->tpl->setVariable('INACTIVE', empty($a_set['inactive']) ? '' : $a_set['inactive']);
+        $this->tpl->setVariable('CHANGE', empty($a_set['last_password_change']) ? '' : ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
         $this->tpl->setVariable('ACTIONS', $list->getHTML());
     }
 }

@@ -49,7 +49,7 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
                 'category' => $category,
                 'active' => $data['active'],
                 'inactive' => $data['number'] - $data['active'],
-                'oldest_password' => $data['oldest_password'],
+                'last_password_change' => $data['last_password_change'],
                 'commands' =>   $this->getCategoryCommands($category)
             ];
         }

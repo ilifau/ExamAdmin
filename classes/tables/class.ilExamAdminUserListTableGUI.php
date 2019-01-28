@@ -69,7 +69,7 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->enable('header');
         $this->disable('select_all');
 
-        $this->setEnableNumInfo(false);
+        $this->setEnableNumInfo(true);
         $this->setExternalSegmentation(true);
 	}
 
@@ -117,7 +117,7 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->tpl->setVariable('MATRICULATION', $a_set['matriculation']);
         $this->tpl->setVariable('E_MAIL', $a_set['email']);
         $this->tpl->setVariable('TIME_LIMIT', ilDatePresentation::formatDate(new ilDateTime($a_set['time_limit_until'], IL_CAL_UNIX)));
-        $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['password_change'], IL_CAL_UNIX)));
+        $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
         $this->tpl->setVariable('ACTIVE', $a_set['active']);
         $this->tpl->setVariable('ACTIONS', $actions);
     }

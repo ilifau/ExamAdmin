@@ -82,15 +82,66 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         return [];
     }
 
+    /**
+     * Set the active status of a user given by id
+     * @param integer $usr_id
+     * @param integer $active
+     */
+    public function setActiveByUserId($usr_id, $active)
+    {
+        $this->updateActive('usr_id = '.$this->db->quote($usr_id, 'integer'), $active);
+    }
 
     /**
      * Set the active status of users by category
      * @param string $category
+     * @param integer $active
      */
     public function setActiveByCategory($category, $active)
     {
         $condition = $this->getCategoryCond($category);
-        $this->updateActive($this->getCategoryCond($condition), $active);
+        if ($condition)
+        {
+            $this->updateActive($condition, $active);
+        }
+    }
+
+
+    /**
+     * Synchronize the data of users given by category
+     * @param string $category
+     * @throws ilException
+     */
+    public function synchronizeByCategory($category)
+    {
+        $connObj = $this->plugin->getConnector();
+        foreach ($this->getCategoryUserData($category) as $user)
+        {
+            $data = $connObj->getSingleUserDataByLogin($user['login']);
+            if (isset($data))
+            {
+                $this->applyUserData($user['usr_id'], $data);
+            }
+        }
+    }
+
+    /**
+     * Synchronize the data of a user given by user_id
+     * @param integer $usr_id
+     * @throws ilException
+     */
+    public function synchronizeByUserId($usr_id)
+    {
+        $user = $this->getSingleUserDataById($usr_id);
+        if (isset($user))
+        {
+            $connObj = $this->plugin->getConnector();
+            $data = $connObj->getSingleUserDataByLogin($user['login']);
+            if (isset($data))
+            {
+                $this->applyUserData($user['usr_id'], $data);
+            }
+        }
     }
 
 
@@ -117,7 +168,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
      */
     protected function queryUserOverview($condition)
     {
-        $query = "SELECT COUNT(*) AS number, COUNT(active) AS active, MAX(last_password_change) AS oldest_password FROM usr_data WHERE (" . $condition . ")";
+        $query = "SELECT COUNT(*) AS number, SUM(active) AS active, MAX(last_password_change) AS last_password_change FROM usr_data WHERE (" . $condition . ")";
 
         $result = $this->db->query($query);
         $row = $this->db->fetchAssoc($result);
@@ -215,17 +266,19 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
 
 
     /**
-     * Get data if a user that matches the given data by login
+     * Get data of a user that matches the given data by login
      * @param array $data
      * @param bool $create  create the user if none is found
+     * @param int $role global role to be used for the new user
      * @return array|null
+     * @throws Exception
      */
-    public function getMatchingUser($data, $create = true)
+    public function getMatchingUser($data, $create = true, $role_id = null)
     {
         $user = $this->getSingleUserDataByLogin($data['login']);
         if (empty($user) && $create)
         {
-            $usr_id  = $this->createUser($data);
+            $usr_id = $this->createUser($data, $role_id);
             return $this->getSingleUserDataById($usr_id);
         }
         return $user;
@@ -235,30 +288,48 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     /**
      * Create a user with given data
      * @param array $data
+     * @param int $role_id global role to be used for the new user
      * @return int  user_id
+     * @throws Exception
      */
-    public function createUser($data)
+    public function createUser($data, $role_id = null)
     {
+        global $DIC;
+
         $userObj = new ilObjUser();
         $userObj->setLogin($data['login']);
+        $userObj->setFirstname($data['firstname']);
+        $userObj->setLastname($data['lastname']);
+        $userObj->setTitle($data['title']);
+        $userObj->setActive($role_id == $this->plugin->getConfig()->get('global_lecturer_role'));
         $usr_id = $userObj->create();
+
         $userObj->updateOwner();
         $userObj->saveAsNew();
-        $this->applyUserData($usr_id, $data);
 
+        if (!empty($role_id))
+        {
+            $DIC->rbac()->admin()->assignUser($role_id, $usr_id);
+        }
+
+        $this->applyUserData($usr_id, $data);
         return $usr_id;
     }
 
 
     /**
      * Apply a data array to a user account
-     * @param $usr_id
+     * @param int $usr_id
      * @param $data
+     * @throws ilDateTimeException
      */
     public function applyUserData($usr_id, $data)
     {
+        $datetime = (new ilDateTime(time(), IL_CAL_UNIX))->get(IL_CAL_DATETIME);
+
         $this->db->update('usr_data',
             [
+                'login' => ['text', $data['login']],
                 'firstname' => ['text', $data['firstname']],
                 'lastname' => ['text', $data['lastname']],
                 'title' => ['text', $data['title']],
@@ -268,13 +339,20 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 'matriculation' => ['text', $data['matriculation']],
                 'approve_date' => ['text', $data['approve_date']],
                 'agree_date' => ['text', $data['agree_date']],
+                'ext_account' => ['text', $data['ext_account']],
                 'passwd' => ['text', $data['passwd']],
                 'ext_passwd' => ['text', $data['ext_passwd']],
                 'passwd_enc_type' => ['text', $data['passwd_enc_type']],
-                'passwd_salt' => ['text', $data['passwd_salt']]
+                'passwd_salt' => ['text', $data['passwd_salt']],
+                //'active' => ['integer', $data['active']],
+                'time_limit_unlimited' => ['integer', $data['time_limit_unlimited']],
+                'time_limit_from' => ['integer', $data['time_limit_from']],
+                'time_limit_until' => ['integer', $data['time_limit_until']],
+                'last_update' => ['text', $datetime],
+                'last_password_change' => ['integer', time()],
             ],
             [
-                'usr_id' => $usr_id
+                'usr_id' => ['integer', $usr_id]
             ]
         );
     }
