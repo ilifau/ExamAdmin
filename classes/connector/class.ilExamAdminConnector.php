@@ -72,31 +72,7 @@ class ilExamAdminConnector extends ilExamAdminUserQuery
     }
 
 
-
-    /**
-     * Get the data of users by their login
-     * @param string[] $logins
-     * @return array[]
-     * @throws ilDatabaseException
-     */
-    public function getUserDataByLogins($logins = [])
-    {
-        $condition = $this->db->in('login', $logins, false, 'string');
-        return $this->queryUserData($condition);
-    }
-
-    /**
-     * Get the data of users by their matriculation number
-     * @param string[] $matriculations
-     * @return array[]
-     * @throws ilDatabaseException
-     */
-    public function getUserDataByMatriculations($matriculations = [])
-    {
-        $condition = $this->db->in('matriculation', $matriculations, false, 'string');
-        return $this->queryUserData($condition);
-    }
-
+    
 
     /**
      * get the user data of course, group or session members

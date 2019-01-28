@@ -95,6 +95,9 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                     case 'deactivateUsers':
                     case 'synchronizeUser':
                     case 'synchronizeUsers':
+                    case 'showUserImportForm':
+                    case 'showUserImportList':
+                    case 'importUsersByList':
                         $this->$cmd();
                         break;
 
@@ -145,6 +148,12 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
                 $this->addToolbarSearch($this->plugin->txt('addMember'));
+
+                $this->toolbar->addSeparator();
+                $button = ilLinkButton::getInstance();
+                $button->setUrl($this->ctrl->getLinkTarget($this,'showUserImportForm'));
+                $button->setCaption($this->plugin->txt('import_members_list'), false);
+                $this->toolbar->addButtonInstance($button);
                 break;
         }
 
@@ -277,6 +286,120 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
         $this->tpl->setContent($content);
         $this->tpl->show();
+    }
+
+    /**
+     * Init the the form to import users by a list
+     * @return ilPropertyFormGUI
+     */
+    protected function initUserImportForm()
+    {
+        $form = new ilPropertyFormGUI();
+        $form->setFormAction($this->ctrl->getFormAction($this));
+        $form->setTitle($this->plugin->txt('import_members_list'));
+        $form->setDescription($this->plugin->txt('import_members_desc'));
+
+        $source = new ilRadioGroupInputGUI($this->plugin->txt('source'), 'source');
+        $source->setValue('matriculations');
+
+        $sm = new ilRadioOption($this->plugin->txt('source_matriculations'), 'matriculations');
+        $matriculations = new ilTextAreaInputGUI('', 'matriculations');
+        $matriculations->setInfo($this->plugin->txt('matriculations_format'));
+        $sm->addSubItem($matriculations);
+        $source->addOption($sm);
+
+        $form->addItem($source);
+
+        $form->addCommandButton('showUserImportList', $this->plugin->txt('list_users'));
+        $form->addCommandButton('listUsers', $this->lng->txt('cancel'));
+
+        return $form;
+
+    }
+
+    /**
+     * Show the form to import users by a list
+     */
+    protected function showUserImportForm()
+    {
+        $this->prepareObjectOutput();
+        $this->ctrl->saveParameter($this, 'category');
+
+        $form = $this->initUserImportForm();
+        $this->tpl->setContent($form->getHTML());
+        $this->tpl->show();
+    }
+
+
+    protected function showUserImportList()
+    {
+        $this->prepareObjectOutput();
+        $this->ctrl->saveParameter($this, 'category');
+
+        $connObj = $this->plugin->getConnector();
+
+        $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
+        $table = new ilExamAdminUserListTableGUI($this, 'showUserImportList');
+        $table->setTitle($this->plugin->txt('external'));
+        $table->setShowCheckboxes(true);
+        $table->addCommandButton('listUsers', $this->lng->txt('cancel'));
+
+        $external = [];
+        switch ($_POST['source'])
+        {
+            case 'matriculations':
+                $external = $connObj->getUserDataByMatriculationList($_POST['matriculations']);
+                break;
+
+            default:
+                // table sorting does not produce a POST
+                if (is_array($_SESSION['showUserImportList']))
+                {
+                    $external = $connObj->getUserDataByIds($_SESSION['showUserImportList']);
+                }
+        }
+        $_SESSION['showUserImportList'] = $connObj->extractUserIds($external);
+
+        $table->setData($external);
+        if (count($external))
+        {
+            ilUtil::sendInfo(sprintf($this->plugin->txt('x_users_found'), count($external)));
+            $table->addMultiCommand('importUsersByList', $this->plugin->txt('import_members'));
+        }
+
+        $this->tpl->setContent($table->getHTML());
+        $this->tpl->show();
+    }
+
+    /**
+     * Import the users by a posted list of ids
+     * @throws Exception
+     */
+    protected function importUsersByList()
+    {
+        unset($_SESSION['showUserImportList']);
+
+        $added = [];
+        if (is_array($_POST['usr_id']))
+        {
+            $usersObj = $this->getUsersObj();
+            $connObj = $this->plugin->getConnector();
+            $external = $connObj->getUserDataByIds($_POST['usr_id']);
+            foreach ($external as $user)
+            {
+                $user = $usersObj->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_participant_role'));
+                $this->parent_obj->getMembersObject()->add($user['usr_id'], IL_GRP_MEMBER);
+                $added[] = $user['login'];
+            }
+        }
+
+        if ($added)
+        {
+            ilUtil::sendSuccess($this->plugin->txt('members_added_to_group'). '<br />' . implode('<br />', $added), true);
+        }
+
+        $this->ctrl->saveParameter($this, 'category');
+        $this->ctrl->redirect($this, 'listUsers');
     }
 
 

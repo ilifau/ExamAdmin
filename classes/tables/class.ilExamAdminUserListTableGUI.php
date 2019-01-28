@@ -31,6 +31,13 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
      */
 	protected $id_parameter = 'usr_id';
 
+
+    /**
+     * Show a checkbox column
+     * @var bool
+     */
+    protected $show_checkboxes = false;
+
 	/**
 	 * Constructor.
 	 * @param object	$a_parent_obj
@@ -51,9 +58,9 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
 
         parent::__construct($a_parent_obj, $a_parent_cmd);
 
-        $this->setFormName('user_overview');
-        $this->setTitle($this->plugin->txt('user_overview'));
+        $this->setFormName('user_list');
         $this->setStyle('table', 'fullwidth');
+        $this->addColumn('', '', '', true);
         $this->addColumn($this->lng->txt("name"), "name");
         $this->addColumn($this->lng->txt('login'), 'login');
         $this->addColumn($this->lng->txt('matriculation'), 'matriculation');
@@ -61,7 +68,6 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->addColumn($this->lng->txt('active'), 'active');
         $this->addColumn($this->lng->txt('time_limit_until'), 'time_limit_until');
         $this->addColumn($this->plugin->txt('password_change'), 'last_password_change');
-        $this->addColumn($this->lng->txt('actions'));
 
         $this->setRowTemplate("tpl.il_exam_admin_user_list_row.html", $this->plugin->getDirectory());
         $this->setFormAction($this->ctrl->getFormAction($a_parent_obj, $a_parent_cmd));
@@ -77,11 +83,21 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
 	public function setRowCommands($a_commands)
     {
         $this->row_commands = $a_commands;
+        if (count( $this->row_commands))
+        {
+            $this->addColumn($this->lng->txt('actions'));
+        }
     }
 
     public function setIdParameter($a_parameter)
     {
         $this->id_parameter = $a_parameter;
+    }
+
+    public function setShowCheckboxes($a_show)
+    {
+        $this->show_checkboxes = $a_show;
+        $this->setSelectAllCheckbox($this->id_parameter);
     }
 
     protected function fillRow($a_set)
@@ -112,6 +128,12 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
             $actions = $button->getToolbarHTML();
         }
 
+        if ($this->show_checkboxes)
+        {
+            $this->tpl->setVariable('ID_PARAMETER', $this->id_parameter);
+            $this->tpl->setVariable('ID_VALUE', $a_set['usr_id']);
+        }
+
         $this->tpl->setVariable('NAME', $a_set['name']);
         $this->tpl->setVariable('LOGIN', $a_set['login']);
         $this->tpl->setVariable('MATRICULATION', $a_set['matriculation']);
@@ -119,6 +141,10 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->tpl->setVariable('TIME_LIMIT', ilDatePresentation::formatDate(new ilDateTime($a_set['time_limit_until'], IL_CAL_UNIX)));
         $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
         $this->tpl->setVariable('ACTIVE', $a_set['active']);
-        $this->tpl->setVariable('ACTIONS', $actions);
+
+        if (count($this->row_commands) > 0)
+        {
+            $this->tpl->setVariable('ACTIONS', $actions);
+        }
     }
 }

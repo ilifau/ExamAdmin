@@ -53,6 +53,41 @@ abstract class ilExamAdminUserQuery
     }
 
 
+    /**
+     * Get the daty of accountd found by an input of matriculation numbers
+     * @param string $list
+     * @return array
+     */
+    public function getUserDataByMatriculationList($input)
+    {
+        return $this->queryUserData($this->getCondByMatriculationList($input));
+    }
+
+    /**
+     * Get the data of users by a list of user IDs
+     * @param int[] $ids
+     * @return array
+     */
+    public function getUserDataByIds($ids = [])
+    {
+        return $this->queryUserData($this->db->in('usr_id', $ids, false, 'integer'));
+    }
+
+    /**
+     * Extract the user ids from a list of user data
+     * @param array $data
+     * @return int[]
+     */
+    public function extractUserIds($data)
+    {
+        $ids = [];
+        foreach ($data as $row)
+        {
+            $ids[] = $row['usr_id'];
+        }
+        return $ids;
+    }
+
 
     /**
      * Query the user ids for a condition
@@ -134,6 +169,44 @@ abstract class ilExamAdminUserQuery
             return '';
         }
     }
+
+
+    /**
+     * Get a search condition for a matriculation list
+     * @param string $input
+     * @return string
+     */
+    protected function getCondByMatriculationList($input)
+    {
+        $list = $this->getArrayFromListInput($input);
+        return $this->db->in('matriculation', $list, false, 'text');
+    }
+
+
+    /**
+     * Get an array from comma or newline separated input
+     * @param string $input
+     * @return array
+     */
+    protected function getArrayFromListInput($input)
+    {
+        $input = preg_replace('/\r/', ',', $input);   // carriage return to comma
+        $input = preg_replace('/\n/', ',', $input);   // newline to comma
+        $input = preg_replace('/;/', ',', $input);   // semicolon to comma
+        $array = explode(',', $input);
+
+        $trimmed = [];
+        foreach ($array as $element)
+        {
+            $t = trim($element);
+            if (!empty($t))
+            {
+                $trimmed[] = $t;
+            }
+        }
+        return $trimmed;
+    }
+
 
 
     /**

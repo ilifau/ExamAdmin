@@ -16,7 +16,6 @@ user_overview#:#Personen
 category#:#Kategorie
 active#:#Aktiv
 inactive#:#Inaktiv
-listUsers#:#Auflisten
 activateUsers#:#Aktivieren
 deactivateUsers#:#Deaktivieren
 synchronizeUsers#:#Synchronisieren
@@ -48,3 +47,13 @@ internal#:#Prüfungsplattform
 external#:#Lernplattform
 lecturer_added_to_group#:#Der Dozenten-Account wurde samt Testacounts in die Gruppe aufgenommen.
 member_added_to_group#:#Der Teilnehmer-Account wurde in die Gruppe aufgenommen.
+import_members#:#Teilnehmer importieren
+import_members_list#:#Teilnehmerliste importieren
+import_members_desc#:#Die Teilnehmer werden anhand einer Liste aus der Lernplattform übernommen.
+source#:#Quelle
+source_matriculations#:#Liste von Matrikelnummern
+matriculations#:#Matrikelnummern
+matriculations_format#:#Geben Sie die Matrikulationsnummern durch Komma, Semikolon oder Zeilenwechsel getrennt ein. Leerzeichen werden ignoriert.
+list_users#:#Nutzer auflisten
+x_users_found#:#%s Nutzer gefunden.
+members_added_to_group#:#Die Teilnehmer-Accounts wurde in die Gruppe aufgenommen.
