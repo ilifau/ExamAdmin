@@ -55,12 +55,12 @@ abstract class ilExamAdminUserQuery
 
     /**
      * Get the daty of accountd found by an input of matriculation numbers
-     * @param string $list
+     * @param string[] $list
      * @return array
      */
-    public function getUserDataByMatriculationList($input)
+    public function getUserDataByMatriculationList($list)
     {
-        return $this->queryUserData($this->getCondByMatriculationList($input));
+        return $this->queryUserData($this->getCondByMatriculationList($list));
     }
 
     /**
@@ -173,12 +173,11 @@ abstract class ilExamAdminUserQuery
 
     /**
      * Get a search condition for a matriculation list
-     * @param string $input
+     * @param string[] $list
      * @return string
      */
-    protected function getCondByMatriculationList($input)
+    protected function getCondByMatriculationList($list)
     {
-        $list = $this->getArrayFromListInput($input);
         return $this->db->in('matriculation', $list, false, 'text');
     }
 
@@ -188,7 +187,7 @@ abstract class ilExamAdminUserQuery
      * @param string $input
      * @return array
      */
-    protected function getArrayFromListInput($input)
+    public function getArrayFromListInput($input)
     {
         $input = preg_replace('/\r/', ',', $input);   // carriage return to comma
         $input = preg_replace('/\n/', ',', $input);   // newline to comma

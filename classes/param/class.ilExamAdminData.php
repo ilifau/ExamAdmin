@@ -35,14 +35,14 @@ class ilExamAdminData
         $this->plugin->includeClass('param/class.ilExamAdminParam.php');
 
         /** @var ilExamAdminParam[] $params */
-        $params = array();
+        $params = [];
 
-//        $params[] = ilExamAdminParam::_create(
-//            'config_base',
-//            $this->plugin->txt('config_base'),
-//            $this->plugin->txt('config_base_info'),
-//            ilExamAdminParam::TYPE_HEAD
-//        );
+        $params[] = ilExamAdminParam::_create(
+            'source', '', '', ilExamAdminParam::TYPE_TEXT, 'matriculations'
+        );
+        $params[] = ilExamAdminParam::_create(
+            'source_ref_id', '', '', ilExamAdminParam::TYPE_REF_ID
+        );
 
         foreach ($params as $param)
         {

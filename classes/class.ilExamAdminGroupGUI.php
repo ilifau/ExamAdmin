@@ -27,6 +27,8 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 	/** @var  ilObjGroup $parent_obj */
 	protected $parent_obj;
 
+	/** @var ilExamAdminData */
+	protected $data;
 
 	/**
 	 * constructor.
@@ -43,6 +45,9 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 		$this->parent_gui_class = ilObjectFactory::getClassByType($this->parent_type).'GUI';
 
         $this->plugin->includeClass('class.ilExamAdminGroupUsers.php');
+        $this->plugin->includeClass('param/class.ilExamAdminData.php');
+
+        $this->data = new ilExamAdminData($this->plugin, $this->parent_obj->getId());
     }
 
     /**
@@ -52,6 +57,15 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     public function getPlugin()
     {
         return $this->plugin;
+    }
+
+    /**
+     * Get the data object
+     * @return ilExamAdminData
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
@@ -300,13 +314,22 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $form->setDescription($this->plugin->txt('import_members_desc'));
 
         $source = new ilRadioGroupInputGUI($this->plugin->txt('source'), 'source');
-        $source->setValue('matriculations');
+        $source->setValue($this->data->get('source'));
 
         $sm = new ilRadioOption($this->plugin->txt('source_matriculations'), 'matriculations');
         $matriculations = new ilTextAreaInputGUI('', 'matriculations');
         $matriculations->setInfo($this->plugin->txt('matriculations_format'));
         $sm->addSubItem($matriculations);
         $source->addOption($sm);
+
+        $sr =  new ilRadioOption($this->plugin->txt('source_ref_id'), 'ref_id');
+        $ref_id = new ilNumberInputGUI($this->plugin->txt('ref_id'), 'ref_id');
+        $ref_id->allowDecimals(false);
+        $ref_id->setSize(10);
+        $ref_id->setInfo($this->plugin->txt('ref_id_info'));
+        $ref_id->setValue($this->data->get('source_ref_id'));
+        $sr->addSubItem($ref_id);
+        $source->addOption($sr);
 
         $form->addItem($source);
 
@@ -330,7 +353,10 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $this->tpl->show();
     }
 
-
+    /**
+     * Show the list of users
+     * @throws ilDatabaseException
+     */
     protected function showUserImportList()
     {
         $this->prepareObjectOutput();
@@ -345,10 +371,37 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $table->addCommandButton('listUsers', $this->lng->txt('cancel'));
 
         $external = [];
+        $info = [];
+
         switch ($_POST['source'])
         {
             case 'matriculations':
-                $external = $connObj->getUserDataByMatriculationList($_POST['matriculations']);
+                $this->data->set('source', 'matriculations');
+                $this->data->write();
+
+                $list = $connObj->getArrayFromListInput($_POST['matriculations']);
+                $info[] = sprintf($this->plugin->txt('x_matrikulations_searched'), count($list));
+                $external = $connObj->getUserDataByMatriculationList($list);
+                break;
+
+            case 'ref_id':
+                $ref_id = (int) $_POST['ref_id'];
+                $this->data->set('source', 'ref_id');
+                $this->data->set('source_ref_id', $ref_id);
+                $this->data->write();
+
+                $object = $connObj->getObjectDataByRefId($ref_id);
+                if (is_array($object) && ($object['type'] == 'crs' || $object['type'] == 'grp'))
+                {
+                    $type = $object['type'];
+                    $info[] = sprintf($this->plugin->txt('members_of_'.$type), $object['title']);
+                    $external = $connObj->getUserDataByMembership($ref_id, $type);
+                }
+                else
+                {
+                    ilUtil::sendFailure($this->plugin->txt('no_membership_object'), true);
+                    $this->ctrl->redirect($this, 'showUserImportForm');
+                }
                 break;
 
             default:
@@ -361,11 +414,10 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $_SESSION['showUserImportList'] = $connObj->extractUserIds($external);
 
         $table->setData($external);
-        if (count($external))
-        {
-            ilUtil::sendInfo(sprintf($this->plugin->txt('x_users_found'), count($external)));
-            $table->addMultiCommand('importUsersByList', $this->plugin->txt('import_members'));
-        }
+        $table->addMultiCommand('importUsersByList', $this->plugin->txt('import_members'));
+
+        $info[] = sprintf($this->plugin->txt('x_users_found'), count($external));
+        ilUtil::sendInfo(implode('<br />', $info));
 
         $this->tpl->setContent($table->getHTML());
         $this->tpl->show();

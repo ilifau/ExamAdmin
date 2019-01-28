@@ -53,7 +53,14 @@ import_members_desc#:#Die Teilnehmer werden anhand einer Liste aus der Lernplatt
 source#:#Quelle
 source_matriculations#:#Liste von Matrikelnummern
 matriculations#:#Matrikelnummern
-matriculations_format#:#Geben Sie die Matrikulationsnummern durch Komma, Semikolon oder Zeilenwechsel getrennt ein. Leerzeichen werden ignoriert.
+matriculations_format#:#Geben Sie die Nummern durch Komma, Semikolon oder Zeilenwechsel getrennt ein. Leerzeichen werden ignoriert.
 list_users#:#Nutzer auflisten
-x_users_found#:#%s Nutzer gefunden.
+x_users_found#:#Gefundene Nutzer: %s
 members_added_to_group#:#Die Teilnehmer-Accounts wurde in die Gruppe aufgenommen.
+source_ref_id#:#Kurs- oder Gruppenmitglieder
+ref_id#:#Ref-Id
+ref_id_info#:#Ref-Id des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen.
+x_matrikulations_searched#:#Gesuchte Matrikelnummern: %s
+members_of_crs#:#Mitglieder des Kurses "%s"
+members_of_grp#:#Mitglieder der Gruppe "%s"
+no_membership_object#:#Die Ref-Id entspricht keinem Kurs und keiner Gruppe.
