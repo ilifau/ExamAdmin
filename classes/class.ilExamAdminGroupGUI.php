@@ -595,7 +595,13 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
      */
     protected function synchronizeUsers()
     {
-        $this->getUsersObj()->synchronizeByCategory($_GET['category']);
+        $count = $this->getUsersObj()->synchronizeByCategory($_GET['category']);
+        if ($count > 0) {
+        	ilUtil::sendSuccess(sprintf($this->plugin->txt('x_users_synchronized'), $count), true);
+		}
+		else {
+			ilUtil::sendFailure($this->plugin->txt('no_users_synchronized'), true);
+		}
         $this->ctrl->redirect($this, 'showOverview');
     }
 

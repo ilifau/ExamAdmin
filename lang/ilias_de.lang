@@ -64,3 +64,5 @@ x_matrikulations_searched#:#Gesuchte Matrikelnummern: %s
 members_of_crs#:#Mitglieder des Kurses "%s"
 members_of_grp#:#Mitglieder der Gruppe "%s"
 no_membership_object#:#Die Ref-Id entspricht keinem Kurs und keiner Gruppe.
+x_users_synchronized#:#%s Nutzer synchronisiert.
+no_users_synchronized#:#Es wurden keine Nutzer synchronisiert.

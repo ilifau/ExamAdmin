@@ -110,19 +110,26 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     /**
      * Synchronize the data of users given by category
      * @param string $category
+	 * @return int number of synchronized users
      * @throws ilException
      */
     public function synchronizeByCategory($category)
     {
+    	$count = 0;
         $connObj = $this->plugin->getConnector();
         foreach ($this->getCategoryUserData($category) as $user)
         {
+        	if ($this->isSelfRegisteredLogin($user['login'])) {
+        		continue;
+			}
             $data = $connObj->getSingleUserDataByLogin($user['login']);
             if (isset($data))
             {
                 $this->applyUserData($user['usr_id'], $data);
+                $count++;
             }
         }
+        return $count;
     }
 
     /**
@@ -143,6 +150,20 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
             }
         }
     }
+
+
+	/**
+	 * Check if a login name is auto generated at self registration
+	 * @param string $login
+	 * @return bool
+	 */
+    protected function isSelfRegisteredLogin($login) {
+
+    	if (substr($login, 0, 3) == 'gsr' && is_numeric(substr($login, 3))) {
+    		return true;
+    	}
+    	return false;
+	}
 
 
     /**

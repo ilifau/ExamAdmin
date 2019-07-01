@@ -110,7 +110,7 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
                 return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
 
             case self::CAT_LOCAL_MEMBER_REGISTERED:
-                return ['activateUsers', 'deactivateUsers'];
+                return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
 
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 return ['synchronizeUsers'];
