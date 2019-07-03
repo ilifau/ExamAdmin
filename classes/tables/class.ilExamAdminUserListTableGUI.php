@@ -39,6 +39,12 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
     protected $show_checkboxes = false;
 
 	/**
+	 * Link the user account
+	 * @var bool
+	 */
+    protected $link_user = false;
+
+	/**
 	 * Constructor.
 	 * @param object	$a_parent_obj
 	 * @param string 	$a_parent_cmd
@@ -100,6 +106,14 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->setSelectAllCheckbox($this->id_parameter);
     }
 
+	/**
+	 * @param bool $a_link
+	 */
+    public function setLinkUser($a_link)
+	{
+		$this->link_user = $a_link;
+	}
+
     protected function fillRow($a_set)
     {
         $this->ctrl->setParameter($this->parent_obj, $this->id_parameter, $a_set['usr_id']);
@@ -134,8 +148,18 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
             $this->tpl->setVariable('ID_VALUE', $a_set['usr_id']);
         }
 
-        $this->tpl->setVariable('NAME', $a_set['name']);
-        $this->tpl->setVariable('LOGIN', $a_set['login']);
+		if ($this->link_user) {
+			$this->ctrl->setParameterByClass("ilobjusergui", "ref_id", 7);
+			$this->ctrl->setParameterByClass("ilobjusergui", "obj_id", $a_set['usr_id']);
+			$link = $this->ctrl->getLinkTargetByClass(array("iladministrationgui", "ilobjusergui"), "view");
+			$this->tpl->setVariable('LINK_USER', $link);
+			$this->tpl->setVariable('LINKED_LOGIN', $a_set['login']);
+		}
+		else {
+			$this->tpl->setVariable('LOGIN', $a_set['login']);
+		}
+
+		$this->tpl->setVariable('NAME', $a_set['name']);
         $this->tpl->setVariable('MATRICULATION', $a_set['matriculation']);
         $this->tpl->setVariable('E_MAIL', $a_set['email']);
         $this->tpl->setVariable('TIME_LIMIT', ilDatePresentation::formatDate(new ilDateTime($a_set['time_limit_until'], IL_CAL_UNIX)));

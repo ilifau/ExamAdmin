@@ -22,6 +22,9 @@ synchronizeUsers#:#Synchronisieren
 activateUser#:#Aktivieren
 deactivateUser#:#Deaktivieren
 synchronizeUser#:#Synchronisieren
+rewriteUser#:#Nutzer umschreiben
+rewriteUserConfirm#:#Diesen verwenden
+rewrite_user_x#:#Nutzer "%s" umschreiben
 actions#:#Aktionen
 cat_global_admin#:#Administratoren
 cat_global_lecturer#:#Dozenten
@@ -66,3 +69,11 @@ members_of_grp#:#Mitglieder der Gruppe "%s"
 no_membership_object#:#Die Ref-Id entspricht keinem Kurs und keiner Gruppe.
 x_users_synchronized#:#%s Nutzer synchronisiert.
 no_users_synchronized#:#Es wurden keine Nutzer synchronisiert.
+rewrite_transfer#:#Sollen die Testeilnahmen des Accounts "%s" auf den Account "%s" übertragen werden?
+rewrite_transfer_info#:#Es werden nur die Tests dieser Gruppe umgeschrieben. Der neue Account wird Mitglied der Gruppe. Der alte Account bleibt erhalten, wird aber aus der Gruppe entfernt. Beide erhalten im Profil einen Kommentar. Der Übertrag wird im Testlog vermerkt.
+rewrite_not_found#:#Der neue Account wurde nicht gefunden!
+rewrite_conflict#:#Die Testteilnahmen können nicht übertragen werden, da der Account "%s" folgende Tests ebenfalls geschrieben hat:
+transfered_from#:#Testteilnahme übertragen von "%s"
+transfered_to#:#Testteilnahme übertragen auf "%s"
+rewrite_failed#:#Die Umschreibung von "%s" ist fehlgeschlagen.
+rewrite_done#:#Die Testteilnahmen wurden von "%s" auf "%s" übertragen.

@@ -278,7 +278,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 return ['activateUser', 'deactivateUser', 'synchronizeUser'];
 
             case self::CAT_GLOBAL_REGISTERED:
-                return ['activateUser', 'deactivateUser'];
+                return ['activateUser', 'deactivateUser', 'rewriteUser'];
 
             default:
                 return [];
@@ -290,7 +290,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
      * Get data of a user that matches the given data by login
      * @param array $data
      * @param bool $create  create the user if none is found
-     * @param int $role global role to be used for the new user
+     * @param int $role_id global role to be used for the new user
      * @return array|null
      * @throws Exception
      */
@@ -378,4 +378,108 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         );
     }
 
+	/**
+	 * Add a comment to a user account
+	 * @param $usr_id
+	 * @param $comment
+	 * @throws ilDateTimeException
+	 */
+    public function addComment($usr_id, $comment)
+	{
+		$datetime = (new ilDateTime(time(), IL_CAL_UNIX))->get(IL_CAL_DATETIME);
+
+		$query = "SELECT hobby FROM usr_data WHERE usr_id = " . $this->db->quote($usr_id, 'integer');
+		$result = $this->db->query($query);
+		$row = $this->db->fetchAssoc($result);
+
+		$comment = (string) $row['hobby'] . "\n" . $datetime . ': ' . $comment;
+
+		$this->db->update('usr_data',
+			[
+				'hobby' => ['text', $comment],
+			],
+			[
+				'usr_id' => ['integer', $usr_id]
+			]
+		);
+	}
+
+
+	/**
+	 * Get the display strung of a user
+	 * @param $data
+	 * @return string
+	 */
+    public function getUserDisplay($data)
+	{
+		return $data['firstname']. ' '. $data['lastname'] . ' ('. $data['login'] .')';
+	}
+
+
+	/**
+	 * Get the tests a user has started
+	 * @param int $usr_id
+	 * @param int $parent_ref_id
+	 * @return array ref_id => [ref_id => int, obj_id => int, title => string, test_id => int, active_id => int]
+	 */
+	public function getTestsOfUser($usr_id, $parent_ref_id = null)
+	{
+		global $DIC;
+
+		$tests = [];
+		$query = "
+			SELECT r.ref_id, o.obj_id, o.title, t.test_id, a.active_id
+			FROM tst_active a
+			INNER JOIN tst_tests t ON t.test_id = a.test_fi 
+			INNER JOIN object_data o ON o.obj_id = t.obj_fi
+			INNER JOIN object_reference r ON r.obj_id = o.obj_id
+			WHERE a.user_fi = ". $this->db->quote($usr_id, 'integer');
+
+		if ($parent_ref_id) {
+			$childs = $DIC->repositoryTree()->getSubTreeIds($parent_ref_id);
+			$query .= " AND " . $this->db->in('r.ref_id', $childs, false, 'integer');
+		}
+
+		$result = $this->db->query($query);
+		while ($row = $this->db->fetchAssoc($result))
+		{
+			$tests[$row['ref_id']] = $row;
+		}
+
+		return $tests;
+	}
+
+
+	/**
+	 * Move all test passes from one user to another
+	 * Note: the learning progress of the user is not updated!
+	 * @param array $orig
+	 * @param array $new
+	 * @param int $parent_ref_id
+	 * @throws ilDateTimeException
+	 */
+	public function changeTestsOfUser($orig, $new, $parent_ref_id = null)
+	{
+		$note_to = sprintf($this->plugin->txt('transfered_to'), $this->getUserDisplay($new));
+		$note_from = sprintf($this->plugin->txt('transfered_from'), $this->getUserDisplay($orig));
+
+		foreach ($this->getTestsOfUser($orig['usr_id'], $parent_ref_id) as $test) {
+
+			$this->db->update('tst_active',
+				[
+					'user_fi' => ['integer', $new['usr_id']]
+				],
+				[
+					'active_id' => ['integer', $test['active_id']]
+				]
+			);
+
+			ilObjAssessmentFolder::_addLog($orig['usr_id'], $test['obj_id'], $note_to,null,null, true, 	$test['ref_id']);
+			ilObjAssessmentFolder::_addLog($new['usr_id'], $test['obj_id'], $note_from,null,null, true, 	$test['ref_id']);
+		}
+
+		$this->addComment($orig['usr_id'], $note_to);
+		$this->addComment($new['usr_id'], $note_from);
+
+	}
 }
