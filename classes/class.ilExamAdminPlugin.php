@@ -81,6 +81,15 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     }
 
     /**
+     * Do initialisations
+     */
+    public function init()
+    {
+        require_once (__DIR__ . '/connector/class.ilExamAdminArConnectorDB.php');
+        ilExamAdminArConnectorDB::register();
+    }
+
+    /**
      * Check if the object type is allowed
      */
     public function isAllowedType($type)

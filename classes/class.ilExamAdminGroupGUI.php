@@ -131,6 +131,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                     case 'showUserImportForm':
                     case 'showUserImportList':
                     case 'importUsersByList':
+                    case 'listExams':
                         $this->$cmd();
                         break;
 
@@ -204,6 +205,26 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     }
 
     /**
+     * Show a list of exams
+     */
+    protected function listExams()
+    {
+        $this->prepareObjectOutput();
+
+        require_once (__DIR__ . '/orga/class.ilExamAdminRecord.php');
+        $records = ilExamAdminRecord::getCollection()->get();
+        $titles = [];
+        /** @var ilExamAdminRecord $record */
+        foreach ($records as $record)
+        {
+                $titles[] = $record->exam_title;
+        }
+
+        $this->tpl->setContent(implode('<br />', $titles));
+        $this->tpl->show();
+    }
+
+    /**
      * Add the user search to the toolba
      * @param $caption
      */
@@ -221,6 +242,12 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $button = ilSubmitButton::getInstance();
         $button->setCommand('showUserSearch');
         $button->setCaption($caption, false);
+        $this->toolbar->addButtonInstance($button);
+
+        $this->toolbar->addSeparator();
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this, 'listExams'));
+        $button->setCaption('list exams', false);
         $this->toolbar->addButtonInstance($button);
     }
 

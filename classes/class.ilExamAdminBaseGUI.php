@@ -44,6 +44,7 @@ class ilExamAdminBaseGUI
 		$this->tpl = $DIC['tpl'];
 
 		$this->plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'UIComponent', 'uihk', 'ExamAdmin');
+		$this->plugin->init();
 	}
 
 
