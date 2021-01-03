@@ -9,10 +9,10 @@ require_once(__DIR__ . '/class.ilExamAdminBaseGUI.php');
  * @author Fred Neumann <fred.neumann@fau.de>
  * @version $Id$
  *
- * @ilCtrl_IsCalledBy ilExamAdminGroupGUI: ilUIPluginRouterGUI
- * @ilCtrl_Calls ilExamAdminGroupGUI:
+ * @ilCtrl_IsCalledBy ilExamAdminCourseGUI: ilUIPluginRouterGUI
+ * @ilCtrl_Calls ilExamAdminCourseGUI:
  */
-class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
+class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 {
 
 	/** @var  int parent object ref_id */
@@ -24,13 +24,13 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 	/** @var  string parent gui class */
 	protected $parent_gui_class;
 
-	/** @var  ilObjGroup $parent_obj */
+	/** @var  ilObjCourse $parent_obj */
 	protected $parent_obj;
 
 	/** @var ilExamAdminData */
 	protected $data;
 
-	/** @var ilExamAdminGroupUsers */
+	/** @var ilExamAdminCourseUsers */
 	protected $users;
 
 	/**
@@ -47,11 +47,11 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 		$this->parent_obj = ilObjectFactory::getInstanceByRefId($this->parent_ref_id);
 		$this->parent_gui_class = ilObjectFactory::getClassByType($this->parent_type).'GUI';
 
-        $this->plugin->includeClass('class.ilExamAdminGroupUsers.php');
-        $this->plugin->includeClass('param/class.ilExamAdminData.php');
+		require_once(__DIR__ . '/class.ilExamAdminCourseUsers.php');
+        require_once(__DIR__ . '/param/class.ilExamAdminData.php');
 
         $this->data = new ilExamAdminData($this->plugin, $this->parent_obj->getId());
-		$this->users = new ilExamAdminGroupUsers($this->plugin, $this->parent_obj);
+		$this->users = new ilExamAdminCourseUsers($this->plugin, $this->parent_obj);
     }
 
     /**
@@ -74,7 +74,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
 	/**
 	 * Get the users object
-	 * @return ilExamAdminGroupUsers
+	 * @return ilExamAdminCourseUsers
 	 */
 	protected function getUsers()
 	{
@@ -89,9 +89,8 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 	{
 		$fallback_url = "goto.php?target=".$this->parent_type.'_'.$this->parent_ref_id;
 
-        // Only System administrators
-        if (!$this->plugin->hasAdminAccess())
-		//if (!$this->access->checkAccess('write','', $_GET['ref_id']))
+        // Only Course administrators
+		if (!$this->access->checkAccess('write','', $_GET['ref_id']))
 		{
             ilUtil::sendFailure($this->lng->txt("permission_denied"), true);
             $this->ctrl->redirectToURL($fallback_url);
@@ -118,6 +117,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                     case 'listUsers':
                     case 'showUserSearch':
                     case 'addLecturer':
+                    case 'addCorrector':
                     case 'addMember':
                     case 'activateUser':
                     case 'activateUsers':
@@ -180,6 +180,10 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                 $this->addToolbarSearch($this->plugin->txt('addLecturer'));
                 break;
 
+            case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
+                $this->addToolbarSearch($this->plugin->txt('addCorrector'));
+                break;
+
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
                 $this->addToolbarSearch($this->plugin->txt('addMember'));
 
@@ -211,10 +215,10 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     {
         $this->prepareObjectOutput();
 
-        require_once (__DIR__ . '/orga/class.ilExamAdminRecord.php');
-        $records = ilExamAdminRecord::getCollection()->get();
+        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
+        $records = ilExamAdminOrgaRecord::getCollection()->get();
         $titles = [];
-        /** @var ilExamAdminRecord $record */
+        /** @var ilExamAdminOrgaRecord $record */
         foreach ($records as $record)
         {
                 $titles[] = $record->exam_title;
@@ -244,11 +248,11 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
         $button->setCaption($caption, false);
         $this->toolbar->addButtonInstance($button);
 
-        $this->toolbar->addSeparator();
-        $button = ilLinkButton::getInstance();
-        $button->setUrl($this->ctrl->getLinkTarget($this, 'listExams'));
-        $button->setCaption('list exams', false);
-        $this->toolbar->addButtonInstance($button);
+//        $this->toolbar->addSeparator();
+//        $button = ilLinkButton::getInstance();
+//        $button->setUrl($this->ctrl->getLinkTarget($this, 'listExams'));
+//        $button->setCaption('list exams', false);
+//        $this->toolbar->addButtonInstance($button);
     }
 
 
@@ -307,6 +311,13 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                 $form = $this->initSearchForm($this->plugin->txt('addLecturer'), $pattern);
                 $content = $form->getHTML();
                 $commands = ['addLecturer'];
+                break;
+
+            case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
+                $searchCategory = ilExamAdminUsers::CAT_GLOBAL_LECTURER;
+                $form = $this->initSearchForm($this->plugin->txt('addCorrector'), $pattern);
+                $content = $form->getHTML();
+                $commands = ['addCorrector'];
                 break;
 
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
@@ -452,7 +463,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
                 $this->data->write();
 
                 $list = $connObj->getArrayFromListInput($_POST['matriculations']);
-                $info[] = sprintf($this->plugin->txt('x_matrikulations_searched'), count($list));
+                $info[] = sprintf($this->plugin->txt('x_matriculations_searched'), count($list));
                 $external = $connObj->getUserDataByMatriculationList($list);
                 break;
 
@@ -511,7 +522,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
         if ($added)
         {
-            ilUtil::sendSuccess($this->plugin->txt('members_added_to_group'). '<br />' . implode('<br />', $added), true);
+            ilUtil::sendSuccess($this->plugin->txt('members_added_to_course'). '<br />' . implode('<br />', $added), true);
         }
 
         $this->ctrl->saveParameter($this, 'category');
@@ -537,15 +548,40 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
         if (!empty($added))
         {
-            ilUtil::sendSuccess($this->plugin->txt('lecturer_added_to_group'). '<br />' . implode('<br />', $added), true);
+            ilUtil::sendSuccess($this->plugin->txt('lecturer_added_to_course'). '<br />' . implode('<br />', $added), true);
+        }
+        $this->ctrl->saveParameter($this, 'category');
+        $this->ctrl->redirect($this, 'listUsers');
+    }
+
+    /**
+     * Add a Corrector
+     * @throws Exception
+     */
+    protected function addCorrector()
+    {
+        $added = [];
+        if ($_GET['usr_id'])
+        {
+            $added = $this->getUsers()->addCorrectors([$_GET['usr_id']], true);
+        }
+        elseif ($_GET['conn_usr_id'])
+        {
+            $added = $this->getUsers()->addCorrectors([$_GET['conn_usr_id']], false);
+        }
+
+        if (!empty($added))
+        {
+            ilUtil::sendSuccess($this->plugin->txt('corrector_added_to_course'). '<br />' . implode('<br />', $added), true);
         }
         $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
     }
 
 
+
     /**
-     * Addd a member
+     * Add a member
      * @throws Exception
      */
     protected function addMember()
@@ -562,7 +598,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
         if (!empty($added))
         {
-            ilUtil::sendSuccess($this->plugin->txt('member_added_to_group'). '<br />' . implode('<br />', $added), true);
+            ilUtil::sendSuccess($this->plugin->txt('member_added_to_course'). '<br />' . implode('<br />', $added), true);
         }
 
         $this->ctrl->saveParameter($this, 'category');
@@ -600,7 +636,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
     }
 
     /**
-     * Deativate the users of a category
+     * Deactivate the users of a category
      */
     protected function deactivateUser()
     {
@@ -642,7 +678,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 	 */
     protected function rewriteUser()
 	{
-		$usersObj =  new ilExamAdminGroupUsers($this->plugin, $this->parent_obj);
+		$usersObj =  new ilExamAdminCourseUsers($this->plugin, $this->parent_obj);
 
 		$pattern = '';
 		$user = $usersObj->getSingleUserDataById( $_GET['usr_id']);
@@ -763,7 +799,7 @@ class ilExamAdminGroupGUI extends ilExamAdminBaseGUI
 
     protected function getAutocompleteUrl()
     {
-        return $this->ctrl->getLinkTargetByClass(['ilrepositorygui','ilobjgroupgui','ilgroupmembershipgui', 'ilrepositorysearchgui'],
+        return $this->ctrl->getLinkTargetByClass(['ilrepositorygui','ilobjcoursegui','ilcoursemembershipgui', 'ilrepositorysearchgui'],
             'doUserAutoComplete', '', true,false);
     }
 

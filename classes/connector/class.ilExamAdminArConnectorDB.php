@@ -16,7 +16,7 @@ class ilExamAdminArConnectorDB extends arConnectorDB
      */
     public static function register()
     {
-        require_once(__DIR__ . '/../orga/class.ilExamAdminRecord.php');
-        arConnectorMap::register(new ilExamAdminRecord(), new self());
+        require_once(__DIR__ . '/../orga/class.ilExamAdminOrgaRecord.php');
+        arConnectorMap::register(new ilExamAdminOrgaRecord(), new self());
     }
 }

@@ -20,6 +20,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     const CAT_GLOBAL_REGISTERED = 'cat_global_registered';
 
     const CAT_LOCAL_ADMIN_LECTURER = 'cat_local_admin_lecturer';
+    const CAT_LOCAL_TUTOR_CORRECTOR = 'cat_local_tutor_corrector';
     const CAT_LOCAL_MEMBER_TESTACCOUNT = 'cat_local_member_testaccount';
     const CAT_LOCAL_MEMBER_STANDARD = 'cat_local_member_standard';
     const CAT_LOCAL_MEMBER_REGISTERED = 'cat_local_member_registered';

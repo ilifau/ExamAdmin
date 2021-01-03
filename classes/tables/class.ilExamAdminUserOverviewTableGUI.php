@@ -46,7 +46,9 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
         $this->addColumn($this->plugin->txt("category"));
         $this->addColumn($this->plugin->txt("active"));
         $this->addColumn($this->plugin->txt('inactive'));
-        $this->addColumn($this->plugin->txt('password_change'));
+        if ($this->plugin->hasAdminAccess()) {
+            $this->addColumn($this->plugin->txt('password_change'));
+        }
         $this->addColumn($this->plugin->txt('actions'));
 
         $this->setRowTemplate("tpl.il_exam_admin_user_overview_row.html", $this->plugin->getDirectory());
@@ -76,13 +78,16 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
         }
 
         $title = $this->plugin->txt($a_set['category']);
+        $info = $this->plugin->txt($a_set['category']. '_info');
         $link = $this->ctrl->getLinkTarget($this->parent_obj, 'listUsers');
-        $title = '<a href="' . $link . '">' .$title . '</a>';
+        $title = '<a href="' . $link . '">' .$title . '</a><p class="small">' . $info . '</p>';
 
         $this->tpl->setVariable('CATEGORY', $title);
         $this->tpl->setVariable('ACTIVE', empty($a_set['active']) ? '' : $a_set['active']);
         $this->tpl->setVariable('INACTIVE', empty($a_set['inactive']) ? '' : $a_set['inactive']);
-        $this->tpl->setVariable('CHANGE', empty($a_set['last_password_change']) ? '' : ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
+        if ($this->plugin->hasAdminAccess()) {
+            $this->tpl->setVariable('CHANGE', empty($a_set['last_password_change']) ? '&nbsp;' : ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)) . '&nbsp;');
+        }
         $this->tpl->setVariable('ACTIONS', $list->getHTML());
     }
 }

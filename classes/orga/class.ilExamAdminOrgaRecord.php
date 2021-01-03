@@ -3,7 +3,7 @@
 /**
  * Base Representation of an Exam
  */
-class ilExamAdminRecord extends ActiveRecord
+class ilExamAdminOrgaRecord extends ActiveRecord
 {
 
     /**

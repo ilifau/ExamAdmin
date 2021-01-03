@@ -7,23 +7,23 @@ require_once(__DIR__ . '/class.ilExamAdminUsers.php');
 /**
  * Class ilExamAdminGroup Users
  */
-class ilExamAdminGroupUsers extends ilExamAdminUsers
+class ilExamAdminCourseUsers extends ilExamAdminUsers
 {
-    /** @var ilObjGroup */
-    protected $group;
+    /** @var ilObjCourse */
+    protected $course;
 
-    /** @var ilGroupParticipants */
+    /** @var ilCourseParticipants */
     protected $participants;
     /**
      * constructor.
      * @param ilExamAdminPlugin $plugin
      * @param ilObjGroup $group
      */
-    public function __construct($plugin, $group)
+    public function __construct($plugin, $course)
     {
         parent::__construct($plugin);
-        $this->group = $group;
-        $this->participants = $group->getMembersObject();
+        $this->course = $course;
+        $this->participants = $course->getMembersObject();
     }
 
 
@@ -36,6 +36,7 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
     {
         $categories = [
             self::CAT_LOCAL_ADMIN_LECTURER,
+            self::CAT_LOCAL_TUTOR_CORRECTOR,
             self::CAT_LOCAL_MEMBER_TESTACCOUNT,
             self::CAT_LOCAL_MEMBER_STANDARD,
             self::CAT_LOCAL_MEMBER_REGISTERED
@@ -69,8 +70,13 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 
             case self::CAT_LOCAL_ADMIN_LECTURER:
                 return
-                    $this->db->in('usr_id', $this->participants->getAdmins(), false, 'integer')
-                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_LECTURER) .")";
+                    $this->db->in('usr_id', $this->participants->getAdmins(), false, 'integer');
+//                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_LECTURER) .")";
+
+            case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                return
+                    $this->db->in('usr_id', $this->participants->getTutors(), false, 'integer');
+//                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_LECTURER) .")";
 
             case self::CAT_LOCAL_MEMBER_STANDARD:
                 return
@@ -101,17 +107,27 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
      */
     public function getCategoryCommands($category)
     {
+        if (!$this->plugin->hasAdminAccess()) {
+            switch ($category) {
+                case self::CAT_LOCAL_ADMIN_LECTURER:
+                case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                    return ['synchronizeUsers'];
+                case self::CAT_LOCAL_MEMBER_STANDARD:
+                    return ['activateUsers', 'synchronizeUsers'];
+                case self::CAT_LOCAL_MEMBER_REGISTERED:
+                    return [];
+                default:
+                    return parent::getCategoryCommands($category);
+            }
+        }
+
         switch ($category) {
-
             case self::CAT_LOCAL_ADMIN_LECTURER:
-                return ['synchronizeUsers'];
-
-            case self::CAT_LOCAL_MEMBER_STANDARD:
-                return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
-
+            case self::CAT_LOCAL_TUTOR_CORRECTOR:
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 return ['synchronizeUsers'];
-
+            case self::CAT_LOCAL_MEMBER_STANDARD:
 			case self::CAT_LOCAL_MEMBER_REGISTERED:
 				return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
 
@@ -127,20 +143,31 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
      */
     public function getUserCommands($category)
     {
+        if (!$this->plugin->hasAdminAccess()) {
+            switch ($category) {
+                case self::CAT_LOCAL_ADMIN_LECTURER:
+                case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                    return ['synchronizeUser'];
+                case self::CAT_LOCAL_MEMBER_STANDARD:
+                    return ['activateUser', 'synchronizeUser'];
+                case self::CAT_LOCAL_MEMBER_REGISTERED:
+                    return [];
+                default:
+                    return parent::getUserCommands($category);
+            }
+
+        }
+
         switch ($category) {
-
             case self::CAT_LOCAL_ADMIN_LECTURER:
-                return ['synchronizeUser'];
-
-            case self::CAT_LOCAL_MEMBER_STANDARD:
-                return ['activateUser', 'deactivateUser', 'synchronizeUser'];
-
+            case self::CAT_LOCAL_TUTOR_CORRECTOR:
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 return ['synchronizeUser'];
-
-			case self::CAT_LOCAL_MEMBER_REGISTERED:
+            case self::CAT_LOCAL_MEMBER_STANDARD:
+                return ['activateUser', 'deactivateUser', 'synchronizeUser'];
+ 			case self::CAT_LOCAL_MEMBER_REGISTERED:
 				return ['activateUser', 'deactivateUser', 'rewriteUser'];
-
 			default:
                 return parent::getUserCommands($category);
         }
@@ -161,11 +188,11 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 			$users = $this->getUserDataByIds($usr_ids);
 			foreach ($users as $user)
 			{
-				$this->group->getMembersObject()->add($user['usr_id'], IL_GRP_ADMIN);
+				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN);
 				$added[] = $user['login'];
 				foreach ($this->getTestaccountData($user['login']) as $test)
 				{
-					$this->group->getMembersObject()->add($test['usr_id'], IL_GRP_MEMBER);
+					$this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
 					$added[] = $test['login'];
 				}
 			}
@@ -177,12 +204,12 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 			foreach ($users as $user)
 			{
 				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-				$this->group->getMembersObject()->add($user['usr_id'], IL_GRP_ADMIN);
+				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN);
 				$added[] = $user['login'];
 				foreach ($connObj->getTestaccountData($user['login']) as $test)
 				{
 					$test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-					$this->group->getMembersObject()->add($test['usr_id'], IL_GRP_MEMBER);
+					$this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
 					$added[] = $test['login'];
 				}
 			}
@@ -190,7 +217,53 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 		return $added;
 	}
 
-	/**
+
+    /**
+     * Add Correctors
+     * @param int[] $usr_ids
+     * @param bool $local
+     * @return string[] list of logins
+     * @throws Exception
+     */
+    public function addCorrectors($usr_ids, $local)
+    {
+        $added = [];
+        if ($local)
+        {
+            $users = $this->getUserDataByIds($usr_ids);
+            foreach ($users as $user)
+            {
+                $this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR);
+                $added[] = $user['login'];
+                foreach ($this->getTestaccountData($user['login']) as $test)
+                {
+                    $this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
+                    $added[] = $test['login'];
+                }
+            }
+        }
+        else
+        {
+            $connObj = $this->plugin->getConnector();
+            $users = $connObj->getUserDataByIds($usr_ids);
+            foreach ($users as $user)
+            {
+                $user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
+                $this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR);
+                $added[] = $user['login'];
+                foreach ($connObj->getTestaccountData($user['login']) as $test)
+                {
+                    $test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
+                    $this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
+                    $added[] = $test['login'];
+                }
+            }
+        }
+        return $added;
+    }
+
+
+    /**
 	 * Add  members
 	 * @param int[] $usr_ids
 	 * @param bool $local
@@ -205,7 +278,7 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 			$users = $this->getUserDataByIds($usr_ids);
 			foreach ($users as $user)
 			{
-				$this->group->getMembersObject()->add($user['usr_id'], IL_GRP_MEMBER);
+				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER);
 				$added[] = $user['login'];
 			}
 		}
@@ -215,7 +288,7 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 			foreach ($users as $user)
 			{
 				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_participant_role'));
-				$this->group->getMembersObject()->add($user['usr_id'], IL_GRP_MEMBER);
+				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER);
 				$added[] = $user['login'];
 			}
 		}
@@ -225,9 +298,9 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 	/**
 	 * Rewrite a self-registered user
 	 * A new user is created, if it does not exist in the local platform
-	 * The test passes of tests in this group are moved from the self registered user to the new one
-	 * The new user is added to the group
-	 * The original user is kept but removed from the group
+	 * The test passes of tests in this course are moved from the self registered user to the new one
+	 * The new user is added to the course
+	 * The original user is kept but removed from the course
 	 * Both users get comments about their relationship
 	 *
 	 * @param int $orig_id		local user id of the self-registered user
@@ -259,8 +332,8 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 
 		// check for conflicting tests in the current group
 		if ($local) {
-			$orig_tests = $this->getTestsOfUser($orig_id, $this->group->getRefId());
-			$new_tests = $this->getTestsOfUser($new_id, $this->group->getRefId());
+			$orig_tests = $this->getTestsOfUser($orig_id, $this->course->getRefId());
+			$new_tests = $this->getTestsOfUser($new_id, $this->course->getRefId());
 			foreach ($orig_tests as $ref_id => $test) {
 				if (isset($new_tests[$ref_id])) {
 					$conflicts[$ref_id] = $test['title'];
@@ -278,11 +351,11 @@ class ilExamAdminGroupUsers extends ilExamAdminUsers
 			}
 
 			// transfer tests of the original user (will be logged)
-			$this->changeTestsOfUser($orig, $new, $this->group->getRefId());
+			$this->changeTestsOfUser($orig, $new, $this->course->getRefId());
 
 			// switch the group membership
-			$this->group->getMembersObject()->delete($orig_id);
-			$this->group->getMembersObject()->add($new_id, IL_GRP_MEMBER);
+			$this->course->getMembersObject()->delete($orig_id);
+			$this->course->getMembersObject()->add($new_id, IL_CRS_MEMBER);
 
 			// deactivate the old user
 			$this->setActiveByUserId($orig_id, false);

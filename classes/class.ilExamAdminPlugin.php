@@ -52,7 +52,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     {
         if (!isset($this->config))
         {
-            $this->includeClass('param/class.ilExamAdminConfig.php');
+            require_once(__DIR__ . '/param/class.ilExamAdminConfig.php');
             $this->config = new ilExamAdminConfig($this);
         }
         return $this->config;
@@ -66,7 +66,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     {
         if (!isset($this->connector))
         {
-            $this->includeClass('connector/class.ilExamAdminConnector.php');
+            require_once(__DIR__ . '/connector/class.ilExamAdminConnector.php');
             try
             {
                 $this->connector = ilExamAdminConnector::getInstance($this);
@@ -94,7 +94,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      */
     public function isAllowedType($type)
     {
-        return in_array($type, array('grp'));
+        return in_array($type, array('crs'));
     }
 
     /**

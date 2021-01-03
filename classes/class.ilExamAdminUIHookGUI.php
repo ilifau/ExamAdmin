@@ -54,28 +54,26 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                 $this->access = $DIC->access();
 
                 // exam admin page is shown in a group
-                if (in_array($this->ctrl->getCmdClass(), array('ilexamadmingroupgui')))
+                if (in_array($this->ctrl->getCmdClass(), array('ilexamadmincoursegui')))
                 {
-                    $this->restoreTabs('group');
+                    $this->restoreTabs('course');
                     $this->tabs->activateTab('examad');
                 }
-                // Group is shown
-				elseif ($this->parent_type = 'grp')
+                // Course is shown
+				elseif ($this->parent_type = 'crs')
 				{
-				    // Group can be edited
-                    // if ($this->access->checkAccess('write','', $_GET['ref_id']))
-                    // System administrator
-                    if ($this->plugin_object->hasAdminAccess())
+				    // course can be edited
+                    if ($this->access->checkAccess('write','', $_GET['ref_id']))
                     {
                         // add exam admin tab
-                        $this->ctrl->setParameterByClass('ilExamAdminGroupGUI', 'ref_id', $this->parent_ref_id);
+                        $this->ctrl->setParameterByClass('ilExamAdminCourseGUI', 'ref_id', $this->parent_ref_id);
                         $this->tabs->addTab('examad', $this->plugin_object->txt('exam_admin_tab'),
-                            $this->ctrl->getLinkTargetByClass(array('ilUIPluginRouterGUI','ilExamAdminGroupGUI')));
+                            $this->ctrl->getLinkTargetByClass(array('ilUIPluginRouterGUI','ilExamAdminCourseGUI')));
 
                         // save the situation when
-                        if (in_array($this->ctrl->getCmdClass(), array('ilobjgroupgui', 'ilinfoscreengui', 'ilgroupmembershipgui', 'ilexportgui', 'ilpermissiongui')))
+                        if (in_array($this->ctrl->getCmdClass(), array('ilobjcoursegui', 'ilinfoscreengui', 'ilcoursemembershipgui', 'ilexportgui', 'ilpermissiongui')))
                         {
-                            $this->saveTabs('group');
+                            $this->saveTabs('course');
                         }
                     }
 				}
