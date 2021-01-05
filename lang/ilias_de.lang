@@ -84,3 +84,14 @@ transfered_from#:#Testteilnahme übertragen von "%s"
 transfered_to#:#Testteilnahme übertragen auf "%s"
 rewrite_failed#:#Die Umschreibung von "%s" ist fehlgeschlagen.
 rewrite_done#:#Die Testteilnahmen wurden von "%s" auf "%s" übertragen.
+summer_term#:#Sommersemester
+winter_term#:#Wintersemester
+semester#:#Semester
+semester_info#:#Prüfungen dieses Semesters aus StudOn abfragen
+exam_format#:#Prüfungsformat
+exam_format_info#:#Prüfungen dieses Formats aus StudOn abfragen
+exam_format_presence#:#E-Prüfung in Präsenz
+exam_format_open#:#Open-Book-Prüfung mit Zeitbegrenzung
+exam_format_monitored#:#Fernklausur mit Videoaufsicht
+testdata#:#Testdaten
+testdata_info#:#Testdaten aus StudOn abfragen

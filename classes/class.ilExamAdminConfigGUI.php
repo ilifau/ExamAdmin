@@ -94,7 +94,7 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 
         foreach($this->config->getParams() as $param)
         {
-            $param->setValue((int) $this->config->get($param->name));
+            $param->setValue($this->config->get($param->name));
             $form->addItem($param->getFormItem());
         }
 
@@ -110,9 +110,10 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 		$form = $this->initBasicConfigurationForm();
 		if ($form->checkInput())
 		{
+		    $form->setValuesByPost();
 		    foreach ($this->config->getParams() as $param)
             {
-                $this->config->set($param->name, $form->getInput($param->name));
+                $this->config->set($param->name, $param->getFormValue($form));
             }
             $this->config->write();
 

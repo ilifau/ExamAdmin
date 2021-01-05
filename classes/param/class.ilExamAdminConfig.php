@@ -47,6 +47,42 @@ class ilExamAdminConfig
             ilExamAdminParam::TYPE_ROLE
         );
 
+        // format
+        $params[] = ilExamAdminParam::_create(
+            'exam_format',
+            $this->plugin->txt('exam_format'),
+            $this->plugin->txt('exam_format_info'),
+            ilExamAdminParam::TYPE_MULTISELECT,
+            'presence',
+            [
+                'presence' =>  $this->plugin->txt('exam_format_presence'),
+                'open' =>  $this->plugin->txt('exam_format_open'),
+                'monitored' => $this->plugin->txt('exam_format_monitored'),
+            ]
+        );
+
+        // semester
+        for ($y = 2020; $y <= 2030; $y++) {
+            $options[$y . 's'] = $this->plugin->txt('summer_term') . ' ' . $y;
+            $options[$y . 'w'] = $this->plugin->txt('winter_term') . ' ' . $y . '/' . ($y + 1);
+        }
+        $params[] = ilExamAdminParam::_create(
+            'semester',
+            $this->plugin->txt('semester'),
+            $this->plugin->txt('semester_info'),
+            ilExamAdminParam::TYPE_SELECT, '2020w',
+            $options
+        );
+        // test data
+        $params[] = ilExamAdminParam::_create(
+            'testdata',
+            $this->plugin->txt('testdata'),
+            $this->plugin->txt('testdata_info'),
+            ilExamAdminParam::TYPE_BOOLEAN,
+            0
+        );
+
+
         foreach ($params as $param)
         {
             $this->params[$param->name] = $param;
