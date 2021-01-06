@@ -28,6 +28,10 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
     /** @var ilTemplate $lng */
 	protected $tpl;
 
+    /** @var  ilToolbarGUI $toolbar */
+    protected $toolbar;
+
+
     /**
 	 * Handles all commands, default is "configure"
      * @throws Exception
@@ -42,9 +46,11 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
         $this->lng = $DIC->language();
         $this->tabs = $DIC->tabs();
         $this->ctrl = $DIC->ctrl();
-        $this->tpl = $DIC['tpl'];
+        $this->toolbar = $DIC->toolbar();
+        $this->tpl = $DIC->ui()->mainTemplate();
 
         $this->tabs->addTab('basic', $this->plugin->txt('basic_configuration'), $this->ctrl->getLinkTarget($this, 'configure'));
+        $this->setToolbar();
 
         switch ($DIC->ctrl()->getNextClass())
         {
@@ -63,6 +69,8 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
                 {
                     case "configure":
                     case "saveBasicSettings":
+                    case "updateLanguages":
+                    case "installCourses":
                         $this->tabs->activateTab('basic');
                         $this->$cmd();
                         break;
@@ -79,6 +87,23 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 		$this->tpl->setContent($form->getHTML());
 	}
 
+    /**
+     * Set the toolbar
+     */
+    protected function setToolbar()
+    {
+        $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
+
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this, 'updateLanguages'));
+        $button->setCaption($this->plugin->txt('update_languages'), false);
+        $this->toolbar->addButtonInstance($button);
+
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this, 'installCourses'));
+        $button->setCaption($this->plugin->txt('install_courses'), false);
+        $this->toolbar->addButtonInstance($button);
+    }
 
 
     /**
@@ -126,6 +151,31 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 			$this->tpl->setContent($form->getHtml());
 		}
 	}
+
+
+    /**
+     * Update Languages
+     */
+    protected function updateLanguages()
+    {
+        $this->plugin->updateLanguages();
+       $this->ctrl->redirect($this, 'configure');
+    }
+
+
+    /**
+     * Install Courses
+     */
+	protected function installCourses()
+    {
+        $this->plugin->init();
+        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+        $handler = new ilExamAdminCronHandler($this->plugin);
+        $courses = $handler->installCourses();
+
+        ilUtil::sendSuccess(implode('<br />', $courses), false);
+        $this->configure();
+    }
 }
 
 ?>

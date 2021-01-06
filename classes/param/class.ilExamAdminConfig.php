@@ -73,12 +73,31 @@ class ilExamAdminConfig
             ilExamAdminParam::TYPE_SELECT, '2020w',
             $options
         );
+
         // test data
         $params[] = ilExamAdminParam::_create(
             'testdata',
             $this->plugin->txt('testdata'),
             $this->plugin->txt('testdata_info'),
             ilExamAdminParam::TYPE_BOOLEAN,
+            0
+        );
+
+        // master course
+        $params[] = ilExamAdminParam::_create(
+            'master_course',
+            $this->plugin->txt('master_course'),
+            $this->plugin->txt('master_course_info'),
+            ilExamAdminParam::TYPE_REF_ID,
+            0
+        );
+
+        // parent category
+        $params[] = ilExamAdminParam::_create(
+            'parent_category',
+            $this->plugin->txt('parent_category'),
+            $this->plugin->txt('parent_category_info'),
+            ilExamAdminParam::TYPE_REF_ID,
             0
         );
 

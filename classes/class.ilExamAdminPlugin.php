@@ -139,6 +139,36 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
 		global $ilUser;
 		$ilUser->writePref($this->getId().'_'.$name, $value);
 	}
+
+
+    /**
+     * Handle a call by the cron job plugin
+     * @return	int		Number of created archives
+     * @throws	Exception
+     */
+    public function handleCronJob()
+    {
+        $created = 0;
+
+        try
+        {
+            require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+            $handler = new ilExamAdminCronHandler($this);
+            $courses = $handler->installCourses();
+
+            $created = count($courses);
+        }
+        catch (exception $e)
+        {
+            $error = $e->getMessage();
+        }
+
+        if (!empty($error)) {
+            throw new Exception($error);
+        }
+
+        return $created;
+    }
 }
 
 ?>

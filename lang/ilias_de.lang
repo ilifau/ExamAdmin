@@ -95,3 +95,9 @@ exam_format_open#:#Open-Book-Prüfung mit Zeitbegrenzung
 exam_format_monitored#:#Fernklausur mit Videoaufsicht
 testdata#:#Testdaten
 testdata_info#:#Testdaten aus StudOn abfragen
+master_course#:#Kursvorlage
+master_course_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren verwendet wird.
+update_languages#:#Sprachen neu laden
+install_courses#:#Kurse installieren
+parent_category#:#Haupt-Bereich
+parent_category_info#:#Ref_id des Bereichs, in dem die Bereiche für Prüfungen angelegt werden sollen
