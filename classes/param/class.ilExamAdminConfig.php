@@ -9,6 +9,10 @@
  */
 class ilExamAdminConfig
 {
+    const GLOBAL_ADMIN_ROLE = 'global_admin_role';
+    const GLOBAL_LECTURER_ROLE = 'global_lecturer_role';
+    const GLOBAL_PARTICIPANT_ROLE = 'global_lecturer_role';
+
 	/**
 	 * @var ilExamAdminParam[]	$params		parameters: 	name => ilExamAdminParam
 	 */
@@ -27,21 +31,21 @@ class ilExamAdminConfig
 		$params = array();
 
         $params[] = ilExamAdminParam::_create(
-            'global_admin_role',
+            self::GLOBAL_ADMIN_ROLE,
             $this->plugin->txt('cat_global_admin_role'),
             $this->plugin->txt('cat_global_admin_info'),
             ilExamAdminParam::TYPE_ROLE
         );
 
         $params[] = ilExamAdminParam::_create(
-            'global_lecturer_role',
+            self::GLOBAL_LECTURER_ROLE,
             $this->plugin->txt('cat_global_lecturer_role'),
             $this->plugin->txt('cat_global_lecturer_info'),
             ilExamAdminParam::TYPE_ROLE
         );
 
         $params[] = ilExamAdminParam::_create(
-            'global_participant_role',
+            self::GLOBAL_PARTICIPANT_ROLE,
             $this->plugin->txt('cat_global_participant_role'),
             $this->plugin->txt('cat_global_participant_info'),
             ilExamAdminParam::TYPE_ROLE

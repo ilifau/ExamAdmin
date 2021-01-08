@@ -116,9 +116,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
                     case 'showOverview':
                     case 'listUsers':
                     case 'showUserSearch':
-                    case 'addLecturer':
-                    case 'addCorrector':
-                    case 'addMember':
+                    case 'addParticipant':
                     case 'activateUser':
                     case 'activateUsers':
                     case 'deactivateUser':
@@ -131,7 +129,6 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
                     case 'showUserImportForm':
                     case 'showUserImportList':
                     case 'importUsersByList':
-                    case 'listExams':
                         $this->$cmd();
                         break;
 
@@ -177,15 +174,17 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         switch ($_GET['category'])
         {
             case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
-                $this->addToolbarSearch($this->plugin->txt('addLecturer'));
+                $this->addToolbarSearch($this->plugin->txt('add_lecturer'));
                 break;
-
             case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
-                $this->addToolbarSearch($this->plugin->txt('addCorrector'));
+                $this->addToolbarSearch($this->plugin->txt('add_corrector'));
+                break;
+            case ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                $this->addToolbarSearch($this->plugin->txt('add_testaccount'));
                 break;
 
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
-                $this->addToolbarSearch($this->plugin->txt('addMember'));
+                $this->addToolbarSearch($this->plugin->txt('add_member'));
 
                 $this->toolbar->addSeparator();
                 $button = ilLinkButton::getInstance();
@@ -209,26 +208,6 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
     }
 
     /**
-     * Show a list of exams
-     */
-    protected function listExams()
-    {
-        $this->prepareObjectOutput();
-
-        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
-        $records = ilExamAdminOrgaRecord::getCollection()->get();
-        $titles = [];
-        /** @var ilExamAdminOrgaRecord $record */
-        foreach ($records as $record)
-        {
-                $titles[] = $record->exam_title;
-        }
-
-        $this->tpl->setContent(implode('<br />', $titles));
-        $this->tpl->show();
-    }
-
-    /**
      * Add the user search to the toolba
      * @param $caption
      */
@@ -247,12 +226,6 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         $button->setCommand('showUserSearch');
         $button->setCaption($caption, false);
         $this->toolbar->addButtonInstance($button);
-
-//        $this->toolbar->addSeparator();
-//        $button = ilLinkButton::getInstance();
-//        $button->setUrl($this->ctrl->getLinkTarget($this, 'listExams'));
-//        $button->setCaption('list exams', false);
-//        $this->toolbar->addButtonInstance($button);
     }
 
 
@@ -308,27 +281,39 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         {
             case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
 				$searchCategory = ilExamAdminUsers::CAT_GLOBAL_LECTURER;
+                $withTestAccounts = false;
                 $form = $this->initSearchForm($this->plugin->txt('addLecturer'), $pattern);
                 $content = $form->getHTML();
-                $commands = ['addLecturer'];
+                $commands = ['addParticipant'];
                 break;
 
             case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
                 $searchCategory = ilExamAdminUsers::CAT_GLOBAL_LECTURER;
+                $withTestAccounts = false;
                 $form = $this->initSearchForm($this->plugin->txt('addCorrector'), $pattern);
                 $content = $form->getHTML();
-                $commands = ['addCorrector'];
+                $commands = ['addParticipant'];
+                break;
+
+            case ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                $searchCategory = ilExamAdminUsers::CAT_GLOBAL_TESTACCOUNT;
+                $withTestAccounts = true;
+                $form = $this->initSearchForm($this->plugin->txt('addTestaccount'), $pattern);
+                $content = $form->getHTML();
+                $commands = ['addParticipant'];
                 break;
 
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
 				$searchCategory = ilExamAdminUsers::CAT_GLOBAL_PARTICIPANT;
+                $withTestAccounts = false;
                 $form = $this->initSearchForm($this->plugin->txt('addMember'), $pattern);
                 $content = $form->getHTML();
-                $commands = ['addMember'];
+                $commands = ['addParticipant'];
                 break;
 
 			case ilExamAdminUsers::CAT_LOCAL_MEMBER_REGISTERED:
 				$searchCategory = ilExamAdminUsers::CAT_GLOBAL_PARTICIPANT;
+                $withTestAccounts = false;
 				$this->ctrl->saveParameter($this, 'orig_usr_id');
 				$user = $this->getUsers()->getSingleUserDataById($_GET['orig_usr_id']);
 				$title = sprintf($this->plugin->txt('rewrite_user_x'), $this->getUsers()->getUserDisplay($user));
@@ -341,20 +326,19 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         if ($pattern)
         {
             $usersObj = $this->getUsers();
-            $internal = $usersObj->getUserDataByPattern($pattern, false, $searchCategory);
+            $internal = $usersObj->getUserDataByPattern($pattern, $withTestAccounts, $searchCategory);
 
             // only one user found: add directly
             if (count($internal) == 1)
             {
 				switch ($_GET['category']) {
 					case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
-						$this->ctrl->setParameter($this, 'usr_id', $internal[0]['usr_id']);
-						$this->ctrl->redirect($this, 'addLecturer');
-						break;
+                    case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
 					case  ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
-						$this->ctrl->setParameter($this, 'usr_id', $internal[0]['usr_id']);
-						$this->ctrl->redirect($this, 'addMember');
-						break;
+                    case  ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                        $this->ctrl->setParameter($this, 'usr_id', $internal[0]['usr_id']);
+                        $this->ctrl->redirect($this, 'addParticipant');
+                        break;
 				}
             }
 
@@ -372,7 +356,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 			// clear the usr_id parmeter of the previous table
 			$this->ctrl->setParameter($this, 'usr_id', '');
             $connObj = $this->plugin->getConnector();
-            $external = $connObj->getUserDataByPattern($pattern, false);
+            $external = $connObj->getUserDataByPattern($pattern, $withTestAccounts);
             $table2 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
             $table2->setTitle($this->plugin->txt('external'));
             $table2->setData($external);
@@ -531,76 +515,36 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 
 
     /**
-     * Add a lecturer
+     * Add a participant
      * @throws Exception
      */
-    protected function addLecturer()
+    protected function addParticipant()
     {
         $added = [];
-        if ($_GET['usr_id'])
-        {
-           	$added = $this->getUsers()->addLecturers([$_GET['usr_id']], true);
+        if ($_GET['usr_id']) {
+            $added = $this->getUsers()->addParticipants([$_GET['usr_id']], true, $_GET['category']);
         }
-        elseif ($_GET['conn_usr_id'])
-        {
-        	$added = $this->getUsers()->addLecturers([$_GET['conn_usr_id']], false);
-		}
-
-        if (!empty($added))
-        {
-            ilUtil::sendSuccess($this->plugin->txt('lecturer_added_to_course'). '<br />' . implode('<br />', $added), true);
-        }
-        $this->ctrl->saveParameter($this, 'category');
-        $this->ctrl->redirect($this, 'listUsers');
-    }
-
-    /**
-     * Add a Corrector
-     * @throws Exception
-     */
-    protected function addCorrector()
-    {
-        $added = [];
-        if ($_GET['usr_id'])
-        {
-            $added = $this->getUsers()->addCorrectors([$_GET['usr_id']], true);
-        }
-        elseif ($_GET['conn_usr_id'])
-        {
-            $added = $this->getUsers()->addCorrectors([$_GET['conn_usr_id']], false);
+        elseif ($_GET['conn_usr_id']) {
+            $added = $this->getUsers()->addParticipants([$_GET['conn_usr_id']], false, $_GET['category']);
         }
 
-        if (!empty($added))
-        {
-            ilUtil::sendSuccess($this->plugin->txt('corrector_added_to_course'). '<br />' . implode('<br />', $added), true);
+        if (!empty($added)) {
+            switch ($_GET['category']) {
+                case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
+                    $info = $this->plugin->txt('lecturer_added_to_course');
+                    break;
+                case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
+                    $info = $this->plugin->txt('tutor_added_to_course');
+                    break;
+                case  ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
+                    $info = $this->plugin->txt('member_added_to_course');
+                    break;
+                case  ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                    $info = $this->plugin->txt('testaccount_added_to_course');
+                    break;
+            }
+            ilUtil::sendSuccess($info. '<br />' . implode('<br />', $added), true);
         }
-        $this->ctrl->saveParameter($this, 'category');
-        $this->ctrl->redirect($this, 'listUsers');
-    }
-
-
-
-    /**
-     * Add a member
-     * @throws Exception
-     */
-    protected function addMember()
-    {
-        $added = [];
-		if ($_GET['usr_id'])
-		{
-			$added = $this->getUsers()->addMembers([$_GET['usr_id']], true);
-		}
-		elseif ($_GET['conn_usr_id'])
-		{
-			$added = $this->getUsers()->addMembers([$_GET['conn_usr_id']], false);
-		}
-
-        if (!empty($added))
-        {
-            ilUtil::sendSuccess($this->plugin->txt('member_added_to_course'). '<br />' . implode('<br />', $added), true);
-        }
-
         $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
     }
@@ -802,7 +746,4 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         return $this->ctrl->getLinkTargetByClass(['ilrepositorygui','ilobjcoursegui','ilcoursemembershipgui', 'ilrepositorysearchgui'],
             'doUserAutoComplete', '', true,false);
     }
-
-
-
 }

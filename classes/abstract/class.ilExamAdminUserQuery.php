@@ -54,7 +54,7 @@ abstract class ilExamAdminUserQuery
 
 
     /**
-     * Get the daty of accountd found by an input of matriculation numbers
+     * Get the data of accounts found by an input of matriculation numbers
      * @param string[] $list
      * @return array
      */

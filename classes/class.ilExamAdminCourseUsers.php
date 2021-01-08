@@ -173,6 +173,82 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         }
     }
 
+    /**
+     * Add Course Participants
+     * @param int[] $usr_ids
+     * @param bool $local       usr_ids are local (otherwise from connection)
+     * @param string $category
+     * @return string[] list of logins
+     * @throws Exception
+
+     */
+    public function addParticipants($usr_ids, $local, $category)
+    {
+        switch ($category) {
+            case self::CAT_LOCAL_ADMIN_LECTURER:
+                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = IL_CRS_ADMIN;
+                $with_testaccounts = true;
+                break;
+
+            case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = IL_CRS_TUTOR;
+                $with_testaccounts = true;
+                break;
+
+            case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = IL_CRS_MEMBER;
+                $with_testaccounts = false;
+                break;
+
+            case self::CAT_LOCAL_MEMBER_STANDARD:
+                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
+                $local_role = IL_CRS_MEMBER;
+                $with_testaccounts = false;
+                break;
+
+            case self::CAT_LOCAL_MEMBER_REGISTERED:
+            default:
+                return [];
+        }
+
+        $added = [];
+        if ($local)  {
+            foreach ($this->getUserDataByIds($usr_ids) as $user) {
+                if ($this->course->getMembersObject()->add($user['usr_id'], $local_role)) {
+                    $added[] = $user['login'];
+                }
+                if ($with_testaccounts) {
+                    foreach ($this->getTestaccountData($user['login']) as $test) {
+                        if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                            $added[] = $test['login'];
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            $connObj = $this->plugin->getConnector();
+            foreach ($connObj->getUserDataByIds($usr_ids) as $user) {
+                $user = $this->getMatchingUser($user, true, $global_role);
+                if ($this->course->getMembersObject()->add($user['usr_id'], $local_role)) {
+                    $added[] = $user['login'];
+                }
+                if ($with_testaccounts) {
+                    foreach ($connObj->getTestaccountData($user['login']) as $test) {
+                        $test = $this->getMatchingUser($test, true, $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
+                        if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                            $added[] = $test['login'];
+                        }
+                    }
+                }
+            }
+        }
+        return $added;
+    }
+
 	/**
 	 * Add lecturers
 	 * @param int[] $usr_ids
@@ -188,12 +264,14 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			$users = $this->getUserDataByIds($usr_ids);
 			foreach ($users as $user)
 			{
-				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN);
-				$added[] = $user['login'];
+				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN)) {
+                    $added[] = $user['login'];
+                }
 				foreach ($this->getTestaccountData($user['login']) as $test)
 				{
-					$this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
-					$added[] = $test['login'];
+					if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        $added[] = $test['login'];
+                    }
 				}
 			}
 		}
@@ -204,13 +282,15 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			foreach ($users as $user)
 			{
 				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN);
-				$added[] = $user['login'];
+				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN)) {
+                    $added[] = $user['login'];
+                }
 				foreach ($connObj->getTestaccountData($user['login']) as $test)
 				{
 					$test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-					$this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
-					$added[] = $test['login'];
+					if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        $added[] = $test['login'];
+                    }
 				}
 			}
 		}
@@ -233,12 +313,14 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             $users = $this->getUserDataByIds($usr_ids);
             foreach ($users as $user)
             {
-                $this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR);
-                $added[] = $user['login'];
+                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR)) {
+                    $added[] = $user['login'];
+                }
                 foreach ($this->getTestaccountData($user['login']) as $test)
                 {
-                    $this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
-                    $added[] = $test['login'];
+                    if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        $added[] = $test['login'];
+                    }
                 }
             }
         }
@@ -249,19 +331,54 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             foreach ($users as $user)
             {
                 $user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-                $this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR);
-                $added[] = $user['login'];
+                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR)) {
+                    $added[] = $user['login'];
+                }
                 foreach ($connObj->getTestaccountData($user['login']) as $test)
                 {
                     $test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-                    $this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER);
-                    $added[] = $test['login'];
+                    if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        $added[] = $test['login'];
+                    }
                 }
             }
         }
         return $added;
     }
 
+    /**
+     * Add  test accounts
+     * @param int[] $usr_ids
+     * @param bool $local
+     * @return string[] list of logins
+     * @throws Exception
+     */
+    public function addTestaccounts($usr_ids, $local)
+    {
+        $added = [];
+        if ($local)
+        {
+            $users = $this->getUserDataByIds($usr_ids);
+            foreach ($users as $user)
+            {
+                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
+                    $added[] = $user['login'];
+                }
+            }
+        }
+        else
+        {
+            $users = $this->plugin->getConnector()->getUserDataByIds($usr_ids);
+            foreach ($users as $user)
+            {
+                $user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
+                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
+                    $added[] = $user['login'];
+                }
+            }
+        }
+        return $added;
+    }
 
     /**
 	 * Add  members
@@ -278,8 +395,9 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			$users = $this->getUserDataByIds($usr_ids);
 			foreach ($users as $user)
 			{
-				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER);
-				$added[] = $user['login'];
+				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
+                    $added[] = $user['login'];
+                }
 			}
 		}
 		else
@@ -288,8 +406,9 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			foreach ($users as $user)
 			{
 				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_participant_role'));
-				$this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER);
-				$added[] = $user['login'];
+				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
+                    $added[] = $user['login'];
+                }
 			}
 		}
 		return $added;

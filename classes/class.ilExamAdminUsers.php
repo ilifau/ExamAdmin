@@ -12,6 +12,9 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     /** @var ilExamAdminPlugin */
     protected $plugin;
 
+    /** @var ilExamAdminConfig */
+    protected $config;
+
     // user categories
     const CAT_GLOBAL_ADMIN = 'cat_global_admin';
     const CAT_GLOBAL_LECTURER = 'cat_global_lecturer';
@@ -35,6 +38,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         global $DIC;
 
         $this->plugin = $plugin;
+        $this->config = $this->plugin->getConfig();
         $this->db = $DIC->database();
     }
 

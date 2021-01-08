@@ -48,15 +48,14 @@ cat_global_lecturer_info#:#Die Dozenten werden nicht aktiviert / deaktiviert.
 cat_global_participant_role#:#Globale Teilnehmer-Rolle
 cat_global_participant_info#:#Die Teilnehmer sollen zur zu ihrer Prüfung aktiviert werden.
 password_change#:#Passwortänderung
-addLecturer#:#Prüfer/in hinzufügen
-addCorrector#:#Korretor/in hinzufügen
-addMember#:#Teilnehmer/in hinzufügen
+addParticipant#:#Hinzufügen
 login_or_name#:#Login, Name oder Matrikelnummer
 internal#:#Prüfungsplattform
 external#:#Lernplattform
 lecturer_added_to_course#:#Der Prüfer-Account wurde samt Testacounts in den Kurs aufgenommen.
 tutor_added_to_course#:#Der Korrektoren-Account wurde samt Testacounts in den Kurs aufgenommen.
-member_added_to_group#:#Der Teilnehmer-Account wurde in den Kurs aufgenommen.
+member_added_to_course#:#Der Teilnehmer-Account wurde in den Kurs aufgenommen.
+testaccount_added_to_course#:#Der Testaccount wurde in den Kurs aufgenommen.
 import_members#:#Teilnehmer importieren
 import_members_list#:#Teilnehmerliste importieren
 import_members_desc#:#Die Teilnehmer werden anhand einer Liste aus der Lernplattform übernommen.
