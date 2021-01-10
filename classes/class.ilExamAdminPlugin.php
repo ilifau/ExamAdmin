@@ -94,7 +94,31 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      */
     public function isAllowedType($type)
     {
-        return in_array($type, array('crs'));
+        return in_array($type, array('crs', 'grp'));
+    }
+
+
+    /**
+     * Get the ref_id of the course for a repository position
+     * @param int $ref_id
+     * @return int|false
+     */
+    public function getCourseRefId($ref_id)
+    {
+        global $DIC;
+
+        if (ilObject::_lookupType($ref_id, true) == 'crs') {
+            return $ref_id;
+        }
+
+        $path = $DIC->repositoryTree()->getNodePath($ref_id);
+        foreach ($path as $node) {
+            if ($node['type'] == 'crs') {
+                return $node['child'];
+            }
+        }
+
+        return false;
     }
 
     /**

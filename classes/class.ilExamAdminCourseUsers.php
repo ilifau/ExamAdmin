@@ -17,7 +17,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
     /**
      * constructor.
      * @param ilExamAdminPlugin $plugin
-     * @param ilObjGroup $group
+     * @param ilObjCourse $course
      */
     public function __construct($plugin, $course)
     {

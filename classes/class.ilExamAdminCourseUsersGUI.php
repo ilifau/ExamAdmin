@@ -2,6 +2,8 @@
 // Copyright (c) 2019 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg, GPLv3, see LICENSE
 
 require_once(__DIR__ . '/class.ilExamAdminBaseGUI.php');
+require_once(__DIR__ . '/class.ilExamAdminCourseUsers.php');
+require_once(__DIR__ . '/param/class.ilExamAdminData.php');
 
 /**
  * GUI for Exam administration in group object
@@ -9,77 +11,41 @@ require_once(__DIR__ . '/class.ilExamAdminBaseGUI.php');
  * @author Fred Neumann <fred.neumann@fau.de>
  * @version $Id$
  *
- * @ilCtrl_IsCalledBy ilExamAdminCourseGUI: ilUIPluginRouterGUI
- * @ilCtrl_Calls ilExamAdminCourseGUI:
+ * @ilCtrl_IsCalledBy ilExamAdminCourseUsersGUI: ilUIPluginRouterGUI
+ * @ilCtrl_Calls ilExamAdminCourseUsersGUI:
  */
-class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
+class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 {
+    /**
+     * Course to which the functions relate (equal to parent or group's course)
+     * @var ilObjCourse
+     */
+    protected $course;
 
-	/** @var  int parent object ref_id */
-	protected $parent_ref_id;
-
-	/** @var  string parent object type */
-	protected $parent_type;
-
-	/** @var  string parent gui class */
-	protected $parent_gui_class;
-
-	/** @var  ilObjCourse $parent_obj */
-	protected $parent_obj;
-
-	/** @var ilExamAdminData */
+    /**
+     * Exam related specific data (bound to obj_id of course)
+     * @var ilExamAdminData
+     */
 	protected $data;
 
-	/** @var ilExamAdminCourseUsers */
+    /**
+     * User administration for the exam
+     * @var ilExamAdminCourseUsers
+     */
 	protected $users;
 
-	/**
-	 * constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->ctrl->saveParameter($this, 'ref_id');
-
-		$this->parent_ref_id = $_GET['ref_id'];
-		$this->parent_type = 'grp';
-		$this->parent_obj = ilObjectFactory::getInstanceByRefId($this->parent_ref_id);
-		$this->parent_gui_class = ilObjectFactory::getClassByType($this->parent_type).'GUI';
-
-		require_once(__DIR__ . '/class.ilExamAdminCourseUsers.php');
-        require_once(__DIR__ . '/param/class.ilExamAdminData.php');
-
-        $this->data = new ilExamAdminData($this->plugin, $this->parent_obj->getId());
-		$this->users = new ilExamAdminCourseUsers($this->plugin, $this->parent_obj);
-    }
-
     /**
-     * Get the plugin object
-     * @return ilExamAdminPlugin|null
+     * ilExamAdminBaseGUI constructor
+     * @param ilExamAdminMainGUI $mainGUI
      */
-    public function getPlugin()
-    {
-        return $this->plugin;
-    }
-
-    /**
-     * Get the data object
-     * @return ilExamAdminData
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-	/**
-	 * Get the users object
-	 * @return ilExamAdminCourseUsers
-	 */
-	protected function getUsers()
+    public function __construct($mainGUI = null)
 	{
-		return $this->users;
-	}
+		parent::__construct($mainGUI);
+
+		$this->course = $this->mainGUI->getCourse();
+        $this->data = new ilExamAdminData($this->plugin, $this->course->getId());
+		$this->users = new ilExamAdminCourseUsers($this->plugin, $this->course);
+    }
 
 
     /**
@@ -87,22 +53,13 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 	*/
 	public function executeCommand()
 	{
-		$fallback_url = "goto.php?target=".$this->parent_type.'_'.$this->parent_ref_id;
-
-        // Only Course administrators
-		if (!$this->access->checkAccess('write','', $_GET['ref_id']))
-		{
-            ilUtil::sendFailure($this->lng->txt("permission_denied"), true);
-            $this->ctrl->redirectToURL($fallback_url);
-		}
-
-		$this->ctrl->saveParameter($this, 'ref_id');
+        $this->ctrl->saveParameter($this, 'ref_id');
 
 		$next_class = $this->ctrl->getNextClass($this);
 		switch ($next_class)
 		{
 //			case 'ilexamadminexample':
-//				$this->prepareOutput();
+//				$this->mainGUI->prepareOutput();
 //				$this->plugin->includeClass('class.ilExampleGUI.php');
 //				$gui = new ilExamAdminExampleGUI();
 //				$this->ctrl->forwardCommand($gui);
@@ -133,7 +90,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
                         break;
 
 					default:
-					    $this->prepareObjectOutput();
+					    $this->mainGUI->prepareObjectOutput();
 					    $this->tpl->setContent($cmd);
 					    $this->tpl->show();
 						break;
@@ -150,9 +107,9 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         $this->plugin->includeClass('tables/class.ilExamAdminUserOverviewTableGUI.php');
 
         $table = new ilExamAdminUserOverviewTableGUI($this, 'showOverview');
-        $table->setData($this->getUsers()->getOverviewData());
+        $table->setData($this->users->getOverviewData());
 
-        $this->prepareObjectOutput();
+        $this->mainGUI->prepareObjectOutput();
         $this->tpl->setContent($table->getHTML());
         $this->tpl->show();
     }
@@ -163,12 +120,8 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function listUsers()
     {
-        $this->prepareObjectOutput();
-
-        $button = ilLinkButton::getInstance();
-        $button->setUrl($this->ctrl->getLinkTarget($this,'showOverview'));
-        $button->setCaption($this->plugin->txt('overview'), false);
-        $this->toolbar->addButtonInstance($button);
+        $this->mainGUI->prepareObjectOutput();
+        $this->addToolbarUserList();
 
         $this->ctrl->saveParameter($this, 'category');
         switch ($_GET['category'])
@@ -194,17 +147,27 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
                 break;
         }
 
-        $usersObj = $this->getUsers();
         $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
         $table->setTitle($this->plugin->txt($_GET['category']));
-        $table->setData($usersObj->getCategoryUserData($_GET['category']));
-        $table->setRowCommands($usersObj->getUserCommands($_GET['category']));
+        $table->setData($this->users->getCategoryUserData($_GET['category']));
+        $table->setRowCommands($this->users->getUserCommands($_GET['category']));
         $table->setLinkUser($this->plugin->hasAdminAccess());
         $this->ctrl->saveParameter($this, 'category');
 
         $this->tpl->setContent($table->getHTML());
         $this->tpl->show();
+    }
+
+    /**
+     * Add the tollbar items for a user list
+     */
+    protected function addToolbarUserList()
+    {
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this,'showOverview'));
+        $button->setCaption('« ' . $this->plugin->txt('overview'), false);
+        $this->toolbar->addButtonInstance($button);
     }
 
     /**
@@ -261,7 +224,8 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function showUserSearch()
     {
-        $this->prepareObjectOutput();
+        $this->mainGUI->prepareObjectOutput();
+        $this->addToolbarUserList();
 
         // POST has precedence but GET is needed for table navigation
         $pattern = '';
@@ -315,8 +279,8 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 				$searchCategory = ilExamAdminUsers::CAT_GLOBAL_PARTICIPANT;
                 $withTestAccounts = false;
 				$this->ctrl->saveParameter($this, 'orig_usr_id');
-				$user = $this->getUsers()->getSingleUserDataById($_GET['orig_usr_id']);
-				$title = sprintf($this->plugin->txt('rewrite_user_x'), $this->getUsers()->getUserDisplay($user));
+				$user = $this->users->getSingleUserDataById($_GET['orig_usr_id']);
+				$title = sprintf($this->plugin->txt('rewrite_user_x'), $this->users->getUserDisplay($user));
 				$form = $this->initSearchForm($title, $pattern);
 				$content = $form->getHTML();
 				$commands = ['rewriteUserConfirm'];
@@ -325,22 +289,21 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 
         if ($pattern)
         {
-            $usersObj = $this->getUsers();
-            $internal = $usersObj->getUserDataByPattern($pattern, $withTestAccounts, $searchCategory);
+            $internal = $this->users->getUserDataByPattern($pattern, $withTestAccounts, $searchCategory);
 
             // only one user found: add directly
-            if (count($internal) == 1)
-            {
-				switch ($_GET['category']) {
-					case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
-                    case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
-					case  ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
-                    case  ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                        $this->ctrl->setParameter($this, 'usr_id', $internal[0]['usr_id']);
-                        $this->ctrl->redirect($this, 'addParticipant');
-                        break;
-				}
-            }
+//            if (count($internal) == 1)
+//            {
+//				switch ($_GET['category']) {
+//					case ilExamAdminUsers::CAT_LOCAL_ADMIN_LECTURER:
+//                    case ilExamAdminUsers::CAT_LOCAL_TUTOR_CORRECTOR:
+//					case  ilExamAdminUsers::CAT_LOCAL_MEMBER_STANDARD:
+//                    case  ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
+//                        $this->ctrl->setParameter($this, 'usr_id', $internal[0]['usr_id']);
+//                        $this->ctrl->redirect($this, 'addParticipant');
+//                        break;
+//				}
+//            }
 
             // show results of internal search
             $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
@@ -412,7 +375,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function showUserImportForm()
     {
-        $this->prepareObjectOutput();
+        $this->mainGUI->prepareObjectOutput();
         $this->ctrl->saveParameter($this, 'category');
 
         $form = $this->initUserImportForm();
@@ -426,7 +389,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function showUserImportList()
     {
-        $this->prepareObjectOutput();
+        $this->mainGUI->prepareObjectOutput();
         $this->ctrl->saveParameter($this, 'category');
 
         $connObj = $this->plugin->getConnector();
@@ -501,7 +464,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
         $added = [];
         if (is_array($_POST['usr_id']))
         {
-			$added = $this->getUsers()->addMembers($_POST['usr_id'], false);
+			$added = $this->users->addParticipants($_POST['usr_id'], false, $_GET['category']);
         }
 
         if ($added)
@@ -522,10 +485,10 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
     {
         $added = [];
         if ($_GET['usr_id']) {
-            $added = $this->getUsers()->addParticipants([$_GET['usr_id']], true, $_GET['category']);
+            $added = $this->users->addParticipants([$_GET['usr_id']], true, $_GET['category']);
         }
         elseif ($_GET['conn_usr_id']) {
-            $added = $this->getUsers()->addParticipants([$_GET['conn_usr_id']], false, $_GET['category']);
+            $added = $this->users->addParticipants([$_GET['conn_usr_id']], false, $_GET['category']);
         }
 
         if (!empty($added)) {
@@ -555,7 +518,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function activateUsers()
     {
-        $this->getUsers()->setActiveByCategory($_GET['category'], 1);
+        $this->users->setActiveByCategory($_GET['category'], 1);
         $this->ctrl->redirect($this, 'showOverview');
     }
 
@@ -565,7 +528,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
     protected function activateUser()
     {
         $this->ctrl->saveParameter($this, 'category');
-        $this->getUsers()->setActiveByUserId($_GET['usr_id'], 1);
+        $this->users->setActiveByUserId($_GET['usr_id'], 1);
         $this->ctrl->redirect($this, 'listUsers');
     }
 
@@ -575,7 +538,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function deactivateUsers()
     {
-        $this->getUsers()->setActiveByCategory($_GET['category'], 0);
+        $this->users->setActiveByCategory($_GET['category'], 0);
         $this->ctrl->redirect($this, 'showOverview');
     }
 
@@ -585,7 +548,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
     protected function deactivateUser()
     {
         $this->ctrl->saveParameter($this, 'category');
-        $this->getUsers()->setActiveByUserId($_GET['usr_id'], 0);
+        $this->users->setActiveByUserId($_GET['usr_id'], 0);
         $this->ctrl->redirect($this, 'listUsers');
     }
 
@@ -596,7 +559,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
      */
     protected function synchronizeUsers()
     {
-        $count = $this->getUsers()->synchronizeByCategory($_GET['category']);
+        $count = $this->users->synchronizeByCategory($_GET['category']);
         if ($count > 0) {
         	ilUtil::sendSuccess(sprintf($this->plugin->txt('x_users_synchronized'), $count), true);
 		}
@@ -613,7 +576,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
     protected function synchronizeUser()
     {
         $this->ctrl->saveParameter($this, 'category');
-        $this->getUsers()->synchronizeByUserId($_GET['usr_id']);
+        $this->users->synchronizeByUserId($_GET['usr_id']);
         $this->ctrl->redirect($this, 'listUsers');
     }
 
@@ -622,10 +585,8 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 	 */
     protected function rewriteUser()
 	{
-		$usersObj =  new ilExamAdminCourseUsers($this->plugin, $this->parent_obj);
-
 		$pattern = '';
-		$user = $usersObj->getSingleUserDataById( $_GET['usr_id']);
+		$user =$this->users->getSingleUserDataById( $_GET['usr_id']);
 		if (isset($user))
 		{
 			if (!empty($user['matriculation'])) {
@@ -655,10 +616,10 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 		$this->ctrl->saveParameter($this, 'category');
 
 		if ($_GET['usr_id']) {
-			$check = $this->getUsers()->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, false);
+			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, false);
 		}
 		elseif ($_GET['conn_usr_id']) {
-			$check = $this->getUsers()->rewriteUser($_GET['orig_usr_id'], $_GET['conn_usr_id'], false, false);
+			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['conn_usr_id'], false, false);
 		}
 
 		if (empty($check['new'])) {
@@ -667,7 +628,7 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 		}
 
 		if (!empty($check['conflicts'])) {
-			$message = sprintf($this->plugin->txt('rewrite_conflict'), $this->getUsers()->getUserDisplay($check['new']));
+			$message = sprintf($this->plugin->txt('rewrite_conflict'), $this->users->getUserDisplay($check['new']));
 			foreach ($check['conflicts'] as $ref_id => $title) {
 				$message .= '<br /><a href="' . ilLink::_getLink($ref_id). '">'. $title.'</a>';
 			}
@@ -679,13 +640,13 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 		$this->ctrl->saveParameter($this, 'orig_usr_id');
 		$this->ctrl->saveParameter($this, 'conn_usr_id');
 
-		$this->prepareObjectOutput();
+		$this->mainGUI->prepareObjectOutput();
 		$confGui = new ilConfirmationGUI();
 		$confGui->setFormAction($this->ctrl->getFormAction($this));
 		$confGui->setConfirm($this->plugin->txt('rewriteUser'), 'rewriteUserConfirmed');
 		$confGui->setCancel($this->lng->txt('cancel'), 'listUsers');
 		$confGui->setHeaderText(sprintf($this->plugin->txt('rewrite_transfer'),
-				$this->getUsers()->getUserDisplay($check['orig']), $this->getUsers()->getUserDisplay($check['new']))
+				$this->users->getUserDisplay($check['orig']), $this->users->getUserDisplay($check['new']))
 			.'<p class="small">'.$this->plugin->txt('rewrite_transfer_info').'</p>');
 
 		$this->tpl->setContent($confGui->getHTML());
@@ -701,19 +662,19 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 		$this->ctrl->saveParameter($this, 'category');
 
 		if ($_GET['usr_id']) {
-			$check = $this->getUsers()->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, true);
+			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, true);
 		}
 		elseif ($_GET['conn_usr_id']) {
-			$check = $this->getUsers()->rewriteUser($_GET['orig_usr_id'], $_GET['conn_usr_id'], false, true);
+			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['conn_usr_id'], false, true);
 		}
 
 		if (!$check['done']) {
 			ilUtil::sendFailure(sprintf($this->plugin->txt('rewrite_failed'),
-				$this->getUsers()->getUserDisplay($check['orig'])), true);
+				$this->users->getUserDisplay($check['orig'])), true);
 		}
 		else {
 			ilUtil::sendSuccess(sprintf($this->plugin->txt('rewrite_done'),
-				$this->getUsers()->getUserDisplay($check['orig']), $this->getUsers()->getUserDisplay($check['new'])), true);
+				$this->users->getUserDisplay($check['orig']), $this->users->getUserDisplay($check['new'])), true);
 		}
 
 		$this->ctrl->redirect($this, 'listUsers');
@@ -721,26 +682,9 @@ class ilExamAdminCourseGUI extends ilExamAdminBaseGUI
 	}
 
     /**
-     * Prepare the header, tabs etc.
+     * Get the URL for user search auto complete
+     * @return string
      */
-    protected function prepareObjectOutput()
-    {
-        global $DIC;
-
-        /** @var ilLocatorGUI $ilLocator */
-        $ilLocator = $DIC['ilLocator'];
-
-        $ilLocator->addRepositoryItems($this->parent_obj->getRefId());
-        $ilLocator->addItem($this->parent_obj->getTitle(), ilLink::_getLink($this->parent_ref_id, $this->parent_type));
-
-        $this->tpl->getStandardTemplate();
-        $this->tpl->setLocator();
-        $this->tpl->setTitle($this->parent_obj->getPresentationTitle());
-        $this->tpl->setDescription($this->parent_obj->getLongDescription());
-        $this->tpl->setTitleIcon(ilObject::_getIcon('', 'big', $this->parent_type), $this->lng->txt('obj_'.$this->parent_type));
-    }
-
-
     protected function getAutocompleteUrl()
     {
         return $this->ctrl->getLinkTargetByClass(['ilrepositorygui','ilobjcoursegui','ilcoursemembershipgui', 'ilrepositorysearchgui'],

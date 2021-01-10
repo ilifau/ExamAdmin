@@ -18,10 +18,10 @@ active#:#Aktiv
 inactive#:#Inaktiv
 activateUsers#:#Aktivieren
 deactivateUsers#:#Deaktivieren
-synchronizeUsers#:#Passwort aus StudOn aktualisieren
+synchronizeUsers#:#Accounts aus StudOn aktualisieren
 activateUser#:#Aktivieren
 deactivateUser#:#Deaktivieren
-synchronizeUser#:#Passwort aus StudOn aktualisieren
+synchronizeUser#:#Account aus StudOn aktualisieren
 rewriteUser#:#Nutzer umschreiben
 rewriteUserConfirm#:#Diesen verwenden
 rewrite_user_x#:#Nutzer "%s" umschreiben
