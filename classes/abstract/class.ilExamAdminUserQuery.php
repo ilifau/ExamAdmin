@@ -52,6 +52,16 @@ abstract class ilExamAdminUserQuery
         return $this->queryUserData($this->getTestaccountCond($login));
     }
 
+    /**
+     * Get the data of accounts found by an input of matriculation numbers
+     * @param string[] $list
+     * @return array
+     */
+    public function getUserDataByLoginList($list)
+    {
+        return $this->queryUserData($this->getCondByLoginList($list));
+    }
+
 
     /**
      * Get the data of accounts found by an input of matriculation numbers
@@ -169,6 +179,16 @@ abstract class ilExamAdminUserQuery
         {
             return '';
         }
+    }
+
+    /**
+     * Get a search condition for a login list
+     * @param string[] $list
+     * @return string
+     */
+    protected function getCondByLoginList($list)
+    {
+        return $this->db->in('login', $list, false, 'text');
     }
 
 

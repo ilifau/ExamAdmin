@@ -472,5 +472,36 @@ class ilExamAdminOrgaRecord extends ActiveRecord
         return $this->fau_lecturer . ' / ' . (!empty($this->exam_title) ? $this->exam_title . ' / ' : ''). ilDatePresentation::formatDate($date);
     }
 
+    /**
+     * Get the logins of correctors as an array
+     * @return string[]
+     */
+    public function getAdminsLogins()
+    {
+        $logins = [];
+        foreach (explode(',', (string) $this->admins) as $login) {
+            if (!empty(trim($login))) {
+                $logins[] = trim($login);
+            }
+        }
+        return $logins;
+    }
+
+    /**
+     * Get the array representation from a string value
+     *
+     * @param string $value
+     * @return array
+     */
+    public static function _getArray($value)
+    {
+        // ilDclGenericMultiInputGUI starts counting of its inputs with 2
+        $i = 2;
+        $users = [];
+        foreach (explode(',', (string) $value) as $user) {
+            $users[$i++] = $user;
+        }
+        return $users;
+    }
 
 }

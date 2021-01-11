@@ -196,6 +196,29 @@ class ilExamAdminCronHandler
         $course->setDescription($record->fau_lecturer);
         $course->setOfflineStatus(false);
         $course->update();
+
+        $this->updateCourseParticipants($record, $course);
+    }
+
+    /**
+     * Update the course participants with the data from the orga record
+     * @param ilExamAdminOrgaRecord $record
+     * @param int ilObjCourse $course
+     */
+    protected function updateCourseParticipants($record, $course)
+    {
+        require_once (__DIR__ . '/class.ilExamAdminCourseUsers.php');
+        $users = new ilExamAdminCourseUsers($this->plugin, $course);
+
+        // add owner as admin (with test accounts)
+        $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER);
+
+        // add admnis as tutors (with test accounts)
+        $usr_ids = [];
+        foreach($this->connector->getUserDataByLoginList($record->getAdminsLogins()) as $user) {
+            $usr_ids[] = $user['usr_id'];
+        }
+        $users->addParticipants($usr_ids, false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR);
     }
 
 
