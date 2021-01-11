@@ -152,7 +152,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
         $table->setFormAction($this->ctrl->getFormAction($this));
-        $table->setTitle($this->plugin->txt($_GET['category']));
+        $table->setTitle($this->plugin->txt($_GET['category']. ''));
+        $table->setDescription($this->plugin->txt($_GET['category'] . '_info'));
         $table->setData($this->users->getCategoryUserData($_GET['category']));
         $table->setRowCommands($this->users->getUserCommands($_GET['category']));
         $table->setLinkUser($this->plugin->hasAdminAccess());
@@ -161,7 +162,12 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $table->addMultiCommand('removeUser', $this->plugin->txt('removeUser'));
         $this->ctrl->saveParameter($this, 'category');
 
-        $this->tpl->setContent($table->getHTML());
+        $tpl = $this->plugin->getTemplate('tpl.il_exam_admin_user_list_explanation.html');
+        $tpl->setVariable('EXPLAIN_USER_ADMIN', $this->plugin->txt('explain_user_admin'));
+        $tpl->setVariable('EXPLAIN_AUTO_TESTACCOUNTS', $this->plugin->txt('explain_auto_testaccounts'));
+        $tpl->setVariable('EXPLAIN_USER_ACTIONS', $this->plugin->txt('explain_user_actions'));
+
+        $this->tpl->setContent($tpl->get() . $table->getHTML());
         $this->tpl->show();
     }
 
@@ -193,7 +199,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         $button = ilSubmitButton::getInstance();
         $button->setCommand('showUserSearch');
-        $button->setCaption($caption, false);
+        $button->setCaption($this->plugin->txt('search_and_add'), false);
         $this->toolbar->addButtonInstance($button);
     }
 
@@ -209,6 +215,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $form = new ilPropertyFormGUI();
         $form->setFormAction($this->ctrl->getFormAction($this));
         $form->setTitle($title);
+        $form->setDescription($this->plugin->txt('search_pattern'));
 
         $input = new ilTextInputGUI($this->plugin->txt('login_or_name'), 'pattern');
         $input->setValue($pattern);
@@ -315,6 +322,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
             $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
             $table1 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
             $table1->setTitle($this->plugin->txt('internal'));
+            $table1->setDescription($this->plugin->txt('found_users_internal'));
             $table1->setData($internal);
             $table1->setIdParameter('usr_id');
             $table1->setRowCommands($commands);
@@ -327,6 +335,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
             $connObj = $this->plugin->getConnector();
             $external = $connObj->getUserDataByPattern($pattern, $withTestAccounts);
             $table2 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
+            $table2->setDescription($this->plugin->txt('found_users_external'));
             $table2->setTitle($this->plugin->txt('external'));
             $table2->setData($external);
             $table2->setIdParameter('conn_usr_id');

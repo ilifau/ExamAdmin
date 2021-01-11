@@ -16,11 +16,15 @@ user_overview#:#Personen
 category#:#Personengruppe
 active#:#Aktiv
 inactive#:#Inaktiv
-activateUsers#:#Aktivieren
-deactivateUsers#:#Deaktivieren
+addLecturer#:#Prüfer/in hinzufügen
+addCorrector#:#Korrektor/in hinzufügen
+addTestaccount#:#Testaccount hinzufügen
+addMember#:#Teilnehmer/in hinzufügen
+activateUsers#:#Accounts aktivieren
+deactivateUsers#:#Accounts deaktivieren
 synchronizeUsers#:#Account-Daten aktualisieren
-activateUser#:#Aktivieren
-deactivateUser#:#Deaktivieren
+activateUser#:#Account aktivieren
+deactivateUser#:#Account deaktivieren
 synchronizeUser#:#Account-Daten aktualisieren
 removeUser#:#Aus Kurs entfernen
 removeUserConfirmation#:#Möchten Sie die folgenden Nutzer aus dem Kurs entfernen?
@@ -38,7 +42,7 @@ cat_local_admin_lecturer_info#:#Hauptverantwortliche für die Prüfung. Haben Vo
 cat_local_tutor_corrector#:#Korrektor/innen
 cat_local_tutor_corrector_info#:#Unterstützen bei der Erstellung und Korrektur der Prüfung. Haben Vollzugriff auf die Inhalte der Prüfungswerkstatt. Außerhalb der Werkstatt können sie in Tests und Übungen die Ergebnisse einsehen und bewerten.
 cat_local_member_testaccount#:#Test-Accounts
-cat_local_member_testaccount_info#:#Können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch Tests und Übungen in der Prüfungswerkstatt durchführen.
+cat_local_member_testaccount_info#:#Können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch in der Prüfungswerkstatt Tests und Übungen durchführen.
 cat_local_member_standard#:#Standard-Teilnehmer/innen
 cat_local_member_standard_info#:#Normale Prüflinge, sehen die Prüfungswerkstatt nicht. Außerhalb der Werkstatt können an Tests und Übungen teilnehmen. Können automatisch aus den Anmeldungen in mein campus oder per Import einer Matrikelnummerliste angelegt werden, müssen dazu aber einen StudOn-Account besitzen.
 cat_local_member_registered#:#Spezielle Teilnehmer/innen
@@ -55,7 +59,7 @@ password_change#:#Passwortänderung
 addParticipant#:#Hinzufügen
 login_or_name#:#Login, Name oder Matrikelnummer
 internal#:#Prüfungsplattform
-external#:#Lernplattform
+external#:#Lernplattform (StudOn)
 lecturer_added_to_course#:#Der Prüfer-Account wurde samt Testacounts in den Kurs aufgenommen.
 tutor_added_to_course#:#Der Korrektoren-Account wurde samt Testacounts in den Kurs aufgenommen.
 member_added_to_course#:#Der Teilnehmer-Account wurde in den Kurs aufgenommen.
@@ -107,3 +111,11 @@ parent_category_info#:#Ref_id des Bereichs, in dem die Bereiche für Prüfungen 
 failure_no_entry_selected#:#Bitte wählen Sie einen Eintrag aus!
 failure_remove_self#:#Sie können sich selbst nicht aus dem Kurs entfernen!
 participants_removed_from_course#:#Die folgenden Benutzer wurden aus dem Kurs entfernt:
+search_and_add#:#Suchen und hinzufügen
+search_pattern#:#Sucheingabe
+explain_user_admin#:#Geben Sie im Suchfeld einen Namen, ein Login oder eine Matrikelnummer ein und klicken Sie auf "Suchen und Hinzufügen", um Auccounts aufzulisten, die hinzugefügt werden können.
+explain_auto_testaccounts#:#Wenn Sie Prüfer/innen oder Korrektor/innen hinzufügen, die in StudOn Testaccounts (enden auf .test1 oder .test2) besitzen, werden diese automatisch als Testaccounts in den Prüfungskurs mit übernommen.
+explain_user_actions#:#Über die Aktionen rechts in der Tabelle können Sie einzelne Nutzer wieder entfernen, ihre Benutzerdaten samt Passwort aus der StudOn-Plattfrom aktualisieren, oder inaktive Teilnehmer/innen-Accounts aktivieren.
+found_users_internal#:#Bereits vorhandene Accounts in dieser Prüfungsplattform. Können direkt zum Prüfungskurs hinzugefügt werden.
+found_users_external#:#In StudOn gefundene Accounts. Werden ggf. in der Prüfungsplattform neu angelegt und zum Prüfungskurs hinzugefügt.
+

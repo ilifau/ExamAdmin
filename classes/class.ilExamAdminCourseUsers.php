@@ -236,9 +236,10 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
                 elseif ($this->participants->add($user['usr_id'], $local_role)) {
                     $added[] = $user['login'];
                 }
+
                 if ($with_testaccounts) {
                     foreach ($this->getTestaccountData($user['login']) as $test) {
-                        if ($this->addTestaccount($user['usr_id'])) {
+                        if ($this->addTestaccount($test['usr_id'])) {
                             $added[] = $test['login'];
                         }
                     }
@@ -255,10 +256,11 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
                 elseif ($this->participants->add($user['usr_id'], $local_role)) {
                     $added[] = $user['login'];
                 }
+
                 if ($with_testaccounts) {
                     foreach ($connObj->getTestaccountData($user['login']) as $test) {
                         $test = $this->getMatchingUser($test, true, $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
-                        if ($this->addTestaccount($user['usr_id'])) {
+                        if ($this->addTestaccount($test['usr_id'])) {
                             $added[] = $test['login'];
                         }
                     }

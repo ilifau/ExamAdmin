@@ -140,6 +140,7 @@ class ilExamAdminCronHandler
         $category->create();
         $category->createReference();
         $category->putInTree($parent_ref_id);
+        $category->setPermissions($parent_ref_id);
         return $category->getRefId();
     }
 
@@ -219,6 +220,9 @@ class ilExamAdminCronHandler
             $usr_ids[] = $user['usr_id'];
         }
         $users->addParticipants($usr_ids, false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR);
+
+        $root = $users->getSingleUserDataByLogin('root');
+        $users->removeParticipants([$root['usr_id']]);
     }
 
 
