@@ -86,6 +86,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                     case 'showUserImportForm':
                     case 'showUserImportList':
                     case 'importUsersByList':
+                    case 'removeUser':
+                    case 'removeUserConfirmed':
                         $this->$cmd();
                         break;
 
@@ -149,10 +151,14 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
+        $table->setFormAction($this->ctrl->getFormAction($this));
         $table->setTitle($this->plugin->txt($_GET['category']));
         $table->setData($this->users->getCategoryUserData($_GET['category']));
         $table->setRowCommands($this->users->getUserCommands($_GET['category']));
         $table->setLinkUser($this->plugin->hasAdminAccess());
+        $table->setIdParameter('usr_id');
+        $table->setShowCheckboxes(true);
+        $table->addMultiCommand('removeUser', $this->plugin->txt('removeUser'));
         $this->ctrl->saveParameter($this, 'category');
 
         $this->tpl->setContent($table->getHTML());
@@ -680,6 +686,69 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 		$this->ctrl->redirect($this, 'listUsers');
 
 	}
+
+    /**
+     * Show confirmation to remove users
+     */
+	protected function removeUser()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+
+        $usr_ids = (array) $_REQUEST['usr_id'];
+        if (empty($usr_ids)) {
+            ilUtil::sendFailure($this->plugin->txt('failure_no_entry_selected'), true);
+            $this->ctrl->redirect($this, 'listUsers');
+        }
+        if (in_array($this->user->getId(), $usr_ids)) {
+            ilUtil::sendFailure($this->plugin->txt('failure_remove_self'), true);
+            $this->ctrl->redirect($this, 'listUsers');
+        }
+
+        $this->mainGUI->prepareObjectOutput();
+		$confGui = new ilConfirmationGUI();
+		$confGui->setFormAction($this->ctrl->getFormAction($this));
+		$confGui->setConfirm($this->plugin->txt('removeUser'), 'removeUserConfirmed');
+		$confGui->setCancel($this->lng->txt('cancel'), 'listUsers');
+		$confGui->setHeaderText($this->plugin->txt('removeUserConfirmation'));
+
+		foreach ($this->users->getUserDataByIds($usr_ids) as $user) {
+            $confGui->addItem('usr_id[]', $user['usr_id'], $user['name']);
+            foreach($this->users->getTestaccountData($user['login']) as $test) {
+                $confGui->addItem('usr_id[]', $test['usr_id'], $test['name']);
+            }
+        }
+
+		$this->tpl->setContent($confGui->getHTML());
+		$this->tpl->show();
+    }
+
+
+    /**
+     * Remove users after confirmation
+     */
+    protected function removeUserConfirmed()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+
+        $usr_ids = (array) $_REQUEST['usr_id'];
+        if (empty($usr_ids)) {
+            ilUtil::sendFailure($this->plugin->txt('failure_no_entry_selected'), true);
+            $this->ctrl->redirect($this, 'listUsers');
+        }
+        if (in_array($this->user->getId(), $usr_ids)) {
+            ilUtil::sendFailure($this->plugin->txt('failure_remove_self'), true);
+            $this->ctrl->redirect($this, 'listUsers');
+        }
+
+        $removed = $this->users->removeParticipants($usr_ids);
+        if (!empty($removed)) {
+            $info = $this->plugin->txt('participants_removed_from_course');
+            ilUtil::sendSuccess($info. '<br />' . implode('<br />', $removed), true);
+        }
+        $this->ctrl->redirect($this, 'listUsers');
+
+    }
+
 
     /**
      * Get the URL for user search auto complete

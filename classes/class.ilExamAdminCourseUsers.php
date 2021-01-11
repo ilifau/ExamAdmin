@@ -14,6 +14,10 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
     /** @var ilCourseParticipants */
     protected $participants;
+
+    /** @var int */
+    protected $testaccount_role;
+
     /**
      * constructor.
      * @param ilExamAdminPlugin $plugin
@@ -21,9 +25,18 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
      */
     public function __construct($plugin, $course)
     {
+        global $DIC;
+
         parent::__construct($plugin);
         $this->course = $course;
         $this->participants = $course->getMembersObject();
+
+        foreach($DIC->rbac()->review()->getRolesOfObject($this->course->getRefId(), true) as $role_id) {
+            $title = ilObject::_lookupTitle($role_id);
+            if ($title == $this->config->get(ilExamAdminConfig::LOCAL_TESTACCOUNT_ROLE)) {
+                $this->testaccount_role = $role_id;
+            }
+        }
     }
 
 
@@ -71,18 +84,16 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             case self::CAT_LOCAL_ADMIN_LECTURER:
                 return
                     $this->db->in('usr_id', $this->participants->getAdmins(), false, 'integer');
-//                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_LECTURER) .")";
 
             case self::CAT_LOCAL_TUTOR_CORRECTOR:
                 return
                     $this->db->in('usr_id', $this->participants->getTutors(), false, 'integer');
-//                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_LECTURER) .")";
 
             case self::CAT_LOCAL_MEMBER_STANDARD:
                 return
                     $this->db->in('usr_id', $this->participants->getMembers(), false, 'integer')
-                    . " AND NOT (" . parent::getCategoryCond(self::CAT_GLOBAL_TESTACCOUNT).")"
-                    . " AND NOT (" . parent::getCategoryCond(self::CAT_GLOBAL_REGISTERED) .")";
+                    . " AND NOT (" . $this->getCategoryCond(self::CAT_LOCAL_MEMBER_TESTACCOUNT) . ")"
+                    . " AND NOT (" . parent::getCategoryCond(self::CAT_GLOBAL_REGISTERED) . ")";
 
             case self::CAT_LOCAL_MEMBER_REGISTERED:
                 return
@@ -91,8 +102,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 return
-                    $this->db->in('usr_id', $this->participants->getMembers(), false, 'integer')
-                    . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_TESTACCOUNT) .")";
+                    $this->db->in('usr_id', $this->getTestaccounts(), false, 'integer');
 
             default:
                 return parent::getCategoryCond($category);
@@ -107,7 +117,21 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
      */
     public function getCategoryCommands($category)
     {
-        if (!$this->plugin->hasAdminAccess()) {
+        if ($this->plugin->hasAdminAccess()) {
+            switch ($category) {
+                case self::CAT_LOCAL_ADMIN_LECTURER:
+                case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                    return ['synchronizeUsers'];
+                case self::CAT_LOCAL_MEMBER_STANDARD:
+                    return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
+                case self::CAT_LOCAL_MEMBER_REGISTERED:
+                    return ['activateUsers', 'deactivateUsers'];
+                default:
+                    return parent::getCategoryCommands($category);
+            }
+        }
+        else {
             switch ($category) {
                 case self::CAT_LOCAL_ADMIN_LECTURER:
                 case self::CAT_LOCAL_TUTOR_CORRECTOR:
@@ -121,19 +145,6 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
                     return parent::getCategoryCommands($category);
             }
         }
-
-        switch ($category) {
-            case self::CAT_LOCAL_ADMIN_LECTURER:
-            case self::CAT_LOCAL_TUTOR_CORRECTOR:
-            case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                return ['synchronizeUsers'];
-            case self::CAT_LOCAL_MEMBER_STANDARD:
-			case self::CAT_LOCAL_MEMBER_REGISTERED:
-				return ['activateUsers', 'deactivateUsers', 'synchronizeUsers'];
-
-			default:
-                return parent::getCategoryCommands($category);
-        }
     }
 
     /**
@@ -143,34 +154,35 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
      */
     public function getUserCommands($category)
     {
-        if (!$this->plugin->hasAdminAccess()) {
+        if ($this->plugin->hasAdminAccess()) {
             switch ($category) {
                 case self::CAT_LOCAL_ADMIN_LECTURER:
                 case self::CAT_LOCAL_TUTOR_CORRECTOR:
                 case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                    return ['synchronizeUser'];
+                    return ['synchronizeUser', 'removeUser'];
                 case self::CAT_LOCAL_MEMBER_STANDARD:
-                    return ['activateUser', 'synchronizeUser'];
+                    return ['activateUser', 'deactivateUser', 'synchronizeUser', 'removeUser'];
                 case self::CAT_LOCAL_MEMBER_REGISTERED:
-                    return [];
+                    return ['activateUser', 'deactivateUser', 'rewriteUser', 'removeUser'];
                 default:
                     return parent::getUserCommands($category);
             }
-
+        }
+        else {
+            switch ($category) {
+                case self::CAT_LOCAL_ADMIN_LECTURER:
+                case self::CAT_LOCAL_TUTOR_CORRECTOR:
+                case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
+                    return ['synchronizeUser', 'removeUser'];
+                case self::CAT_LOCAL_MEMBER_STANDARD:
+                    return ['activateUser', 'synchronizeUser', 'removeUser'];
+                case self::CAT_LOCAL_MEMBER_REGISTERED:
+                    return ['removeUser'];
+                default:
+                    return parent::getUserCommands($category);
+            }
         }
 
-        switch ($category) {
-            case self::CAT_LOCAL_ADMIN_LECTURER:
-            case self::CAT_LOCAL_TUTOR_CORRECTOR:
-            case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                return ['synchronizeUser'];
-            case self::CAT_LOCAL_MEMBER_STANDARD:
-                return ['activateUser', 'deactivateUser', 'synchronizeUser'];
- 			case self::CAT_LOCAL_MEMBER_REGISTERED:
-				return ['activateUser', 'deactivateUser', 'rewriteUser'];
-			default:
-                return parent::getUserCommands($category);
-        }
     }
 
     /**
@@ -180,10 +192,12 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
      * @param string $category
      * @return string[] list of logins
      * @throws Exception
-
      */
     public function addParticipants($usr_ids, $local, $category)
     {
+        $as_testaccount = false;
+        $with_testaccounts = false;
+
         switch ($category) {
             case self::CAT_LOCAL_ADMIN_LECTURER:
                 $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
@@ -200,13 +214,12 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
                 $local_role = IL_CRS_MEMBER;
-                $with_testaccounts = false;
+                $as_testaccount = true;
                 break;
 
             case self::CAT_LOCAL_MEMBER_STANDARD:
                 $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
                 $local_role = IL_CRS_MEMBER;
-                $with_testaccounts = false;
                 break;
 
             case self::CAT_LOCAL_MEMBER_REGISTERED:
@@ -217,12 +230,15 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         $added = [];
         if ($local)  {
             foreach ($this->getUserDataByIds($usr_ids) as $user) {
-                if ($this->course->getMembersObject()->add($user['usr_id'], $local_role)) {
+                if ($as_testaccount && $this->addTestaccount($user['usr_id'])) {
+                    $added[] = $user['login'];
+                }
+                elseif ($this->participants->add($user['usr_id'], $local_role)) {
                     $added[] = $user['login'];
                 }
                 if ($with_testaccounts) {
                     foreach ($this->getTestaccountData($user['login']) as $test) {
-                        if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        if ($this->addTestaccount($user['usr_id'])) {
                             $added[] = $test['login'];
                         }
                     }
@@ -233,13 +249,16 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             $connObj = $this->plugin->getConnector();
             foreach ($connObj->getUserDataByIds($usr_ids) as $user) {
                 $user = $this->getMatchingUser($user, true, $global_role);
-                if ($this->course->getMembersObject()->add($user['usr_id'], $local_role)) {
+                if ($as_testaccount && $this->addTestaccount($user['usr_id'])) {
+                    $added[] = $user['login'];
+                }
+                elseif ($this->participants->add($user['usr_id'], $local_role)) {
                     $added[] = $user['login'];
                 }
                 if ($with_testaccounts) {
                     foreach ($connObj->getTestaccountData($user['login']) as $test) {
                         $test = $this->getMatchingUser($test, true, $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
-                        if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
+                        if ($this->addTestaccount($user['usr_id'])) {
                             $added[] = $test['login'];
                         }
                     }
@@ -249,170 +268,67 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         return $added;
     }
 
-	/**
-	 * Add lecturers
-	 * @param int[] $usr_ids
-	 * @param bool $local
-	 * @return string[] list of logins
-	 * @throws Exception
-	 */
-	public function addLecturers($usr_ids, $local)
-	{
-		$added = [];
-		if ($local)
-		{
-			$users = $this->getUserDataByIds($usr_ids);
-			foreach ($users as $user)
-			{
-				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN)) {
-                    $added[] = $user['login'];
-                }
-				foreach ($this->getTestaccountData($user['login']) as $test)
-				{
-					if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
-                        $added[] = $test['login'];
-                    }
-				}
-			}
-		}
-		else
-		{
-			$connObj = $this->plugin->getConnector();
-			$users = $connObj->getUserDataByIds($usr_ids);
-			foreach ($users as $user)
-			{
-				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_ADMIN)) {
-                    $added[] = $user['login'];
-                }
-				foreach ($connObj->getTestaccountData($user['login']) as $test)
-				{
-					$test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-					if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
-                        $added[] = $test['login'];
-                    }
-				}
-			}
-		}
-		return $added;
-	}
-
-
     /**
-     * Add Correctors
+     * Add Course Participants
      * @param int[] $usr_ids
-     * @param bool $local
      * @return string[] list of logins
      * @throws Exception
      */
-    public function addCorrectors($usr_ids, $local)
+    public function removeParticipants($usr_ids)
     {
-        $added = [];
-        if ($local)
-        {
-            $users = $this->getUserDataByIds($usr_ids);
-            foreach ($users as $user)
-            {
-                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR)) {
-                    $added[] = $user['login'];
-                }
-                foreach ($this->getTestaccountData($user['login']) as $test)
-                {
-                    if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
-                        $added[] = $test['login'];
-                    }
-                }
+        $removed = [];
+        foreach ($this->getUserDataByIds($usr_ids) as $user) {
+            if ($this->participants->delete($user['usr_id'])) {
+                $removed[] = $user['login'];
             }
         }
-        else
-        {
-            $connObj = $this->plugin->getConnector();
-            $users = $connObj->getUserDataByIds($usr_ids);
-            foreach ($users as $user)
-            {
-                $user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_TUTOR)) {
-                    $added[] = $user['login'];
-                }
-                foreach ($connObj->getTestaccountData($user['login']) as $test)
-                {
-                    $test = $this->getMatchingUser($test, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-                    if ($this->course->getMembersObject()->add($test['usr_id'], IL_CRS_MEMBER)) {
-                        $added[] = $test['login'];
-                    }
-                }
-            }
-        }
-        return $added;
+        return $removed;
     }
 
+
     /**
-     * Add  test accounts
-     * @param int[] $usr_ids
-     * @param bool $local
-     * @return string[] list of logins
-     * @throws Exception
+     * Add a test account to the course
+     * @return bool
      */
-    public function addTestaccounts($usr_ids, $local)
+    public function addTestaccount($usr_id)
     {
-        $added = [];
-        if ($local)
-        {
-            $users = $this->getUserDataByIds($usr_ids);
-            foreach ($users as $user)
-            {
-                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
-                    $added[] = $user['login'];
-                }
-            }
+        global $DIC;
+
+        $rbacadmin = $DIC->rbac()->admin();
+        $rbacreview = $DIC->rbac()->review();
+        $event = $DIC->event();
+
+        if ($this->testaccount_role && !$rbacreview->isAssigned($usr_id, $this->testaccount_role)) {
+            $rbacadmin->assignUser($this->testaccount_role, $usr_id);
+            $event->raise(
+                'Modules/Course',
+                "addParticipant",
+                array(
+                    'obj_id' => $this->course->getId(),
+                    'usr_id' => $usr_id,
+                    'role_id' => $this->testaccount_role)
+            );
+
+            return true;
         }
-        else
-        {
-            $users = $this->plugin->getConnector()->getUserDataByIds($usr_ids);
-            foreach ($users as $user)
-            {
-                $user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_lecturer_role'));
-                if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
-                    $added[] = $user['login'];
-                }
-            }
-        }
-        return $added;
+        return false;
     }
 
     /**
-	 * Add  members
-	 * @param int[] $usr_ids
-	 * @param bool $local
-	 * @return string[] list of logins
-	 * @throws Exception
-	 */
-	public function addMembers($usr_ids, $local)
-	{
-		$added = [];
-		if ($local)
-		{
-			$users = $this->getUserDataByIds($usr_ids);
-			foreach ($users as $user)
-			{
-				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
-                    $added[] = $user['login'];
-                }
-			}
-		}
-		else
-		{
-			$users = $this->plugin->getConnector()->getUserDataByIds($usr_ids);
-			foreach ($users as $user)
-			{
-				$user = $this->getMatchingUser($user, true, $this->plugin->getConfig()->get('global_participant_role'));
-				if ($this->course->getMembersObject()->add($user['usr_id'], IL_CRS_MEMBER)) {
-                    $added[] = $user['login'];
-                }
-			}
-		}
-		return $added;
-	}
+     * Get the test accounts of a course
+     * @return int[]
+     */
+    public function getTestaccounts()
+    {
+        global $DIC;
+        $rbacreview = $DIC->rbac()->review();
+
+        if ($this->testaccount_role) {
+            return $rbacreview->assignedUsers($this->testaccount_role);
+        }
+        return [];
+    }
+
 
 	/**
 	 * Rewrite a self-registered user
@@ -449,7 +365,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			}
 		}
 
-		// check for conflicting tests in the current group
+		// check for conflicting tests in the current course
 		if ($local) {
 			$orig_tests = $this->getTestsOfUser($orig_id, $this->course->getRefId());
 			$new_tests = $this->getTestsOfUser($new_id, $this->course->getRefId());

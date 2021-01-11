@@ -88,12 +88,14 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 				switch ($cmd)
 				{
                     case 'redirectDefault':
+                    case 'redirectFallback':
                         $this->$cmd();
                         break;
 
 					default:
 					    $this->prepareObjectOutput();
 					    $this->tpl->setContent('invalid command:' . $cmd);
+                        $this->tpl->show();
 						break;
 				}
 		}
@@ -118,6 +120,9 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         if ($this->canManageParticipants()) {
             $this->ctrl->redirectByClass('ilExamAdminCourseUsersGUI');
         }
+        $this->prepareObjectOutput();
+        ilUtil::sendFailure($this->lng->txt("permission_denied"), false);
+        $this->tpl->show();
     }
 
     /**
@@ -155,7 +160,8 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
      */
     public function canManageParticipants()
     {
-        return ($this->participants->isAdmin($this->user->getId()) ||
+        return ($this->plugin->hasAdminAccess() ||
+            $this->participants->isAdmin($this->user->getId()) ||
             $this->participants->isTutor($this->user->getId()));
     }
 }

@@ -13,15 +13,17 @@ config_base_info#:#Hier stellen Sie die Grundfunktionen des Plugins ein
 exam_admin_tab#:#Prüfung
 overview#:#Übersicht
 user_overview#:#Personen
-category#:#Kategorie
+category#:#Personengruppe
 active#:#Aktiv
 inactive#:#Inaktiv
 activateUsers#:#Aktivieren
 deactivateUsers#:#Deaktivieren
-synchronizeUsers#:#Accounts aus StudOn aktualisieren
+synchronizeUsers#:#Account-Daten aktualisieren
 activateUser#:#Aktivieren
 deactivateUser#:#Deaktivieren
-synchronizeUser#:#Account aus StudOn aktualisieren
+synchronizeUser#:#Account-Daten aktualisieren
+removeUser#:#Aus Kurs entfernen
+removeUserConfirmation#:#Möchten Sie die folgenden Nutzer aus dem Kurs entfernen?
 rewriteUser#:#Nutzer umschreiben
 rewriteUserConfirm#:#Diesen verwenden
 rewrite_user_x#:#Nutzer "%s" umschreiben
@@ -32,21 +34,23 @@ cat_global_participant#:#Teilnehmer
 cat_global_testaccounts#:#Testaccounts
 cat_global_registered#:#Selbstregistrierte Nutzer
 cat_local_admin_lecturer#:#Prüfer/innen
-cat_local_admin_lecturer_info#:#Rolle: Kursadministrator
+cat_local_admin_lecturer_info#:#Hauptverantwortliche für die Prüfung. Haben Vollzugriff auf alle Inhalte des Kurses und können hier die Zugriffe für andere Personen verwalten.
 cat_local_tutor_corrector#:#Korrektor/innen
-cat_local_tutor_corrector_info#:#Rolle: Kurstutor | kann nur Ergebnisse einsehen und bewerten
-cat_local_member_testaccount#:#Testaccounts
-cat_local_member_testaccount_info#:#Rolle: Kursmitglied | Login endet mit .test1 oder .test2
+cat_local_tutor_corrector_info#:#Unterstützen bei der Erstellung und Korrektur der Prüfung. Haben Vollzugriff auf die Inhalte der Prüfungswerkstatt. Außerhalb der Werkstatt können sie in Tests und Übungen die Ergebnisse einsehen und bewerten.
+cat_local_member_testaccount#:#Test-Accounts
+cat_local_member_testaccount_info#:#Können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch Tests und Übungen in der Prüfungswerkstatt durchführen.
 cat_local_member_standard#:#Standard-Teilnehmer/innen
-cat_local_member_standard_info#:#Rolle: Kursmitglied | aus StudOn importiert
+cat_local_member_standard_info#:#Normale Prüflinge, sehen die Prüfungswerkstatt nicht. Außerhalb der Werkstatt können an Tests und Übungen teilnehmen. Können automatisch aus den Anmeldungen in mein campus oder per Import einer Matrikelnummerliste angelegt werden, müssen dazu aber einen StudOn-Account besitzen.
 cat_local_member_registered#:#Spezielle Teilnehmer/innen
-cat_local_member_registered_info#:#Rolle: Kursmitglied | per Registrierungscode angelegt
+cat_local_member_registered_info#:#Prüflinge, die über einen Selbstregistrierungs-Code angelegt wurden. Können nachträglich auf einen vorhandenen StudOn-Account umgeschrieben werden.
 cat_global_admin_role#:#Globale Administratoren-Rolle
-cat_global_admin_info#:#Die Administratoren werden in der Prüfungs-Übersicht nicht zu den Dozenten gezählt.
+cat_global_admin_info#:#Die Administratoren haben Vollzugriff auf alles.
 cat_global_lecturer_role#:#Globale Dozenten-Rolle
 cat_global_lecturer_info#:#Die Dozenten werden nicht aktiviert / deaktiviert.
 cat_global_participant_role#:#Globale Teilnehmer-Rolle
 cat_global_participant_info#:#Die Teilnehmer sollen zur zu ihrer Prüfung aktiviert werden.
+local_testaccount_role#:#Lokale Testaccount-Rolle
+local_testaccount_role_info#:#Name einer lokalen Rolle in Kursen, die für Testaccounts verwendet wird.
 password_change#:#Passwortänderung
 addParticipant#:#Hinzufügen
 login_or_name#:#Login, Name oder Matrikelnummer
@@ -100,3 +104,6 @@ update_languages#:#Sprachen neu laden
 install_courses#:#Kurse installieren
 parent_category#:#Haupt-Bereich
 parent_category_info#:#Ref_id des Bereichs, in dem die Bereiche für Prüfungen angelegt werden sollen
+failure_no_entry_selected#:#Bitte wählen Sie einen Eintrag aus!
+failure_remove_self#:#Sie können sich selbst nicht aus dem Kurs entfernen!
+participants_removed_from_course#:#Die folgenden Benutzer wurden aus dem Kurs entfernt:

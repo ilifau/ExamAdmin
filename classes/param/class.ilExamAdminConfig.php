@@ -12,6 +12,7 @@ class ilExamAdminConfig
     const GLOBAL_ADMIN_ROLE = 'global_admin_role';
     const GLOBAL_LECTURER_ROLE = 'global_lecturer_role';
     const GLOBAL_PARTICIPANT_ROLE = 'global_lecturer_role';
+    const LOCAL_TESTACCOUNT_ROLE = 'local_testaccount_role';
 
 	/**
 	 * @var ilExamAdminParam[]	$params		parameters: 	name => ilExamAdminParam
@@ -50,6 +51,15 @@ class ilExamAdminConfig
             $this->plugin->txt('cat_global_participant_info'),
             ilExamAdminParam::TYPE_ROLE
         );
+
+        $params[] = ilExamAdminParam::_create(
+            self::LOCAL_TESTACCOUNT_ROLE,
+            $this->plugin->txt('local_testaccount_role'),
+            $this->plugin->txt('local_testaccount_role_info'),
+            ilExamAdminParam::TYPE_TEXT,
+            'Testaccount'
+        );
+
 
         // format
         $params[] = ilExamAdminParam::_create(
