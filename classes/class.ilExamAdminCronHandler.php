@@ -74,9 +74,15 @@ class ilExamAdminCronHandler
                 $courses[$record->id] = $record->exam_title;
 
                 if ($ref_id = $this->findCourse($record)) {
+                    if (!ilContext::usesHTTP()) {
+                        echo "UPDATE " . $record->exam_title . "...\n";
+                    }
                     $this->updateCourse($record, $ref_id);
                 }
                 else {
+                    if (!ilContext::usesHTTP()) {
+                        echo "CREATE " . $record->exam_title . "...\n";
+                    }
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
                     $this->removeRootParticipant($ref_id);
