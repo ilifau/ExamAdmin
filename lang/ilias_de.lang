@@ -113,9 +113,13 @@ failure_remove_self#:#Sie können sich selbst nicht aus dem Kurs entfernen!
 participants_removed_from_course#:#Die folgenden Benutzer wurden aus dem Kurs entfernt:
 search_and_add#:#Suchen und hinzufügen
 search_pattern#:#Sucheingabe
-explain_user_admin#:#Geben Sie im Suchfeld einen Namen, ein Login oder eine Matrikelnummer ein und klicken Sie auf "Suchen und Hinzufügen", um Auccounts aufzulisten, die hinzugefügt werden können.
+explain_user_admin#:#Geben Sie im Suchfeld einen Namen, ein Login oder eine Matrikelnummer ein und klicken Sie auf "Suchen und Hinzufügen", um Accounts aufzulisten, die hinzugefügt werden können.
 explain_auto_testaccounts#:#Wenn Sie Prüfer/innen oder Korrektor/innen hinzufügen, die in StudOn Testaccounts (enden auf .test1 oder .test2) besitzen, werden diese automatisch als Testaccounts in den Prüfungskurs mit übernommen.
 explain_user_actions#:#Über die Aktionen rechts in der Tabelle können Sie einzelne Nutzer wieder entfernen, ihre Benutzerdaten samt Passwort aus der StudOn-Plattfrom aktualisieren, oder inaktive Teilnehmer/innen-Accounts aktivieren.
 found_users_internal#:#Bereits vorhandene Accounts in dieser Prüfungsplattform. Können direkt zum Prüfungskurs hinzugefügt werden.
 found_users_external#:#In StudOn gefundene Accounts. Werden ggf. in der Prüfungsplattform neu angelegt und zum Prüfungskurs hinzugefügt.
+admin_data#:#Administrations-Daten
+manage_users#:#Nutzerverwaltung
+base_url#:#Basis-URL
+base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generierung der Kurslinks verwendet
 

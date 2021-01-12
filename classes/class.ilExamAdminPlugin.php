@@ -39,7 +39,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      */
 	public function getData($obj_id)
     {
-        $this->includeClass('class.ilExamAdminData.php');
+        require_once(__DIR__ . '/param/class.ilExamAdminData.php');
         return new ilExamAdminData($this, $obj_id);
     }
 

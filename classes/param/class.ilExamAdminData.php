@@ -9,6 +9,11 @@
  */
 class ilExamAdminData
 {
+    const PARAM_ORGA_ID = 'orga_id';
+    const PARAM_IMPORT_SOURCE_TYPE = 'source';
+    const PARAM_IMPORT_SOURCE_REF_ID = 'source_ref_id';
+
+
     /** @var int obj_id */
     protected $obj_id;
 	/**
@@ -37,14 +42,19 @@ class ilExamAdminData
         /** @var ilExamAdminParam[] $params */
         $params = [];
 
+        // used to store the exam_orga id
+        $params[] = ilExamAdminParam::_create(
+            self::PARAM_ORGA_ID, self::PARAM_ORGA_ID, '', ilExamAdminParam::TYPE_INT
+        );
+
         // used to remember the selected import type (matriculations or ref_id)
         $params[] = ilExamAdminParam::_create(
-            'source', '', '', ilExamAdminParam::TYPE_TEXT, 'matriculations'
+            self::PARAM_IMPORT_SOURCE_TYPE, self::PARAM_IMPORT_SOURCE_TYPE, '', ilExamAdminParam::TYPE_TEXT, 'matriculations'
         );
 
         // used to remember the ref_id for import
         $params[] = ilExamAdminParam::_create(
-            'source_ref_id', '', '', ilExamAdminParam::TYPE_REF_ID
+            self::PARAM_IMPORT_SOURCE_REF_ID, self::PARAM_IMPORT_SOURCE_REF_ID, '', ilExamAdminParam::TYPE_REF_ID
         );
 
         foreach ($params as $param)
@@ -55,6 +65,38 @@ class ilExamAdminData
         $this->read();
 	}
 
+    /**
+     * Get the array of all parameters
+     * @return ilExamAdminParam[]
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+
+    /**
+     * Get the object
+     * @param string $param_name
+     * @param mixed $param_value
+     * @return int[]
+     */
+	public static function findObjectIds($param_name, $param_value)
+    {
+        global $DIC;
+        $ilDB = $DIC->database();
+
+        $query = "SELECT obj_id FROM examad_data WHERE param_name = ". $ilDB->quote($param_name, 'string')
+            . " AND param_value = " . $ilDB->quote((string) $param_value, 'text');
+        $res = $ilDB->query($query);
+
+        $obj_ids = [];
+        while($row = $ilDB->fetchAssoc($res))
+        {
+            $obj_ids[] = $row['obj_id'];
+        }
+        return $obj_ids;
+    }
 
     /**
      * Get the value of a named parameter

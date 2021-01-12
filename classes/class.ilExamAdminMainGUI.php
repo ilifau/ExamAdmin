@@ -71,7 +71,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 		switch ($next_class)
 		{
 			case 'ilexamadmincourseusersgui':
-			    $this->tabs->activateSubTab('users');
+			    $this->tabs->activateSubTab('manage_users');
 			    if ($this->canManageParticipants()) {
                     require_once(__DIR__ . '/class.ilExamAdminCourseUsersGUI.php');
                     $this->ctrl->forwardCommand(new ilExamAdminCourseUsersGUI($this));
@@ -92,6 +92,13 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
                         $this->$cmd();
                         break;
 
+                    case 'editAdminData':
+                    case 'saveAdminData':
+                        if ($this->plugin->hasAdminAccess()) {
+                            $this->$cmd();
+                        }
+                        break;
+
 					default:
 					    $this->prepareObjectOutput();
 					    $this->tpl->setContent('invalid command:' . $cmd);
@@ -107,8 +114,13 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 	protected function setSubTabs()
     {
 	    if ($this->canManageParticipants()) {
-	        $this->tabs->addSubTab('users', $this->plugin->txt('manage_user'),
+	        $this->tabs->addSubTab('manage_users', $this->plugin->txt('manage_users'),
             $this->ctrl->getLinkTargetByClass('ilExamAdminCourseUsersGUI'));
+        }
+
+	    if ($this->plugin->hasAdminAccess()) {
+            $this->tabs->addSubTab('admin_data', $this->plugin->txt('admin_data'),
+                $this->ctrl->getLinkTarget($this,'editAdminData'));
         }
     }
 
@@ -146,7 +158,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         $ilLocator = $DIC['ilLocator'];
 
         $ilLocator->addRepositoryItems($this->parent->getRefId());
-        $ilLocator->addItem($this->parent->getTitle(), ilLink::_getLink($this->parent->getRefId(), $this->parent->getType()));
+        //$ilLocator->addItem($this->parent->getTitle(), ilLink::_getLink($this->parent->getRefId(), $this->parent->getType()));
 
         $this->tpl->getStandardTemplate();
         $this->tpl->setLocator();
@@ -154,6 +166,68 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         $this->tpl->setDescription($this->parent->getLongDescription());
         $this->tpl->setTitleIcon(ilObject::_getIcon($this->parent->getId(), 'big', $this->parent->getType()), $this->lng->txt('obj_'.$this->parent->getType()));
     }
+
+    /**
+     * Initialize the configuration form
+     * @return ilPropertyFormGUI form object
+     */
+    protected function initAdminDataForm()
+    {
+        $form = new ilPropertyFormGUI();
+        $form->setTitle($this->plugin->txt('admin_data'));
+        $form->setFormAction($this->ctrl->getFormAction($this));
+
+        $data = $this->plugin->getData($this->parent->getId());
+        foreach($data->getParams() as $param) {
+            $param->setValue($data->get($param->name));
+            $form->addItem($param->getFormItem());
+        }
+
+        $form->addCommandButton("saveAdminData", $this->lng->txt("save"));
+        return $form;
+    }
+
+    /**
+     * Edit the administration data
+     */
+    protected function editAdminData()
+    {
+        $this->tabs->activateSubTab('admin_data');
+        $form = $this->initAdminDataForm();
+        $this->prepareObjectOutput();
+        $this->tpl->setContent($form->getHtml());
+        $this->tpl->show();
+    }
+
+
+    /**
+     * Save the basic settings
+     */
+    protected function saveAdminData()
+    {
+        $form = $this->initAdminDataForm();
+        if ($form->checkInput())
+        {
+            $form->setValuesByPost();
+
+            $data = $this->plugin->getData($this->parent->getId());
+            foreach ($data->getParams() as $param) {
+                $data->set($param->name, $param->getFormValue($form));
+            }
+            $data->write();
+
+            ilUtil::sendSuccess($this->lng->txt("settings_saved"), true);
+            $this->ctrl->redirect($this, 'editAdminData');
+        }
+        else
+        {
+            $form->setValuesByPost();
+            $this->prepareObjectOutput();
+            $this->tpl->setContent($form->getHtml());
+            $this->tpl->show();
+        }
+    }
+
 
     /**
      * Check if the current user can manage

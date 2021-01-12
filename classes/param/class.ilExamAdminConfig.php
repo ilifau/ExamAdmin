@@ -13,6 +13,7 @@ class ilExamAdminConfig
     const GLOBAL_LECTURER_ROLE = 'global_lecturer_role';
     const GLOBAL_PARTICIPANT_ROLE = 'global_lecturer_role';
     const LOCAL_TESTACCOUNT_ROLE = 'local_testaccount_role';
+    const BASE_URL = 'base_url';
 
 	/**
 	 * @var ilExamAdminParam[]	$params		parameters: 	name => ilExamAdminParam
@@ -112,6 +113,15 @@ class ilExamAdminConfig
             $this->plugin->txt('parent_category'),
             $this->plugin->txt('parent_category_info'),
             ilExamAdminParam::TYPE_REF_ID,
+            0
+        );
+
+        // parent category
+        $params[] = ilExamAdminParam::_create(
+            self::BASE_URL,
+            $this->plugin->txt('base_url'),
+            $this->plugin->txt('base_url_info'),
+            ilExamAdminParam::TYPE_TEXT,
             0
         );
 
