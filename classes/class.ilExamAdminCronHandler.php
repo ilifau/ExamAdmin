@@ -52,25 +52,36 @@ class ilExamAdminCronHandler
     {
         $objects = $this->connector->getOrgaObjects();
 
+        $formats = explode(',', $this->config->get('exam_format'));
+        $is_presence = in_array('presence', $formats);
+
         $collection = ilExamAdminOrgaRecord::getCollection()
-            ->where(['obj_id' => array_keys($objects)])
-            ->where(['exam_format'=>  explode(',', $this->config->get('exam_format'))]);
+            ->where(['obj_id' => array_keys($objects)]);
 
         $courses = [];
 
         /** @var ilExamAdminOrgaRecord $record */
         foreach ($collection->get() as $record) {
 
-            $courses[$record->id] = $record->exam_title;
+            // ignore format matching if presence is requires and platform is not for presence
+            if ($record->force_presence && !$is_presence) {
+                continue;
+            }
 
-            if ($ref_id = $this->findCourse($record)) {
-                $this->updateCourse($record, $ref_id);
+            // format matches or platform is forced for presence
+            if (in_array($record->exam_format, $formats) || ($record->force_presence && $is_presence)) {
+
+                $courses[$record->id] = $record->exam_title;
+
+                if ($ref_id = $this->findCourse($record)) {
+                    $this->updateCourse($record, $ref_id);
+                }
+                else {
+                    $ref_id = $this->createCourse($record);
+                    $this->updateCourse($record, $ref_id);
+                }
             }
-            else {
-                $ref_id = $this->createCourse($record);
-                $this->updateCourse($record, $ref_id);
-            }
-        }
+         }
 
         return $courses;
     }

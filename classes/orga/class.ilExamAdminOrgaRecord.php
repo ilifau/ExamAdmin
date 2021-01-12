@@ -90,6 +90,14 @@ class ilExamAdminOrgaRecord extends ActiveRecord
     public $exam_format;
 
     /**
+     * @var integer
+     * @con_has_field        true
+     * @con_fieldtype        integer
+     * @con_length           4
+     */
+    public $force_presence;
+
+    /**
      * @var string
      * @con_has_field        true
      * @con_fieldtype        text
