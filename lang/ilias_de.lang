@@ -122,4 +122,5 @@ admin_data#:#Administrations-Daten
 manage_users#:#Nutzerverwaltung
 base_url#:#Basis-URL
 base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generierung der Kurslinks verwendet
+function_not_available#:#Diese Funktion ist für Ihren Account nicht verfügbar.
 

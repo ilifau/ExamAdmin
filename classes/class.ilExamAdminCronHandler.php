@@ -79,6 +79,7 @@ class ilExamAdminCronHandler
                 else {
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
+                    $this->removeRootParticipant($ref_id);
                 }
             }
          }
@@ -261,10 +262,28 @@ class ilExamAdminCronHandler
             $usr_ids[] = $user['usr_id'];
         }
         $users->addParticipants($usr_ids, false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR);
+    }
 
-        // remove the root
-        $root = $users->getSingleUserDataByLogin('root');
-        $users->removeParticipants([$root['usr_id']]);
+    /**
+     * Remove the root account from groups in the course
+     * @param $ref_id
+     */
+    protected function removeRootParticipant($ref_id)
+    {
+        global $DIC;
+        $tree = $DIC->repositoryTree();
+
+        $root_id = ilObjUser::_lookupId('root');
+
+        // remove from course
+        $part = new ilCourseParticipants(ilObject::_lookupObjectId($ref_id));
+        $part->delete($root_id);
+
+        // remove from group
+        foreach ($tree->getChildsByType($ref_id, 'grp') as $node) {
+            $part = new ilGroupParticipants($node['obj_id']);
+            $part->delete($root_id);
+        }
     }
 
     /**

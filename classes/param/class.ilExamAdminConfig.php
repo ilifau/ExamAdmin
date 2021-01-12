@@ -11,7 +11,7 @@ class ilExamAdminConfig
 {
     const GLOBAL_ADMIN_ROLE = 'global_admin_role';
     const GLOBAL_LECTURER_ROLE = 'global_lecturer_role';
-    const GLOBAL_PARTICIPANT_ROLE = 'global_lecturer_role';
+    const GLOBAL_PARTICIPANT_ROLE = 'global_participant_role';
     const LOCAL_TESTACCOUNT_ROLE = 'local_testaccount_role';
     const BASE_URL = 'base_url';
 

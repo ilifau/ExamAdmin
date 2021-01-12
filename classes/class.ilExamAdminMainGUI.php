@@ -78,7 +78,8 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
                 }
 			    else {
                     $this->prepareObjectOutput();
-                    ilUtil::sendFailure($this->lng->txt("permission_denied"), false);
+                    ilUtil::sendInfo($this->plugin->txt('function not_available'),false);
+                    $this->tpl->show();
                 }
                 break;
 
@@ -133,7 +134,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             $this->ctrl->redirectByClass('ilExamAdminCourseUsersGUI');
         }
         $this->prepareObjectOutput();
-        ilUtil::sendFailure($this->lng->txt("permission_denied"), false);
+        ilUtil::sendInfo($this->plugin->txt('function_not_available'),false);
         $this->tpl->show();
     }
 
@@ -234,8 +235,9 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
      */
     public function canManageParticipants()
     {
-        return ($this->plugin->hasAdminAccess() ||
-            $this->participants->isAdmin($this->user->getId()) ||
-            $this->participants->isTutor($this->user->getId()));
+        return (
+            $this->plugin->hasAdminAccess() ||
+            $this->participants->isAdmin($this->user->getId())
+        );
     }
 }
