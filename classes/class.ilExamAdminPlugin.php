@@ -172,27 +172,19 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      */
     public function handleCronJob()
     {
-        $created = 0;
-
-        try
-        {
-            require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
-            $handler = new ilExamAdminCronHandler($this);
-            $courses = $handler->installCourses();
-
-            $created = count($courses);
-        }
-        catch (exception $e)
-        {
-            $error = $e->getMessage();
+        if (!ilContext::usesHTTP()) {
+            echo "ExamAdmin: handle cron job...\n";
         }
 
-        if (!empty($error)) {
-            throw new Exception($error);
+        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+        $handler = new ilExamAdminCronHandler($this);
+        $courses = $handler->installCourses();
+        $created = count($courses);
+
+        if (!ilContext::usesHTTP()) {
+            echo "ExamAdmin: finished.\n";
         }
 
         return $created;
     }
 }
-
-?>
