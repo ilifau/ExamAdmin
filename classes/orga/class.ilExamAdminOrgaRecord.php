@@ -496,6 +496,21 @@ class ilExamAdminOrgaRecord extends ActiveRecord
     }
 
     /**
+     * Get the exam ids stored in this record
+     */
+    public function getExamIds()
+    {
+        $ids = [];
+        foreach (explode(',', (string) $this->exam_ids) as $id) {
+            if (!empty(trim($id))) {
+                $ids[] = (int) trim($id);
+            }
+        }
+        return $ids;
+    }
+
+
+    /**
      * Get the array representation from a string value
      *
      * @param string $value

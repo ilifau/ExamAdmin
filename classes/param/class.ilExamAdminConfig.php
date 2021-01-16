@@ -116,13 +116,22 @@ class ilExamAdminConfig
             0
         );
 
-        // parent category
+        // base url
         $params[] = ilExamAdminParam::_create(
             self::BASE_URL,
             $this->plugin->txt('base_url'),
             $this->plugin->txt('base_url_info'),
             ilExamAdminParam::TYPE_TEXT,
             0
+        );
+
+        // calpus soaü url
+        $params[] = ilExamAdminParam::_create(
+            'campus_soap_url',
+            $this->plugin->txt('campus_soap_url'),
+            $this->plugin->txt('campus_soap_url_info'),
+            ilExamAdminParam::TYPE_TEXT,
+            ''
         );
 
 
@@ -208,4 +217,17 @@ class ilExamAdminConfig
             );
         }
     }
+
+    /**
+     * Get the semester as it is stored in mein campus
+     * @return string (format: '20201' (summer term) or '20202' (winter term)
+     */
+    public function getCampusSemester()
+    {
+        $semester = $this->get('semester');
+        $semester = str_replace('s', '1', $semester);
+        $semester = str_replace('w', '2', $semester);
+        return $semester;
+    }
+
 }

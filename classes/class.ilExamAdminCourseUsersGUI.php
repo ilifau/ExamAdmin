@@ -359,7 +359,24 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $form->setDescription($this->plugin->txt('import_members_desc'));
 
         $source = new ilRadioGroupInputGUI($this->plugin->txt('source'), 'source');
-        $source->setValue($this->data->get('source'));
+        $source->setValue($this->data->get(ilExamAdminData::PARAM_IMPORT_SOURCE_TYPE));
+
+        require_once(__DIR__ . '/orga/class.ilExamAdminOrgaCampusExamsInputGUI.php');
+        require_once(__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
+        $orga_id = (int) $this->data->get(ilExamAdminData::PARAM_ORGA_ID);
+        if (empty($exam_ids = $_SESSION['ilExamAdminExamIds_' . $orga_id])) {
+            /** @var  ilExamAdminOrgaRecord $record */
+            $record = ilExamAdminOrgaRecord::findOrGetInstance($this->data->get(ilExamAdminData::PARAM_ORGA_ID));
+            $exam_ids = $record->exam_ids;
+        }
+
+        $se = new ilRadioOption($this->plugin->txt('source_exams'), 'exam_ids');
+        $examsgui = new ilExamAdminOrgaCampusExamsInputGUI('', 'exam_ids');
+        $examsgui->setInfo($this->plugin->txt('exam_ids_desc'));
+        $examsgui->setValueByString($exam_ids);
+        $examsgui->setAutocomplete($this->plugin->getConfig()->getCampusSemester());
+        $se->addSubItem($examsgui);
+        $source->addOption($se);
 
         $sm = new ilRadioOption($this->plugin->txt('source_matriculations'), 'matriculations');
         $matriculations = new ilTextAreaInputGUI('', 'matriculations');
@@ -372,7 +389,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $ref_id->allowDecimals(false);
         $ref_id->setSize(10);
         $ref_id->setInfo($this->plugin->txt('ref_id_info'));
-        $ref_id->setValue($this->data->get('source_ref_id'));
+        $ref_id->setValue($this->data->get(ilExamAdminData::PARAM_IMPORT_SOURCE_REF_ID));
         $sr->addSubItem($ref_id);
         $source->addOption($sr);
 
@@ -420,8 +437,28 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         switch ($_POST['source'])
         {
+            case 'exam_ids':
+                $orga_id = (int) $this->data->get(ilExamAdminData::PARAM_ORGA_ID);
+                $this->data->set(ilExamAdminData::PARAM_IMPORT_SOURCE_TYPE, 'exam_ids');
+                $this->data->write();
+
+                $exam_ids = (array) $_POST['exam_ids'];
+                $_SESSION['ilExamAdminExamIds_' . $orga_id] = implode(',', $exam_ids);
+
+                require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
+                $matriculations = [];
+                foreach ($exam_ids as $id) {
+                    if (!empty($id)) {
+                        $campus = new ilExamAdminCampusParticipants();
+                        $campus->fetchParticipants($this->plugin, $id);
+                        $matriculations = array_merge($matriculations, $campus->getActiveMatriculations());
+                    }
+                }
+                $external = $connObj->getUserDataByMatriculationList($matriculations);
+                break;
+
             case 'matriculations':
-                $this->data->set('source', 'matriculations');
+                $this->data->set(ilExamAdminData::PARAM_IMPORT_SOURCE_TYPE, 'matriculations');
                 $this->data->write();
 
                 $list = $connObj->getArrayFromListInput($_POST['matriculations']);
@@ -431,8 +468,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
             case 'ref_id':
                 $ref_id = (int) $_POST['ref_id'];
-                $this->data->set('source', 'ref_id');
-                $this->data->set('source_ref_id', $ref_id);
+                $this->data->set(ilExamAdminData::PARAM_IMPORT_SOURCE_TYPE, 'ref_id');
+                $this->data->set(ilExamAdminData::PARAM_IMPORT_SOURCE_REF_ID, $ref_id);
                 $this->data->write();
 
                 $object = $connObj->getObjectDataByRefId($ref_id);

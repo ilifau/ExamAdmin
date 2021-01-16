@@ -16,8 +16,11 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     /** @var ilExamAdminConnector */
     protected $connector;
 
+    /** @var self */
+    protected static $instance;
 
-	public function getPluginName()
+
+    public function getPluginName()
 	{
 		return "ExamAdmin";
 	}
@@ -31,6 +34,18 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
         $ilDB->dropTable('examad_config');
         $ilDB->dropTable('examad_data');
     }
+
+    /**
+     * Get the plugin instance
+     * @return ilExamAdminPlugin
+     */
+    public static function getInstance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
 
     /**
      * Get the data set for an object

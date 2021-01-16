@@ -49,7 +49,7 @@ class ilExamAdminData
 
         // used to remember the selected import type (matriculations or ref_id)
         $params[] = ilExamAdminParam::_create(
-            self::PARAM_IMPORT_SOURCE_TYPE, self::PARAM_IMPORT_SOURCE_TYPE, '', ilExamAdminParam::TYPE_TEXT, 'matriculations'
+            self::PARAM_IMPORT_SOURCE_TYPE, self::PARAM_IMPORT_SOURCE_TYPE, '', ilExamAdminParam::TYPE_TEXT, 'exam_ids'
         );
 
         // used to remember the ref_id for import

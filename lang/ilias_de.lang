@@ -75,8 +75,8 @@ list_users#:#Nutzer auflisten
 x_users_found#:#Gefundene Nutzer: %s
 members_added_to_course#:#Die Teilnehmer-Accounts wurden in den Kurs aufgenommen.
 source_ref_id#:#Kurs- oder Gruppenmitglieder
-ref_id#:#Ref-Id
-ref_id_info#:#Ref-Id des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen.
+ref_id#:#StudOn-ID
+ref_id_info#:#StudOn-ID des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen. Sie finden die ID auf der Info-Seite des StudOn-Kurses oder als ref_id in dessen Adresszeile.
 x_matrikulations_searched#:#Gesuchte Matrikelnummern: %s
 members_of_crs#:#Mitglieder des Kurses "%s"
 members_of_grp#:#Mitglieder der Gruppe "%s"
@@ -123,4 +123,9 @@ manage_users#:#Nutzerverwaltung
 base_url#:#Basis-URL
 base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generierung der Kurslinks verwendet
 function_not_available#:#Diese Funktion ist für Ihren Account nicht verfügbar.
+campus_soap_url#:#URL des mein campus Services
+campus_soap_url_info#:#Von dieser URL werden per SOAP die Prüfungen und ihre Teilnehmer abgefragt
+exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
+source_exams#:#Prüfungen in mein campus
+exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>mein campus</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
 
