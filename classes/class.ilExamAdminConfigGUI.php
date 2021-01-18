@@ -71,6 +71,7 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
                     case "saveBasicSettings":
                     case "updateLanguages":
                     case "installCourses":
+                    case "syncUserData":
                         $this->tabs->activateTab('basic');
                         $this->$cmd();
                         break;
@@ -102,6 +103,11 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
         $button = ilLinkButton::getInstance();
         $button->setUrl($this->ctrl->getLinkTarget($this, 'installCourses'));
         $button->setCaption($this->plugin->txt('install_courses'), false);
+        $this->toolbar->addButtonInstance($button);
+
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this, 'syncUserData'));
+        $button->setCaption($this->plugin->txt('synchronizeUsers'), false);
         $this->toolbar->addButtonInstance($button);
     }
 
@@ -174,6 +180,20 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
         $courses = $handler->installCourses();
 
         ilUtil::sendSuccess(implode('<br />', $courses), false);
+        $this->configure();
+    }
+
+    /**
+     * Sync User data
+     */
+    protected function syncUserData()
+    {
+        $this->plugin->init();
+        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+        $handler = new ilExamAdminCronHandler($this->plugin);
+        $count = $handler->syncUserData();
+
+        ilUtil::sendSuccess(sprintf($this->plugin->txt('x_users_synchronized'), $count), false);
         $this->configure();
     }
 }

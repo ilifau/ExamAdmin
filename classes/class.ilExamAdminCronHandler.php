@@ -428,11 +428,19 @@ class ilExamAdminCronHandler
     }
 
     /**
-     * Synchronize the logins of users
+     * Synchronize the data of users (incl. passwords)
+     * @retrun int
      */
-    public function syncLogins()
+    public function syncUserData()
     {
+        require_once (__DIR__ . '/class.ilExamAdminUsers.php');
+        $users = new ilExamAdminUsers($this->plugin);
 
+        $count = 0;
+        $count += $users->synchronizeByCategory(ilExamAdminUsers::CAT_GLOBAL_LECTURER);
+        $count += $users->synchronizeByCategory(ilExamAdminUsers::CAT_GLOBAL_PARTICIPANT);
+
+        return $count;
     }
 
 }
