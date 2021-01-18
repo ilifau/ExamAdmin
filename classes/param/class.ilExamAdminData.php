@@ -44,17 +44,22 @@ class ilExamAdminData
 
         // used to store the exam_orga id
         $params[] = ilExamAdminParam::_create(
-            self::PARAM_ORGA_ID, self::PARAM_ORGA_ID, '', ilExamAdminParam::TYPE_INT
+            self::PARAM_ORGA_ID, $this->plugin->txt(self::PARAM_ORGA_ID), '', ilExamAdminParam::TYPE_INT
         );
 
         // used to remember the selected import type (matriculations or ref_id)
         $params[] = ilExamAdminParam::_create(
-            self::PARAM_IMPORT_SOURCE_TYPE, self::PARAM_IMPORT_SOURCE_TYPE, '', ilExamAdminParam::TYPE_TEXT, 'exam_ids'
+            self::PARAM_IMPORT_SOURCE_TYPE, $this->plugin->txt(self::PARAM_IMPORT_SOURCE_TYPE), '', ilExamAdminParam::TYPE_SELECT, 'exam_ids',
+            [
+                'exam_ids' => $this->plugin->txt('source_exams'),
+                'matriculations' => $this->plugin->txt('source_matriculations'),
+                'ref_id' => $this->plugin->txt('source_ref_id'),
+            ]
         );
 
         // used to remember the ref_id for import
         $params[] = ilExamAdminParam::_create(
-            self::PARAM_IMPORT_SOURCE_REF_ID, self::PARAM_IMPORT_SOURCE_REF_ID, '', ilExamAdminParam::TYPE_REF_ID
+            self::PARAM_IMPORT_SOURCE_REF_ID, $this->plugin->txt(self::PARAM_IMPORT_SOURCE_REF_ID), '', ilExamAdminParam::TYPE_REF_ID
         );
 
         foreach ($params as $param)

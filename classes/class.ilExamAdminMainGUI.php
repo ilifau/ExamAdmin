@@ -95,6 +95,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 
                     case 'editAdminData':
                     case 'saveAdminData':
+                    case 'updateCourse':
                         if ($this->plugin->hasAdminAccess()) {
                             $this->$cmd();
                         }
@@ -123,6 +124,17 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             $this->tabs->addSubTab('admin_data', $this->plugin->txt('admin_data'),
                 $this->ctrl->getLinkTarget($this,'editAdminData'));
         }
+    }
+
+    /**
+     * Set the toolbar for admin functions
+     */
+    protected function setAdminToolbar()
+    {
+        $button = ilLinkButton::getInstance();
+        $button->setUrl($this->ctrl->getLinkTarget($this,'updateCourse'));
+        $button->setCaption($this->plugin->txt('update_course'), false);
+        $this->toolbar->addButtonInstance($button);
     }
 
     /**
@@ -194,6 +206,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
     protected function editAdminData()
     {
         $this->tabs->activateSubTab('admin_data');
+        $this->setAdminToolbar();
         $form = $this->initAdminDataForm();
         $this->prepareObjectOutput();
         $this->tpl->setContent($form->getHtml());
@@ -229,6 +242,27 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         }
     }
 
+    /**
+     * Update the course fom its connected record
+     */
+    protected function UpdateCourse()
+    {
+        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
+        $data = $this->plugin->getData($this->parent->getId());
+
+        /** @var ilExamAdminOrgaRecord $record */
+        $record = ilExamAdminOrgaRecord::find($data->get(ilExamAdminData::PARAM_ORGA_ID));
+        if (isset($record)) {
+            require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+            $handler = new ilExamAdminCronHandler($this->plugin);
+            $handler->updateCourse($record, $this->parent->getRefId());
+            ilUtil::sendSuccess($this->plugin->txt("course_updated"), true);
+        }
+        else {
+            ilUtil::sendFailure($this->plugin->txt("orga_record_not_found"), true);
+        }
+        $this->ctrl->redirect($this, 'editAdminData');
+    }
 
     /**
      * Check if the current user can manage

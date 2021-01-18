@@ -128,4 +128,9 @@ campus_soap_url_info#:#Von dieser URL werden per SOAP die Prüfungen und ihre Te
 exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
 source_exams#:#Prüfungen in mein campus
 exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>mein campus</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
-
+orga_id#:#Id in Prüfungs-Organisation
+source#:#Quelle Nutzerimport
+source_ref_id#:#Ref-Id Quellkurs
+update_course#:#Kurs aktualisieren
+course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
+orga_record_not_found#:#In der Lernplattform wurde kein passender Datensatz zur Prüfungsorganisation gefunden!

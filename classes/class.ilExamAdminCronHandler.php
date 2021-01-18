@@ -217,7 +217,7 @@ class ilExamAdminCronHandler
      * @param ilExamAdminOrgaRecord $record
      * @param int $ref_id
      */
-    protected function updateCourse($record, $ref_id)
+    public function updateCourse($record, $ref_id)
     {
         $course = new ilObjCourse($ref_id);
         $title = $record->exam_date . ' ' . $record->exam_title;
@@ -228,7 +228,8 @@ class ilExamAdminCronHandler
         $course->setOfflineStatus(false);
         $course->update();
 
-        $this->updateCourseParticipants($record, $course);
+        $this->updateCourseManagers($record, $course);
+        $this->updateCourseMembers($record, $course);
         $this->updateCourseMetadata($record, $course);
 
         // save the data relationship
@@ -250,11 +251,11 @@ class ilExamAdminCronHandler
     }
 
     /**
-     * Update the course participants with the data from the orga record
+     * Update the course managers (admins and tutors, with test accounts) with the data from the orga record
      * @param ilExamAdminOrgaRecord $record
      * @param ilObjCourse $course
      */
-    protected function updateCourseParticipants($record, $course)
+    protected function updateCourseManagers($record, $course)
     {
         require_once (__DIR__ . '/class.ilExamAdminCourseUsers.php');
         $users = new ilExamAdminCourseUsers($this->plugin, $course);
@@ -268,6 +269,44 @@ class ilExamAdminCronHandler
             $usr_ids[] = $user['usr_id'];
         }
         $users->addParticipants($usr_ids, false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR);
+    }
+
+    /**
+     * Update the course members from my campus
+     * @param ilExamAdminOrgaRecord $record
+     * @param ilObjCourse $course
+     */
+    protected function updateCourseMembers($record, $course)
+    {
+        require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
+        require_once (__DIR__ . '/class.ilExamAdminCourseUsers.php');
+
+        $connObj = $this->plugin->getConnector();
+        $usersObj = new ilExamAdminCourseUsers($this->plugin, $course);
+        $partObj = $course->getMembersObject();
+
+        // get the matriculation numbers from campus
+        $active_matriculations = [];
+        $resigned_matriculations = [];
+        foreach ($record->getExamIds() as $id) {
+            if (!empty($id)) {
+                $campus = new ilExamAdminCampusParticipants();
+                $campus->fetchParticipants($this->plugin, $id);
+                $active_matriculations = array_merge($active_matriculations, $campus->getActiveMatriculations());
+                $resigned_matriculations = array_merge($resigned_matriculations, $campus->getResignedMatriculations());
+            }
+        }
+
+        // resign matching local users (only those that are not active for another exam_id)
+        $resigned_matriculations = array_diff($resigned_matriculations, $active_matriculations);
+        $resigned_data = $usersObj->getUserDataByMatriculationList($resigned_matriculations);
+        $usersObj->removeParticipants($usersObj->extractUserIds($resigned_data));
+
+        // add matching remote users (create local users, if neccessary)
+        foreach ($connObj->getUserDataByMatriculationList($active_matriculations) as $active_data) {
+            $local_data = $usersObj->getMatchingUser($active_data, true, ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
+            $partObj->add($local_data['usr_id'], IL_CRS_MEMBER);
+        }
     }
 
     /**
