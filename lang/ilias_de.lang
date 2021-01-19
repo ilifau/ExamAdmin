@@ -134,3 +134,14 @@ source_ref_id#:#Ref-Id Quellkurs
 update_course#:#Kurs aktualisieren
 course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
 orga_record_not_found#:#In der Lernplattform wurde kein passender Datensatz zur Prüfungsorganisation gefunden!
+view_orga_details#:#Prüfungs-Details
+exam_title#:#Prüfungstitel
+fau_chair#:#Lehrstuhl
+fau_lecturer#:#Dozent
+exam_type#:#Typ
+exam_type_exam#:#Klausur
+exam_type_review#:#Einsichtnahme
+exam_type_retry#:#Nachholklausur
+exam_runs#:#Durchgänge (Startzeiten)
+run_minutes#:#Prüfungsdauer
+run_links#:#Zoom-Links

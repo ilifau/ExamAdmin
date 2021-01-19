@@ -509,6 +509,41 @@ class ilExamAdminOrgaRecord extends ActiveRecord
         return $ids;
     }
 
+    /**
+     * Get the properties to show for a record
+     */
+    public function getPropertiesToShow()
+    {
+        $props  = [
+            [
+              'title' => 'exam_title',
+              'content' => $this->exam_title
+            ],
+            [
+              'title' => 'fau_chair',
+              'content' => $this->fau_chair
+            ],
+            [
+              'title' => 'fau_lecturer',
+              'content' => $this->fau_lecturer
+            ],
+            [
+              'title' => 'exam_type',
+              'content' => 'exam_type_' . $this->exam_type,
+              'translate' => true
+            ],
+            [
+              'title' => 'exam_runs',
+              'content' => $this->exam_runs,
+            ],
+            [
+              'title' => 'run_minutes',
+              'content' => $this->run_minutes,
+            ],
+        ];
+
+        return $props;
+    }
 
     /**
      * Get the array representation from a string value

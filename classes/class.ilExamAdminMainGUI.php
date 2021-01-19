@@ -93,6 +93,12 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
                         $this->$cmd();
                         break;
 
+                    case 'viewOrgaDetails':
+                        if ($this->canViewOrgaDetails()) {
+                            $this->$cmd();
+                        }
+                        break;
+
                     case 'editAdminData':
                     case 'saveAdminData':
                     case 'updateCourse':
@@ -118,6 +124,10 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 	    if ($this->canManageParticipants()) {
 	        $this->tabs->addSubTab('manage_users', $this->plugin->txt('manage_users'),
             $this->ctrl->getLinkTargetByClass('ilExamAdminCourseUsersGUI'));
+        }
+	    if ($this->canViewOrgaDetails()) {
+            $this->tabs->addSubTab('view_orga_details', $this->plugin->txt('view_orga_details'),
+                $this->ctrl->getLinkTarget($this,'viewOrgaDetails'));
         }
 
 	    if ($this->plugin->hasAdminAccess()) {
@@ -207,8 +217,9 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
     {
         $this->tabs->activateSubTab('admin_data');
         $this->setAdminToolbar();
-        $form = $this->initAdminDataForm();
         $this->prepareObjectOutput();
+
+        $form = $this->initAdminDataForm();
         $this->tpl->setContent($form->getHtml());
         $this->tpl->show();
     }
@@ -265,6 +276,53 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
     }
 
     /**
+     * View the organisational details of the exam
+     */
+    public function viewOrgaDetails()
+    {
+        $this->tabs->activateSubTab('view_orga_details');
+        $this->prepareObjectOutput();
+
+        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
+        $data = $this->plugin->getData($this->parent->getId());
+
+        /** @var ilExamAdminOrgaRecord $record */
+        $record = ilExamAdminOrgaRecord::findOrGetInstance($data->get(ilExamAdminData::PARAM_ORGA_ID));
+
+        $tpl = $this->plugin->getTemplate('tpl.il_exam_admin_orga_details.html');
+        $tpl->setVariable('TXT_ORGA_DETAILS', $this->plugin->txt('view_orga_details'));
+
+        foreach ($record->getPropertiesToShow() as $prop) {
+            $tpl->setCurrentBlock('property');
+            $tpl->setVariable('PROP_TITLE', $this->plugin->txt($prop['title']));
+            if ($prop['translate']) {
+                $tpl->setVariable('PROP_CONTENT', $this->plugin->txt((string) $prop['content']));
+            }
+            else {
+                $tpl->setVariable('PROP_CONTENT', nl2br($prop['content']));
+            }
+            $tpl->parseCurrentBlock();
+        }
+
+        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaLink.php');
+        /** @var ilExamAdminOrgaLink[] $links */
+        $links = ilExamAdminOrgaLink::where(['record_id' => $record->id])->orderBy('exam_run')->get();
+        if (!empty($links)) {
+            $tpl->setVariable('TXT_RUN_LINKS', $this->plugin->txt('run_links'));
+            foreach ($links as $link) {
+                $tpl->setCurrentBlock('link');
+                $tpl->setVariable('LINK_RUN', $link->exam_run);
+                $tpl->setVariable('LINK_URL', $link->link);
+                $tpl->parseCurrentBlock();
+            }
+        }
+
+        $this->tpl->setContent($tpl->get());
+        $this->tpl->show();
+    }
+
+
+    /**
      * Check if the current user can manage
      */
     public function canManageParticipants()
@@ -272,6 +330,18 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         return (
             $this->plugin->hasAdminAccess() ||
             $this->participants->isAdmin($this->user->getId())
+        );
+    }
+
+    /**
+     * Check if the current user can manage
+     */
+    public function canViewOrgaDetails()
+    {
+        return (
+            $this->plugin->hasAdminAccess() ||
+            $this->participants->isAdmin($this->user->getId()) ||
+            $this->participants->isTutor($this->user->getId())
         );
     }
 }
