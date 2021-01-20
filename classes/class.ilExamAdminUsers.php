@@ -293,6 +293,8 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
 
     /**
      * Get data of a user that matches the given data by login
+     * Non-existing users are created with the given global role
+     *
      * @param array $data
      * @param bool $create  create the user if none is found
      * @param int $role_id global role to be used for the new user
@@ -320,8 +322,6 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
      */
     public function createUser($data, $role_id = null)
     {
-        global $DIC;
-
         $userObj = new ilObjUser();
         $userObj->setLogin($data['login']);
         $userObj->setFirstname($data['firstname']);
@@ -335,13 +335,24 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         $userObj->updateOwner();
         $userObj->saveAsNew();
 
-        if (!empty($role_id))
-        {
+        $this->applyUserData($usr_id, $data);
+        $this->addGlobalRole($usr_id, $role_id);
+        return $usr_id;
+    }
+
+
+    /**
+     * Add a global role for a user account
+     * @param int $usr_id
+     * @param int $role_id
+     */
+    public function addGlobalRole($usr_id, $role_id = null)
+    {
+        global $DIC;
+
+        if (!empty($role_id)) {
             $DIC->rbac()->admin()->assignUser($role_id, $usr_id);
         }
-
-        $this->applyUserData($usr_id, $data);
-        return $usr_id;
     }
 
 

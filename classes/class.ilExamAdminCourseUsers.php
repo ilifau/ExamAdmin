@@ -5,18 +5,44 @@
 require_once(__DIR__ . '/class.ilExamAdminUsers.php');
 
 /**
- * Class ilExamAdminGroup Users
+ * User management for courses
+ * Note: ilCourseParticipants is not used because
+ * - it doesn't distinct members from test accounts well
+ * - removing of single users would re-read the membership data
  */
 class ilExamAdminCourseUsers extends ilExamAdminUsers
 {
+    // supported course roles
+    CONST ROLE_ADMIN = 'admin';
+    CONST ROLE_TUTOR = 'tutor';
+    CONST ROLE_MEMBER = 'member';
+    CONST ROLE_TESTACCOUNT = 'testaccount';
+
+    /**
+     * IDs of the supported course roles
+     * @var array
+     */
+    protected $role_ids = [
+        self::ROLE_ADMIN => null,
+        self::ROLE_TUTOR => null,
+        self::ROLE_MEMBER => null,
+        self::ROLE_TESTACCOUNT => null
+    ];
+
+    /**
+     * Assignments of users to the supported course roles
+     * @var array[]
+     */
+    protected $assignments = [
+        self::ROLE_ADMIN => [],
+        self::ROLE_TUTOR => [],
+        self::ROLE_MEMBER => [],
+        self::ROLE_TESTACCOUNT => [],
+    ];
+
     /** @var ilObjCourse */
     protected $course;
 
-    /** @var ilCourseParticipants */
-    protected $participants;
-
-    /** @var int */
-    protected $testaccount_role;
 
     /**
      * constructor.
@@ -29,12 +55,31 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
         parent::__construct($plugin);
         $this->course = $course;
-        $this->participants = $course->getMembersObject();
 
         foreach($DIC->rbac()->review()->getRolesOfObject($this->course->getRefId(), true) as $role_id) {
             $title = ilObject::_lookupTitle($role_id);
-            if ($title == $this->config->get(ilExamAdminConfig::LOCAL_TESTACCOUNT_ROLE)) {
-                $this->testaccount_role = $role_id;
+            $assigned = $DIC->rbac()->review()->assignedUsers($role_id);
+
+            switch (substr($title, 0, 8)) {
+                case 'il_crs_a':
+                    $this->role_ids[self::ROLE_ADMIN] = $role_id;
+                    $this->assignments[self::ROLE_ADMIN] = $assigned;
+                    break;
+
+                case 'il_crs_t':
+                    $this->role_ids[self::ROLE_TUTOR] = $role_id;
+                    $this->assignments[self::ROLE_TUTOR] = $assigned;
+                    break;
+
+                case 'il_crs_m':
+                    $this->role_ids[self::ROLE_MEMBER] = $role_id;
+                    $this->assignments[self::ROLE_MEMBER] = $assigned;
+                    break;
+
+                case substr($this->config->get(ilExamAdminConfig::LOCAL_TESTACCOUNT_ROLE), 0, 8):
+                    $this->role_ids[self::ROLE_TESTACCOUNT] = $role_id;
+                    $this->assignments[self::ROLE_TESTACCOUNT] = $assigned;
+                    break;
             }
         }
     }
@@ -83,26 +128,25 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
             case self::CAT_LOCAL_ADMIN_LECTURER:
                 return
-                    $this->db->in('usr_id', $this->participants->getAdmins(), false, 'integer');
+                    $this->db->in('usr_id', $this->assignments[self::ROLE_ADMIN], false, 'integer');
 
             case self::CAT_LOCAL_TUTOR_CORRECTOR:
                 return
-                    $this->db->in('usr_id', $this->participants->getTutors(), false, 'integer');
+                    $this->db->in('usr_id', $this->assignments[self::ROLE_TUTOR], false, 'integer');
 
             case self::CAT_LOCAL_MEMBER_STANDARD:
                 return
-                    $this->db->in('usr_id', $this->participants->getMembers(), false, 'integer')
-                    . " AND NOT (" . $this->getCategoryCond(self::CAT_LOCAL_MEMBER_TESTACCOUNT) . ")"
+                    $this->db->in('usr_id', $this->assignments[self::ROLE_MEMBER], false, 'integer')
                     . " AND NOT (" . parent::getCategoryCond(self::CAT_GLOBAL_REGISTERED) . ")";
 
             case self::CAT_LOCAL_MEMBER_REGISTERED:
                 return
-                    $this->db->in('usr_id', $this->participants->getMembers(), false, 'integer')
+                    $this->db->in('usr_id', $this->assignments[self::ROLE_MEMBER], false, 'integer')
                     . " AND (" . parent::getCategoryCond(self::CAT_GLOBAL_REGISTERED) .")";
 
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                 return
-                    $this->db->in('usr_id', $this->getTestaccounts(), false, 'integer');
+                    $this->db->in('usr_id', $this->assignments[self::ROLE_TESTACCOUNT], false, 'integer');
 
             default:
                 return parent::getCategoryCond($category);
@@ -186,60 +230,75 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
     }
 
     /**
+     * Check if the user is already a participant
+     * @param int $usr_id
+     * @return bool
+     */
+    public function isParticipant($usr_id)
+    {
+        foreach ([self::ROLE_ADMIN, self::ROLE_TUTOR, self::ROLE_MEMBER, self::ROLE_TESTACCOUNT] as $role) {
+            if (in_array($usr_id, $this->assignments[$role])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Add Course Participants
      * @param int[] $usr_ids
      * @param bool $local       usr_ids are local (otherwise from connection)
      * @param string $category
+     * @param bool $change_existing
      * @return string[] list of logins
      * @throws Exception
      */
-    public function addParticipants($usr_ids, $local, $category)
+    public function addParticipants($usr_ids, $local, $category, $change_existing = true)
     {
-        $as_testaccount = false;
-        $with_testaccounts = false;
-
         switch ($category) {
             case self::CAT_LOCAL_ADMIN_LECTURER:
-                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
-                $local_role = IL_CRS_ADMIN;
+                $global_role_id = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = self::ROLE_ADMIN;
                 $with_testaccounts = true;
                 break;
 
             case self::CAT_LOCAL_TUTOR_CORRECTOR:
-                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
-                $local_role = IL_CRS_TUTOR;
+                $global_role_id = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = self::ROLE_TUTOR;
                 $with_testaccounts = true;
                 break;
 
             case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
-                $local_role = IL_CRS_MEMBER;
-                $as_testaccount = true;
+                $global_role_id = $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE);
+                $local_role = self::ROLE_TESTACCOUNT;
+                $with_testaccounts = false;
                 break;
 
             case self::CAT_LOCAL_MEMBER_STANDARD:
-                $global_role = $this->config->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
-                $local_role = IL_CRS_MEMBER;
+            case self::CAT_LOCAL_MEMBER_REGISTERED:
+                $global_role_id = $this->config->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
+                $local_role = self::ROLE_MEMBER;
+                $with_testaccounts = false;
                 break;
 
-            case self::CAT_LOCAL_MEMBER_REGISTERED:
             default:
+                // not supported
                 return [];
         }
 
         $added = [];
         if ($local)  {
             foreach ($this->getUserDataByIds($usr_ids) as $user) {
-                if ($as_testaccount && $this->addTestaccount($user['usr_id'])) {
-                    $added[] = $user['login'];
-                }
-                elseif ($this->participants->add($user['usr_id'], $local_role)) {
-                    $added[] = $user['login'];
+                if ($this->addParticipant($user['usr_id'], $local_role, $change_existing)) {
+                        $this->addGlobalRole($user['usr_id'], $global_role_id);
+                        $added[] = $user['login'];
                 }
 
                 if ($with_testaccounts) {
                     foreach ($this->getTestaccountData($user['login']) as $test) {
-                        if ($this->addTestaccount($test['usr_id'])) {
+                        if ($this->addParticipant($test['usr_id'], self::ROLE_TESTACCOUNT, false)) {
+                            // use same global role as the main user
+                            $this->addGlobalRole($user['usr_id'], $global_role_id);
                             $added[] = $test['login'];
                         }
                     }
@@ -249,18 +308,18 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         else {
             $connObj = $this->plugin->getConnector();
             foreach ($connObj->getUserDataByIds($usr_ids) as $user) {
-                $user = $this->getMatchingUser($user, true, $global_role);
-                if ($as_testaccount && $this->addTestaccount($user['usr_id'])) {
-                    $added[] = $user['login'];
-                }
-                elseif ($this->participants->add($user['usr_id'], $local_role)) {
+                $user = $this->getMatchingUser($user, true, $global_role_id);
+                if ($this->addParticipant($user['usr_id'], $local_role, $change_existing)) {
+                    $this->addGlobalRole($user['usr_id'], $global_role_id);
                     $added[] = $user['login'];
                 }
 
                 if ($with_testaccounts) {
                     foreach ($connObj->getTestaccountData($user['login']) as $test) {
-                        $test = $this->getMatchingUser($test, true, $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
-                        if ($this->addTestaccount($test['usr_id'])) {
+                        $test = $this->getMatchingUser($test, true, $global_role_id);
+                        if ($this->addParticipant($test['usr_id'], self::ROLE_TESTACCOUNT, false)) {
+                            // use same global role as the main user
+                            $this->addGlobalRole($user['usr_id'], $global_role_id);
                             $added[] = $test['login'];
                         }
                     }
@@ -270,65 +329,122 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         return $added;
     }
 
+
     /**
-     * Add Course Participants
+     * Add a participant to a known course role (move it from other known course roles)
+     * - allow adding to test account
+     *
+     * @param int $usr_id
+     * @param string $new_role
+     * @param $change_existing
+     * @return bool
+     * @see ilCourseParticipants::add()
+     */
+    public function addParticipant($usr_id, $new_role, $change_existing = true)
+    {
+        global $DIC;
+
+        // local role does not exist
+        if (!isset($this->role_ids[$new_role])) {
+            return false;
+        }
+
+        // user is already assigned to the local role
+        if (in_array($usr_id, $this->assignments[$new_role])) {
+            return false;
+        }
+
+        // other role assignment should be kept
+        if (!$change_existing && $this->isParticipant($usr_id)) {
+            return false;
+        }
+
+        // don't change role assignment of own account, if not global admin
+        if ($usr_id == $DIC->user()->getId() && !$this->plugin->hasAdminAccess()) {
+            return false;
+        }
+
+        // remove from other course role but keep desktop item etc.
+        $this->removeParticipant($usr_id, false);
+
+        // assign the user to the course role
+        $DIC->rbac()->admin()->assignUser($this->role_ids[$new_role], $usr_id);
+        $this->assignments[$new_role][] = $usr_id;
+
+        ilObjUser::_addDesktopItem($usr_id, $this->course->getRefId(), $this->course->getType());
+
+        // raise event like in ilParticipants::add()
+        $DIC->event()->raise(
+            'Modules/Course',
+            "addParticipant",
+            array(
+                'obj_id' => $this->course->getId(),
+                'usr_id' => $usr_id,
+                'role_id' => $this->role_ids[$new_role])
+        );
+
+        return true;
+    }
+
+
+    /**
+     * Remove Course Participants
      * @param int[] $usr_ids
      * @return string[] list of logins
-     * @throws Exception
      */
     public function removeParticipants($usr_ids)
     {
         $removed = [];
         foreach ($this->getUserDataByIds($usr_ids) as $user) {
-            if ($this->participants->delete($user['usr_id'])) {
+            if ($this->removeParticipant($user['usr_id'], true)) {
                 $removed[] = $user['login'];
             }
         }
         return $removed;
     }
 
-
     /**
-     * Add a test account to the course
-     * @return bool
+     * Remove a participant from the known course roles
+     * @param int $usr_id
+     * @param bool $finally user is not moved to another course role
+     * @return bool user was in course
+     * @see ilCourseParticipants::add()
      */
-    public function addTestaccount($usr_id)
+    public function removeParticipant($usr_id, $finally = true)
     {
         global $DIC;
 
-        $rbacadmin = $DIC->rbac()->admin();
-        $rbacreview = $DIC->rbac()->review();
-        $event = $DIC->event();
+        // remove the user from all known course roles
+        $removed = false;
+        foreach ([self::ROLE_ADMIN, self::ROLE_TUTOR, self::ROLE_MEMBER, self::ROLE_TESTACCOUNT] as $role) {
+            $key = array_search($usr_id, $this->assignments[$role]);
+            if ($key !== false) {
 
-        if ($this->testaccount_role && !$rbacreview->isAssigned($usr_id, $this->testaccount_role)) {
-            $rbacadmin->assignUser($this->testaccount_role, $usr_id);
-            $event->raise(
-                'Modules/Course',
-                "addParticipant",
+                // don't delete the own account, if not global admin
+                if ($usr_id == $DIC->user()->getId() && !$this->plugin->hasAdminAccess()) {
+                    return false;
+                }
+
+                $DIC->rbac()->admin()->deassignUser($this->role_ids[$role], $usr_id);
+                unset($this->assignments[$key]);
+                $removed = true;
+            }
+        }
+
+        // cleanup if user is finally removed from the course (not role moved)
+        if ($finally && $removed) {
+            ilObjUser::_dropDesktopItem($usr_id, $this->course->getRefId(), $this->course->getType());
+
+            $DIC->event()->raise(
+               'Modules/Course',
+                "deleteParticipant",
                 array(
                     'obj_id' => $this->course->getId(),
-                    'usr_id' => $usr_id,
-                    'role_id' => $this->testaccount_role)
+                    'usr_id' => $usr_id)
             );
-
-            return true;
         }
-        return false;
-    }
 
-    /**
-     * Get the test accounts of a course
-     * @return int[]
-     */
-    public function getTestaccounts()
-    {
-        global $DIC;
-        $rbacreview = $DIC->rbac()->review();
-
-        if ($this->testaccount_role) {
-            return $rbacreview->assignedUsers($this->testaccount_role);
-        }
-        return [];
+        return $removed;
     }
 
 

@@ -261,14 +261,11 @@ class ilExamAdminCronHandler
         $users = new ilExamAdminCourseUsers($this->plugin, $course);
 
         // add owner as admin (with test accounts)
-        $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER);
+        $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
 
-        // add admins as tutors (with test accounts)
-        $usr_ids = [];
-        foreach($this->connector->getUserDataByLoginList($record->getAdminsLogins()) as $user) {
-            $usr_ids[] = $user['usr_id'];
-        }
-        $users->addParticipants($usr_ids, false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR);
+        // add correctors as tutors (with test accounts)
+        $correctors = $this->connector->getUserDataByLoginList($record->getAdminsLogins());
+        $users->addParticipants($users->extractUserIds($correctors), false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR, false);
     }
 
     /**
@@ -283,7 +280,6 @@ class ilExamAdminCronHandler
 
         $connObj = $this->plugin->getConnector();
         $usersObj = new ilExamAdminCourseUsers($this->plugin, $course);
-        $partObj = $course->getMembersObject();
 
         // get the matriculation numbers from campus
         $active_matriculations = [];
@@ -299,13 +295,14 @@ class ilExamAdminCronHandler
 
         // resign matching local users (only those that are not active for another exam_id)
         $resigned_matriculations = array_diff($resigned_matriculations, $active_matriculations);
-        $resigned_data = $usersObj->getUserDataByMatriculationList($resigned_matriculations);
-        $usersObj->removeParticipants($usersObj->extractUserIds($resigned_data));
+        foreach( $usersObj->getUserDataByMatriculationList($resigned_matriculations) as $resigned_data) {
+           $usersObj->removeParticipant($resigned_data['usr_id'], true);
+        }
 
-        // add matching remote users (create local users, if neccessary)
+        // add matching remote users (create local users, if necessary)
         foreach ($connObj->getUserDataByMatriculationList($active_matriculations) as $active_data) {
-            $local_data = $usersObj->getMatchingUser($active_data, true, ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
-            $partObj->add($local_data['usr_id'], IL_CRS_MEMBER);
+            $local_data = $usersObj->getMatchingUser($active_data, true, $this->config->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE));
+            $usersObj->addParticipant($local_data['usr_id'], ilExamAdminCourseUsers::ROLE_MEMBER);
         }
     }
 

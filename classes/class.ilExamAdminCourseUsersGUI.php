@@ -162,12 +162,16 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $table->addMultiCommand('removeUser', $this->plugin->txt('removeUser'));
         $this->ctrl->saveParameter($this, 'category');
 
-        $tpl = $this->plugin->getTemplate('tpl.il_exam_admin_user_list_explanation.html');
-        $tpl->setVariable('EXPLAIN_USER_ADMIN', $this->plugin->txt('explain_user_admin'));
-        $tpl->setVariable('EXPLAIN_AUTO_TESTACCOUNTS', $this->plugin->txt('explain_auto_testaccounts'));
-        $tpl->setVariable('EXPLAIN_USER_ACTIONS', $this->plugin->txt('explain_user_actions'));
+        $explanation = '';
+        if ($_GET['category'] != ilExamAdminUsers::CAT_LOCAL_MEMBER_REGISTERED) {
+            $tpl = $this->plugin->getTemplate('tpl.il_exam_admin_user_list_explanation.html');
+            $tpl->setVariable('EXPLAIN_USER_ADMIN', $this->plugin->txt('explain_user_admin'));
+            $tpl->setVariable('EXPLAIN_AUTO_TESTACCOUNTS', $this->plugin->txt('explain_auto_testaccounts'));
+            $tpl->setVariable('EXPLAIN_USER_ACTIONS', $this->plugin->txt('explain_user_actions'));
+            $explanation = $tpl->get();
+        }
 
-        $this->tpl->setContent($tpl->get() . $table->getHTML());
+        $this->tpl->setContent($explanation . $table->getHTML());
         $this->tpl->show();
     }
 
@@ -273,7 +277,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 break;
 
             case ilExamAdminUsers::CAT_LOCAL_MEMBER_TESTACCOUNT:
-                $searchCategory = ilExamAdminUsers::CAT_GLOBAL_TESTACCOUNT;
+                $searchCategory = ilExamAdminUsers::CAT_GLOBAL_LECTURER;
                 $withTestAccounts = true;
                 $form = $this->initSearchForm($this->plugin->txt('addTestaccount'), $pattern);
                 $content = $form->getHTML();
