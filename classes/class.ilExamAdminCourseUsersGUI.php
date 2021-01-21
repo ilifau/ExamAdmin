@@ -380,6 +380,14 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $examsgui->setValueByString($exam_ids);
         $examsgui->setAutocomplete($this->plugin->getConfig()->getCampusSemester());
         $se->addSubItem($examsgui);
+
+        $save_exam_ids = new ilCheckboxInputGUI($this->plugin->txt('save_exam_ids'), 'save_exam_ids');
+        $save_exam_ids->setInfo($this->plugin->txt('save_exam_ids_info'));
+        $save_exam_ids->setChecked(true);
+        if (isset($_SESSION['ilExamAdminSaveExamIds_' . $orga_id])) {
+            $save_exam_ids->setChecked($_SESSION['ilExamAdminSaveExamIds_' . $orga_id]);
+        }
+        $se->addSubItem($save_exam_ids);
         $source->addOption($se);
 
         $sm = new ilRadioOption($this->plugin->txt('source_matriculations'), 'matriculations');
@@ -447,7 +455,19 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 $this->data->write();
 
                 $exam_ids = (array) $_POST['exam_ids'];
-                $_SESSION['ilExamAdminExamIds_' . $orga_id] = implode(',', $exam_ids);
+                $save_exam_ids = (bool)  $_POST['save_exam_ids'];
+                $_SESSION['ilExamAdminExamIds_' . $orga_id] = implode(', ', $exam_ids);
+                $_SESSION['ilExamAdminSaveExamIds_' . $orga_id] = $save_exam_ids;
+
+                if ($save_exam_ids) {
+                    require_once(__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
+                    /** @var  ilExamAdminOrgaRecord $record */
+                    $record = ilExamAdminOrgaRecord::find($this->data->get(ilExamAdminData::PARAM_ORGA_ID));
+                    if (isset($record)) {
+                        $record->exam_ids = implode(', ', $exam_ids);
+                        $record->save();
+                    }
+                }
 
                 require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
                 $matriculations = [];

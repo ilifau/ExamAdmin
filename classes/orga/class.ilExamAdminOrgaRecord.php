@@ -540,6 +540,11 @@ class ilExamAdminOrgaRecord extends ActiveRecord
               'title' => 'run_minutes',
               'content' => $this->run_minutes,
             ],
+            [
+                'title' => 'reg_code',
+                'content' => $this->reg_code,
+            ],
+
         ];
 
         return $props;

@@ -67,14 +67,14 @@ testaccount_added_to_course#:#Der Testaccount wurde in den Kurs aufgenommen.
 import_members#:#Teilnehmer importieren
 import_members_list#:#Teilnehmerliste importieren
 import_members_desc#:#Die Teilnehmer werden anhand einer Liste aus der Lernplattform übernommen.
-source#:#Quelle
+source#:#Quelle Nutzerimport
 source_matriculations#:#Liste von Matrikelnummern
 matriculations#:#Matrikelnummern
 matriculations_format#:#Geben Sie die Nummern durch Komma, Semikolon oder Zeilenwechsel getrennt ein. Leerzeichen werden ignoriert.
 list_users#:#Nutzer auflisten
 x_users_found#:#Gefundene Nutzer: %s
 members_added_to_course#:#Die Teilnehmer-Accounts wurden in den Kurs aufgenommen.
-source_ref_id#:#Kurs- oder Gruppenmitglieder
+source_ref_id#:#Kurs- oder Gruppenmitglieder in StudOn
 ref_id#:#StudOn-ID
 ref_id_info#:#StudOn-ID des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen. Sie finden die ID auf der Info-Seite des StudOn-Kurses oder als ref_id in dessen Adresszeile.
 x_matrikulations_searched#:#Gesuchte Matrikelnummern: %s
@@ -129,8 +129,6 @@ exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
 source_exams#:#Prüfungen in mein campus
 exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>mein campus</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
 orga_id#:#Id in Prüfungs-Organisation
-source#:#Quelle Nutzerimport
-source_ref_id#:#Ref-Id Quellkurs
 update_course#:#Kurs aktualisieren
 course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
 orga_record_not_found#:#In der Lernplattform wurde kein passender Datensatz zur Prüfungsorganisation gefunden!
@@ -144,4 +142,8 @@ exam_type_review#:#Einsichtnahme
 exam_type_retry#:#Nachholklausur
 exam_runs#:#Durchgänge (Startzeiten)
 run_minutes#:#Prüfungsdauer
+reg_code#:#Registrierungs-Code
 run_links#:#Zoom-Links
+save_exam_ids#:#IDs übernehmen
+save_exam_ids_info#:#Aktualiert die IDs in der Anmeldung der Prüfung auf StudOn. Damit kann die Teilnehmerliste automatisch täglich aktualisiert werden.
+campus_exams#:#Prüfungen im mein campus
