@@ -304,15 +304,17 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             $tpl->parseCurrentBlock();
         }
 
-        require_once (__DIR__ . '/orga/class.ilExamAdminOrgaCampusExam.php');
-        /** @var ilExamAdminOrgaCampusExam[] $exams */
-        $exams = ilExamAdminOrgaCampusExam::where(['porgnr' => $record->getExamIds()])->get();
-        if (!empty($exams)) {
-            $tpl->setVariable('TXT_CAMPUS_EXAMS', $this->plugin->txt('campus_exams'));
-            foreach ($exams as $exam) {
-                $tpl->setCurrentBlock('exam');
-                $tpl->setVariable('EXAM_LABEL', $exam->getLabel());
-                $tpl->parseCurrentBlock();
+        if (!empty($record->getExamIds())) {
+            $exams = ilExamAdminOrgaCampusExam::where(['porgnr' => $record->getExamIds()])->get();
+            require_once (__DIR__ . '/orga/class.ilExamAdminOrgaCampusExam.php');
+            /** @var ilExamAdminOrgaCampusExam[] $exams */
+            if (!empty($exams)) {
+                $tpl->setVariable('TXT_CAMPUS_EXAMS', $this->plugin->txt('campus_exams'));
+                foreach ($exams as $exam) {
+                    $tpl->setCurrentBlock('exam');
+                    $tpl->setVariable('EXAM_LABEL', $exam->getLabel());
+                    $tpl->parseCurrentBlock();
+                }
             }
         }
 
