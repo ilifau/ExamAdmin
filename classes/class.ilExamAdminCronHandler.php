@@ -263,8 +263,12 @@ class ilExamAdminCronHandler
         // add owner as admin (with test accounts)
         $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
 
+        // add admins (with test accounts)
+        $admins = $this->connector->getUserDataByLoginList($record->getAdminsLogins());
+        $users->addParticipants($users->extractUserIds($admins), false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
+
         // add correctors as tutors (with test accounts)
-        $correctors = $this->connector->getUserDataByLoginList($record->getAdminsLogins());
+        $correctors = $this->connector->getUserDataByLoginList($record->getCorrectorLogins());
         $users->addParticipants($users->extractUserIds($correctors), false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR, false);
     }
 

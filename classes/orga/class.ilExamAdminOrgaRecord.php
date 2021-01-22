@@ -200,6 +200,15 @@ class ilExamAdminOrgaRecord extends ActiveRecord
      * @con_fieldtype        text
      * @con_length           1000
      */
+    public $correctors;
+
+
+    /**
+     * @var string
+     * @con_has_field        true
+     * @con_fieldtype        text
+     * @con_length           1000
+     */
     public $monitors;
 
     /**
@@ -481,7 +490,7 @@ class ilExamAdminOrgaRecord extends ActiveRecord
     }
 
     /**
-     * Get the logins of correctors as an array
+     * Get the logins of admins as an array
      * @return string[]
      */
     public function getAdminsLogins()
@@ -494,6 +503,22 @@ class ilExamAdminOrgaRecord extends ActiveRecord
         }
         return $logins;
     }
+
+    /**
+     * Get the logins of correctors as an array
+     * @return string[]
+     */
+    public function getCorrectorLogins()
+    {
+        $logins = [];
+        foreach (explode(',', (string) $this->correctors) as $login) {
+            if (!empty(trim($login))) {
+                $logins[] = trim($login);
+            }
+        }
+        return $logins;
+    }
+
 
     /**
      * Get the exam ids stored in this record
