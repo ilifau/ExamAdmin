@@ -415,7 +415,7 @@ class ilExamAdminCronHandler
         $codeObj->ext_enabled = false;
         $codeObj->use_limit = 1000;
         $codeObj->login_generation_type = 'guestselfreg';
-        $codeObj->password_generation = 2;
+        $codeObj->password_generation = 0;  //manual entry (will be shown afterwards)
         $codeObj->captcha_required = false;
         $codeObj->email_verification = false;
         $codeObj->global_role = $this->plugin->getConfig()->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
