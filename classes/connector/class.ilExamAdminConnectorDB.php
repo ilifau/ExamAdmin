@@ -28,7 +28,7 @@ class ilExamAdminConnectorDB extends ilDBPdoMySQLInnoDB
         {
             /** @var ilIniFile $ilClientIniFile */
             $ilClientIniFile = $DIC['ilClientIniFile'];
-            $settings = $ilClientIniFile->readGroup("exam_admin_db");
+            $settings = $ilClientIniFile->readGroup("db_remote");
         }
 
         if (!isset(self::$instance))
