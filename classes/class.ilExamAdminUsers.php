@@ -380,7 +380,6 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 'agree_date' => ['text', $data['agree_date']],
                 'ext_account' => ['text', $data['ext_account']],
                 'passwd' => ['text', $data['passwd']],
-                'ext_passwd' => ['text', $data['ext_passwd']],
                 'passwd_enc_type' => ['text', $data['passwd_enc_type']],
                 'passwd_salt' => ['text', $data['passwd_salt']],
                 //'active' => ['integer', $data['active']],
