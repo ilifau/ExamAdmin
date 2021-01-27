@@ -147,3 +147,4 @@ run_links#:#Zoom-Links
 save_exam_ids#:#IDs übernehmen
 save_exam_ids_info#:#Aktualiert die IDs in der Anmeldung der Prüfung auf StudOn. Damit kann die Teilnehmerliste automatisch täglich aktualisiert werden.
 campus_exams#:#Prüfungen im mein campus
+list_users_info#:#Hinweis: dieser Reiter ist im Prüfungskurs und in der Wekstatt verfügbar und bezieht sich immer auf den Kurs. Teilnehmer/innen die Sie hier hinzufügen haben keinen Zugriff auf die Werkstatt.

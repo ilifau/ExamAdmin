@@ -111,6 +111,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $table = new ilExamAdminUserOverviewTableGUI($this, 'showOverview');
         $table->setData($this->users->getOverviewData());
 
+        ilUtil::sendInfo($this->plugin->txt('list_users_info'));
+
         $this->mainGUI->prepareObjectOutput();
         $this->tpl->setContent($table->getHTML());
         $this->tpl->show();
