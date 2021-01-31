@@ -61,8 +61,22 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                 else {
 
                     // object must be a course or in a course
-                    if (!$this->plugin_object->getCourseRefId($this->parent_ref_id)) {
+                    $course_ref_id = $this->plugin_object->getCourseRefId($this->parent_ref_id);
+                    if (!$course_ref_id) {
                         return;
+                    }
+
+                    // don't show tab to course members
+                    foreach($DIC->rbac()->review()->getRolesOfObject($course_ref_id, true) as $role_id) {
+                        if ($DIC->rbac()->review()->isAssigned($DIC->user()->getId(), $role_id)) {
+                            $title = ilObject::_lookupTitle($role_id);
+                            if ($title == 'Testaccount') {
+                                return;
+                            }
+                            if (substr($title, 0, 8) == 'il_crs_member') {
+                                return;
+                            }
+                        }
                     }
 
                     // add exam admin tab
