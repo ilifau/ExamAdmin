@@ -73,7 +73,7 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                             if ($title == 'Testaccount') {
                                 return;
                             }
-                            if (substr($title, 0, 8) == 'il_crs_member') {
+                            if (substr($title, 0, 8) == 'il_crs_m') {
                                 return;
                             }
                         }
