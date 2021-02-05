@@ -574,22 +574,4 @@ class ilExamAdminOrgaRecord extends ActiveRecord
 
         return $props;
     }
-
-    /**
-     * Get the array representation from a string value
-     *
-     * @param string $value
-     * @return array
-     */
-    public static function _getArray($value)
-    {
-        // ilDclGenericMultiInputGUI starts counting of its inputs with 2
-        $i = 2;
-        $users = [];
-        foreach (explode(',', (string) $value) as $user) {
-            $users[$i++] = $user;
-        }
-        return $users;
-    }
-
 }
