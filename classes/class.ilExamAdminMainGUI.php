@@ -200,7 +200,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         $form->setTitle($this->plugin->txt('admin_data'));
         $form->setFormAction($this->ctrl->getFormAction($this));
 
-        $data = $this->plugin->getData($this->parent->getId());
+        $data = $this->plugin->getData($this->course->getId());
         foreach($data->getParams() as $param) {
             $param->setValue($data->get($param->name));
             $form->addItem($param->getFormItem());
@@ -235,7 +235,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         {
             $form->setValuesByPost();
 
-            $data = $this->plugin->getData($this->parent->getId());
+            $data = $this->plugin->getData($this->course->getId());
             foreach ($data->getParams() as $param) {
                 $data->set($param->name, $param->getFormValue($form));
             }
@@ -259,14 +259,14 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
     protected function UpdateCourse()
     {
         require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
-        $data = $this->plugin->getData($this->parent->getId());
+        $data = $this->plugin->getData($this->course->getId());
 
         /** @var ilExamAdminOrgaRecord $record */
         $record = ilExamAdminOrgaRecord::find($data->get(ilExamAdminData::PARAM_ORGA_ID));
         if (isset($record)) {
             require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
             $handler = new ilExamAdminCronHandler($this->plugin);
-            $handler->updateCourse($record, $this->parent->getRefId());
+            $handler->updateCourse($record, $this->course->getRefId());
             ilUtil::sendSuccess($this->plugin->txt("course_updated"), true);
         }
         else {
@@ -284,7 +284,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         $this->prepareObjectOutput();
 
         require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
-        $data = $this->plugin->getData($this->parent->getId());
+        $data = $this->plugin->getData($this->course->getId());
 
         /** @var ilExamAdminOrgaRecord $record */
         $record = ilExamAdminOrgaRecord::findOrGetInstance($data->get(ilExamAdminData::PARAM_ORGA_ID));
