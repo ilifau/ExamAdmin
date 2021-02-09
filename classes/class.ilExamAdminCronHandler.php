@@ -55,8 +55,12 @@ class ilExamAdminCronHandler
         $formats = explode(',', $this->config->get('exam_format'));
         $is_presence = in_array('presence', $formats);
 
+        $today =  (new ilDate(time(), IL_CAL_UNIX))->get(IL_CAL_DATE);
+
         $collection = ilExamAdminOrgaRecord::getCollection()
-            ->where(['obj_id' => array_keys($objects)]);
+            ->where(['obj_id' => array_keys($objects)])
+            ->where(['exam_date' => $today], '>=')
+            ->orderBy('exam_date');
 
         $courses = [];
 
@@ -75,13 +79,13 @@ class ilExamAdminCronHandler
 
                 if ($ref_id = $this->findCourse($record)) {
                     if (!ilContext::usesHTTP()) {
-                        echo "UPDATE " . $record->exam_title . "...\n";
+                        echo "UPDATE " . $record->exam_date . " " . $record->exam_title . "...\n";
                     }
                     $this->updateCourse($record, $ref_id);
                 }
                 else {
                     if (!ilContext::usesHTTP()) {
-                        echo "CREATE " . $record->exam_title . "...\n";
+                        echo "CREATE " . $record->exam_date . " " . $record->exam_title . "...\n";
                     }
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
