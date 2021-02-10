@@ -59,7 +59,7 @@ class ilExamAdminCronHandler
 
         $collection = ilExamAdminOrgaRecord::getCollection()
             ->where(['obj_id' => array_keys($objects)])
-            ->where(['exam_date' => $today], '>=')
+            ->where(['exam_date' => $today], '>')
             ->orderBy('exam_date');
 
         $courses = [];
