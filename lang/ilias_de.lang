@@ -10,7 +10,7 @@
 basic_configuration#:#Grund-Konfiguration
 config_base#:#Grundfunktionen
 config_base_info#:#Hier stellen Sie die Grundfunktionen des Plugins ein
-exam_admin_tab#:#Prüfung
+exam_admin_tab#:#Prüfungsorganisation
 overview#:#Übersicht
 user_overview#:#Personen
 category#:#Personengruppe
@@ -103,7 +103,13 @@ exam_format_monitored#:#Fernklausur mit Videoaufsicht
 testdata#:#Testdaten
 testdata_info#:#Testdaten aus StudOn abfragen
 master_course#:#Kursvorlage
-master_course_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren verwendet wird.
+master_course_info#:#Ref_id eines Kurses der als Standard-Vorlage zum Kopieren verwendet wird.
+master_course_presence#:#Kursvorlage Präsenz
+master_course_presence_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für E-Prüfungen in Präsenz verwendet wird.
+master_course_open#:#Kursvorlage Open-Book
+master_course_open_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Open-Book-Prüfungen verwendet wird.
+master_course_monitored#:#Kursvorlage Fernklausur
+master_course_monitored_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Fernklausuren verwendet wird.
 update_languages#:#Sprachen neu laden
 install_courses#:#Kurse installieren
 parent_category#:#Haupt-Bereich

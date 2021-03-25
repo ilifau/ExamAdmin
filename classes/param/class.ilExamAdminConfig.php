@@ -98,11 +98,32 @@ class ilExamAdminConfig
             0
         );
 
-        // master course
+        // master courses
         $params[] = ilExamAdminParam::_create(
             'master_course',
             $this->plugin->txt('master_course'),
             $this->plugin->txt('master_course_info'),
+            ilExamAdminParam::TYPE_REF_ID,
+            0
+        );
+        $params[] = ilExamAdminParam::_create(
+            'master_course_presence',
+            $this->plugin->txt('master_course_presence'),
+            $this->plugin->txt('master_course_presence_info'),
+            ilExamAdminParam::TYPE_REF_ID,
+            0
+        );
+        $params[] = ilExamAdminParam::_create(
+            'master_course_open',
+            $this->plugin->txt('master_course_open'),
+            $this->plugin->txt('master_course_open_info'),
+            ilExamAdminParam::TYPE_REF_ID,
+            0
+        );
+        $params[] = ilExamAdminParam::_create(
+            'master_course_monitored',
+            $this->plugin->txt('master_course_monitored'),
+            $this->plugin->txt('master_course_monitored_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );

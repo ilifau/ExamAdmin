@@ -23,6 +23,8 @@ class ilExamAdminCronHandler
     /** @var ilExamAdminConnector */
     protected $connector;
 
+    /** @var string */
+    protected $logfile;
 
     /**
      * constructor
@@ -40,6 +42,9 @@ class ilExamAdminCronHandler
         $this->config = $plugin->getConfig();
         $this->connector = $plugin->getConnector();
 
+        $this->logfile = ILIAS_DATA_DIR . '/ExamAdmin.log';
+
+
         // prepare remote db access
         $this->plugin->init();
     }
@@ -50,6 +55,8 @@ class ilExamAdminCronHandler
      */
     public function installCourses()
     {
+        file_put_contents($this->logfile, date('Y-m-d H:i.s') . "\n", FILE_APPEND);
+
         $objects = $this->connector->getOrgaObjects();
 
         $formats = explode(',', $this->config->get('exam_format'));
@@ -78,14 +85,18 @@ class ilExamAdminCronHandler
                 $courses[$record->id] = $record->exam_title;
 
                 if ($ref_id = $this->findCourse($record)) {
+                    $mess = "UPDATE " . $record->exam_date . " " . $record->exam_title . "...\n";
+                    file_put_contents($this->logfile, $mess, FILE_APPEND);
                     if (!ilContext::usesHTTP()) {
-                        echo "UPDATE " . $record->exam_date . " " . $record->exam_title . "...\n";
+                        echo $mess;
                     }
                     $this->updateCourse($record, $ref_id);
                 }
                 else {
+                    $mess = "CREATE " . $record->exam_date . " " . $record->exam_title . "...\n";
+                    file_put_contents($this->logfile, $mess, FILE_APPEND);
                     if (!ilContext::usesHTTP()) {
-                        echo "CREATE " . $record->exam_date . " " . $record->exam_title . "...\n";
+                        echo $mess;
                     }
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
@@ -131,7 +142,11 @@ class ilExamAdminCronHandler
             $cat_ref_id = $this->createCategory($record->fau_unit);
         }
 
-        $master_course = $this->config->get('master_course');
+        $master_course = $this->config->get('master_course_' . $record->exam_format);
+        if (empty($master_course)) {
+            $master_course = $this->config->get('master_course');
+        }
+
         return $this->copyCourse($master_course, $cat_ref_id);
     }
 
