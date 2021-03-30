@@ -218,10 +218,17 @@ class ilExamAdminCronHandler
             }
         }
 
+        // cron context creates no data in the session
+        // but existing session data is needed for ilSession::_duplicate() in ilContainer::cloneAllObject()
+        // otherwise subsequent ilSoapUtil::ilClone calls will not work correctly due to missing sesison id
+
+        $session_id = $DIC['ilAuthSession']->getId();
+        ilSession::_writeData($session_id,'examAdmin');
+
         $source_object = ilObjectFactory::getInstanceByRefId($sourceRefId);
         $ret = $source_object->cloneAllObject(
-            $_COOKIE[session_name()],
-            $_COOKIE['ilClientId'],
+            $session_id,
+            CLIENT_ID,
             $source_object->getType(),
             $targetRefId,
             $sourceRefId,
