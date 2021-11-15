@@ -74,8 +74,13 @@ class ilExamAdminCronHandler
         /** @var ilExamAdminOrgaRecord $record */
         foreach ($collection->get() as $record) {
 
-            // ignore format matching if presence is requires and platform is not for presence
+            // ignore format matching if presence is required and platform is not for presence
             if ($record->force_presence && !$is_presence) {
+                continue;
+            }
+
+            // don't create presence exams if status is not changed by exam team
+            if ($record->exam_format == 'presence' && $record->booking_status == 'requested') {
                 continue;
             }
 
