@@ -10,18 +10,24 @@
 basic_configuration#:#Grund-Konfiguration
 config_base#:#Grundfunktionen
 config_base_info#:#Hier stellen Sie die Grundfunktionen des Plugins ein
-exam_admin_tab#:#Prüfung
+exam_admin_tab#:#Prüfungsorganisation
 overview#:#Übersicht
 user_overview#:#Personen
-category#:#Kategorie
+category#:#Personengruppe
 active#:#Aktiv
 inactive#:#Inaktiv
-activateUsers#:#Aktivieren
-deactivateUsers#:#Deaktivieren
-synchronizeUsers#:#Synchronisieren
-activateUser#:#Aktivieren
-deactivateUser#:#Deaktivieren
-synchronizeUser#:#Synchronisieren
+addLecturer#:#Prüfer/in hinzufügen
+addCorrector#:#Korrektor/in hinzufügen
+addTestaccount#:#Testaccount hinzufügen
+addMember#:#Teilnehmer/in hinzufügen
+activateUsers#:#Accounts aktivieren
+deactivateUsers#:#Accounts deaktivieren
+synchronizeUsers#:#Account-Daten aktualisieren
+activateUser#:#Account aktivieren
+deactivateUser#:#Account deaktivieren
+synchronizeUser#:#Account-Daten aktualisieren
+removeUser#:#Aus Kurs entfernen
+removeUserConfirmation#:#Möchten Sie die folgenden Nutzer aus dem Kurs entfernen?
 rewriteUser#:#Nutzer umschreiben
 rewriteUserConfirm#:#Diesen verwenden
 rewrite_user_x#:#Nutzer "%s" umschreiben
@@ -31,38 +37,46 @@ cat_global_lecturer#:#Dozenten
 cat_global_participant#:#Teilnehmer
 cat_global_testaccounts#:#Testaccounts
 cat_global_registered#:#Selbstregistrierte Nutzer
-cat_local_member_testaccount#:#Teilnehmer (Testaccounts)
-cat_local_admin_lecturer#:#Dozenten
-cat_local_member_testaccount#:#Testaccounts
-cat_local_member_standard#:#Teilnehmer (Standard)
-cat_local_member_registered#:#Teilnehmer (selbstregistriert)
+cat_local_admin_lecturer#:#Prüfer/innen
+cat_local_admin_lecturer_info#:#Hauptverantwortliche für die Prüfung. Haben Vollzugriff auf alle Inhalte des Kurses und können hier die Zugriffe für andere Personen verwalten.
+cat_local_tutor_corrector#:#Korrektor/innen
+cat_local_tutor_corrector_info#:#Unterstützen bei der Erstellung und Korrektur der Prüfung. Haben Vollzugriff auf die Inhalte der Prüfungswerkstatt. Außerhalb der Werkstatt können sie in Tests und Übungen die Ergebnisse einsehen und bewerten.
+cat_local_member_testaccount#:#Test-Accounts
+cat_local_member_testaccount_info#:#Können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch in der Prüfungswerkstatt Tests und Übungen durchführen.
+cat_local_member_standard#:#Standard-Teilnehmer/innen
+cat_local_member_standard_info#:#Normale Prüflinge, sehen die Prüfungswerkstatt nicht. Außerhalb der Werkstatt können an Tests und Übungen teilnehmen. Können automatisch aus den Anmeldungen in mein campus oder per Import einer Matrikelnummerliste angelegt werden, müssen dazu aber einen StudOn-Account besitzen.
+cat_local_member_registered#:#Spezielle Teilnehmer/innen
+cat_local_member_registered_info#:#Prüflinge, die über einen Selbstregistrierungs-Code angelegt wurden. Können nachträglich auf einen vorhandenen StudOn-Account umgeschrieben werden.
 cat_global_admin_role#:#Globale Administratoren-Rolle
-cat_global_admin_info#:#Die Administratoren werden in der Prüfungs-Übersicht nicht zu den Dozenten gezählt.
+cat_global_admin_info#:#Die Administratoren haben Vollzugriff auf alles.
 cat_global_lecturer_role#:#Globale Dozenten-Rolle
 cat_global_lecturer_info#:#Die Dozenten werden nicht aktiviert / deaktiviert.
 cat_global_participant_role#:#Globale Teilnehmer-Rolle
 cat_global_participant_info#:#Die Teilnehmer sollen zur zu ihrer Prüfung aktiviert werden.
+local_testaccount_role#:#Lokale Testaccount-Rolle
+local_testaccount_role_info#:#Name einer lokalen Rolle in Kursen, die für Testaccounts verwendet wird.
 password_change#:#Passwortänderung
-addLecturer#:#Dozent hinzufügen
-addMember#:#Teilnehmer hinzufügen
+addParticipant#:#Hinzufügen
 login_or_name#:#Login, Name oder Matrikelnummer
 internal#:#Prüfungsplattform
-external#:#Lernplattform
-lecturer_added_to_group#:#Der Dozenten-Account wurde samt Testacounts in die Gruppe aufgenommen.
-member_added_to_group#:#Der Teilnehmer-Account wurde in die Gruppe aufgenommen.
+external#:#Lernplattform (StudOn)
+lecturer_added_to_course#:#Der Prüfer-Account wurde samt Testacounts in den Kurs aufgenommen.
+tutor_added_to_course#:#Der Korrektoren-Account wurde samt Testacounts in den Kurs aufgenommen.
+member_added_to_course#:#Der Teilnehmer-Account wurde in den Kurs aufgenommen.
+testaccount_added_to_course#:#Der Testaccount wurde in den Kurs aufgenommen.
 import_members#:#Teilnehmer importieren
 import_members_list#:#Teilnehmerliste importieren
 import_members_desc#:#Die Teilnehmer werden anhand einer Liste aus der Lernplattform übernommen.
-source#:#Quelle
+source#:#Quelle Nutzerimport
 source_matriculations#:#Liste von Matrikelnummern
 matriculations#:#Matrikelnummern
 matriculations_format#:#Geben Sie die Nummern durch Komma, Semikolon oder Zeilenwechsel getrennt ein. Leerzeichen werden ignoriert.
 list_users#:#Nutzer auflisten
 x_users_found#:#Gefundene Nutzer: %s
-members_added_to_group#:#Die Teilnehmer-Accounts wurde in die Gruppe aufgenommen.
-source_ref_id#:#Kurs- oder Gruppenmitglieder
-ref_id#:#Ref-Id
-ref_id_info#:#Ref-Id des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen.
+members_added_to_course#:#Die Teilnehmer-Accounts wurden in den Kurs aufgenommen.
+source_ref_id#:#Kurs- oder Gruppenmitglieder in StudOn
+ref_id#:#StudOn-ID
+ref_id_info#:#StudOn-ID des Kurses oder der Gruppe, deren Mitglieder importiert werden sollen. Sie finden die ID auf der Info-Seite des StudOn-Kurses oder als ref_id in dessen Adresszeile.
 x_matrikulations_searched#:#Gesuchte Matrikelnummern: %s
 members_of_crs#:#Mitglieder des Kurses "%s"
 members_of_grp#:#Mitglieder der Gruppe "%s"
@@ -70,10 +84,73 @@ no_membership_object#:#Die Ref-Id entspricht keinem Kurs und keiner Gruppe.
 x_users_synchronized#:#%s Nutzer synchronisiert.
 no_users_synchronized#:#Es wurden keine Nutzer synchronisiert.
 rewrite_transfer#:#Sollen die Testeilnahmen des Accounts "%s" auf den Account "%s" übertragen werden?
-rewrite_transfer_info#:#Es werden nur die Tests dieser Gruppe umgeschrieben. Der neue Account wird Mitglied der Gruppe. Der alte Account bleibt erhalten, wird aber aus der Gruppe entfernt. Beide erhalten im Profil einen Kommentar. Der Übertrag wird im Testlog vermerkt.
+rewrite_transfer_info#:#Es werden nur die Tests dises Kurses umgeschrieben. Der neue Account wird Mitglied des Kurses. Der alte Account bleibt erhalten, wird aber aus dem Kurs entfernt. Beide erhalten im Profil einen Kommentar. Der Übertrag wird im Testlog vermerkt.
 rewrite_not_found#:#Der neue Account wurde nicht gefunden!
 rewrite_conflict#:#Die Testteilnahmen können nicht übertragen werden, da der Account "%s" folgende Tests ebenfalls geschrieben hat:
 transfered_from#:#Testteilnahme übertragen von "%s"
 transfered_to#:#Testteilnahme übertragen auf "%s"
 rewrite_failed#:#Die Umschreibung von "%s" ist fehlgeschlagen.
 rewrite_done#:#Die Testteilnahmen wurden von "%s" auf "%s" übertragen.
+summer_term#:#Sommersemester
+winter_term#:#Wintersemester
+semester#:#Semester
+semester_info#:#Prüfungen dieses Semesters aus StudOn abfragen
+exam_format#:#Prüfungsformat
+exam_format_info#:#Prüfungen dieses Formats aus StudOn abfragen
+exam_format_presence#:#E-Prüfung in Präsenz
+exam_format_open#:#Open-Book-Prüfung mit Zeitbegrenzung
+exam_format_monitored#:#Fernklausur mit Videoaufsicht
+testdata#:#Testdaten
+testdata_info#:#Testdaten aus StudOn abfragen
+master_course#:#Kursvorlage
+master_course_info#:#Ref_id eines Kurses der als Standard-Vorlage zum Kopieren verwendet wird.
+master_course_presence#:#Kursvorlage Präsenz
+master_course_presence_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für E-Prüfungen in Präsenz verwendet wird.
+master_course_open#:#Kursvorlage Open-Book
+master_course_open_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Open-Book-Prüfungen verwendet wird.
+master_course_monitored#:#Kursvorlage Fernklausur
+master_course_monitored_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Fernklausuren verwendet wird.
+update_languages#:#Sprachen neu laden
+install_courses#:#Kurse installieren
+parent_category#:#Haupt-Bereich
+parent_category_info#:#Ref_id des Bereichs, in dem die Bereiche für Prüfungen angelegt werden sollen
+failure_no_entry_selected#:#Bitte wählen Sie einen Eintrag aus!
+failure_remove_self#:#Sie können sich selbst nicht aus dem Kurs entfernen!
+participants_removed_from_course#:#Die folgenden Benutzer wurden aus dem Kurs entfernt:
+search_and_add#:#Suchen und hinzufügen
+search_pattern#:#Sucheingabe
+explain_user_admin#:#Geben Sie im Suchfeld einen Namen, ein Login oder eine Matrikelnummer ein und klicken Sie auf "Suchen und Hinzufügen", um Accounts aufzulisten, die hinzugefügt werden können.
+explain_auto_testaccounts#:#Wenn Sie Prüfer/innen oder Korrektor/innen hinzufügen, die in StudOn Testaccounts (enden auf .test1 oder .test2) besitzen, werden diese automatisch als Testaccounts in den Prüfungskurs mit übernommen.
+explain_user_actions#:#Über die Aktionen rechts in der Tabelle können Sie einzelne Nutzer wieder entfernen, ihre Benutzerdaten samt Passwort aus der StudOn-Plattfrom aktualisieren, oder inaktive Teilnehmer/innen-Accounts aktivieren.
+found_users_internal#:#Bereits vorhandene Accounts in dieser Prüfungsplattform. Können direkt zum Prüfungskurs hinzugefügt werden.
+found_users_external#:#In StudOn gefundene Accounts. Werden ggf. in der Prüfungsplattform neu angelegt und zum Prüfungskurs hinzugefügt.
+admin_data#:#Administrations-Daten
+manage_users#:#Nutzerverwaltung
+base_url#:#Basis-URL
+base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generierung der Kurslinks verwendet
+function_not_available#:#Diese Funktion ist für Ihren Account nicht verfügbar.
+campus_soap_url#:#URL des mein campus Services
+campus_soap_url_info#:#Von dieser URL werden per SOAP die Prüfungen und ihre Teilnehmer abgefragt
+exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
+source_exams#:#Prüfungen in mein campus
+exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>mein campus</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
+orga_id#:#Id in Prüfungs-Organisation
+update_course#:#Kurs aktualisieren
+course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
+orga_record_not_found#:#In der Lernplattform wurde kein passender Datensatz zur Prüfungsorganisation gefunden!
+view_orga_details#:#Prüfungs-Details
+exam_title#:#Prüfungstitel
+fau_chair#:#Lehrstuhl
+fau_lecturer#:#Dozent
+exam_type#:#Typ
+exam_type_exam#:#Klausur
+exam_type_review#:#Einsichtnahme
+exam_type_retry#:#Nachholklausur
+exam_runs#:#Durchgänge (Startzeiten)
+run_minutes#:#Prüfungsdauer
+reg_code#:#Registrierungs-Code
+run_links#:#Zoom-Links
+save_exam_ids#:#IDs übernehmen
+save_exam_ids_info#:#Aktualiert die IDs in der Anmeldung der Prüfung auf StudOn. Damit kann die Teilnehmerliste automatisch täglich aktualisiert werden.
+campus_exams#:#Prüfungen im mein campus
+list_users_info#:#Hinweis: dieser Reiter ist im Prüfungskurs und in der Wekstatt verfügbar und bezieht sich immer auf den Kurs. Teilnehmer/innen die Sie hier hinzufügen haben keinen Zugriff auf die Werkstatt.

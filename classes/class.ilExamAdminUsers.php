@@ -12,6 +12,9 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     /** @var ilExamAdminPlugin */
     protected $plugin;
 
+    /** @var ilExamAdminConfig */
+    protected $config;
+
     // user categories
     const CAT_GLOBAL_ADMIN = 'cat_global_admin';
     const CAT_GLOBAL_LECTURER = 'cat_global_lecturer';
@@ -20,6 +23,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     const CAT_GLOBAL_REGISTERED = 'cat_global_registered';
 
     const CAT_LOCAL_ADMIN_LECTURER = 'cat_local_admin_lecturer';
+    const CAT_LOCAL_TUTOR_CORRECTOR = 'cat_local_tutor_corrector';
     const CAT_LOCAL_MEMBER_TESTACCOUNT = 'cat_local_member_testaccount';
     const CAT_LOCAL_MEMBER_STANDARD = 'cat_local_member_standard';
     const CAT_LOCAL_MEMBER_REGISTERED = 'cat_local_member_registered';
@@ -34,6 +38,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         global $DIC;
 
         $this->plugin = $plugin;
+        $this->config = $this->plugin->getConfig();
         $this->db = $DIC->database();
     }
 
@@ -288,6 +293,8 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
 
     /**
      * Get data of a user that matches the given data by login
+     * Non-existing users are created with the given global role
+     *
      * @param array $data
      * @param bool $create  create the user if none is found
      * @param int $role_id global role to be used for the new user
@@ -315,26 +322,37 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
      */
     public function createUser($data, $role_id = null)
     {
-        global $DIC;
-
         $userObj = new ilObjUser();
         $userObj->setLogin($data['login']);
         $userObj->setFirstname($data['firstname']);
         $userObj->setLastname($data['lastname']);
         $userObj->setTitle($data['title']);
-        $userObj->setActive($role_id == $this->plugin->getConfig()->get('global_lecturer_role'));
+        // new: activate global participants when they are created
+        $userObj->setActive(true);
+        // $userObj->setActive($role_id == $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
         $usr_id = $userObj->create();
 
         $userObj->updateOwner();
         $userObj->saveAsNew();
 
-        if (!empty($role_id))
-        {
+        $this->applyUserData($usr_id, $data);
+        $this->addGlobalRole($usr_id, $role_id);
+        return $usr_id;
+    }
+
+
+    /**
+     * Add a global role for a user account
+     * @param int $usr_id
+     * @param int $role_id
+     */
+    public function addGlobalRole($usr_id, $role_id = null)
+    {
+        global $DIC;
+
+        if (!empty($role_id)) {
             $DIC->rbac()->admin()->assignUser($role_id, $usr_id);
         }
-
-        $this->applyUserData($usr_id, $data);
-        return $usr_id;
     }
 
 
@@ -362,7 +380,6 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 'agree_date' => ['text', $data['agree_date']],
                 'ext_account' => ['text', $data['ext_account']],
                 'passwd' => ['text', $data['passwd']],
-                'ext_passwd' => ['text', $data['ext_passwd']],
                 'passwd_enc_type' => ['text', $data['passwd_enc_type']],
                 'passwd_salt' => ['text', $data['passwd_salt']],
                 //'active' => ['integer', $data['active']],

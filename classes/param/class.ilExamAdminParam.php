@@ -16,6 +16,8 @@ class ilExamAdminParam
 	const TYPE_FLOAT = 'float';
 	const TYPE_REF_ID = 'ref_id';
 	const TYPE_ROLE = 'role';
+    const TYPE_SELECT = 'select';
+    const TYPE_MULTISELECT = 'multiselect';
 
 
 	/**
@@ -45,18 +47,23 @@ class ilExamAdminParam
 	 */
 	public $value;
 
+    /**
+     * @var array       options for a select param
+     */
+    public $options;
+
 
     /**
      * Create a parameter
-     *
      * @param string $a_name
      * @param string $a_title
      * @param string $a_description
      * @param string $a_type
 	 * @param mixed $a_value
+     * @param array $a_options
      * @return ilExamAdminParam
      */
-    public static function _create($a_name, $a_title, $a_description, $a_type = self::TYPE_TEXT, $a_value = null)
+    public static function _create($a_name, $a_title, $a_description, $a_type = self::TYPE_TEXT, $a_value = null,  $a_options = [])
     {
         $param = new self;
 		$param->name = $a_name;
@@ -64,7 +71,8 @@ class ilExamAdminParam
 		$param->description = $a_description;
 		$param->type = $a_type;
 		$param->value = $a_value;
-		
+        $param->options = $a_options;
+
 		return $param;
     }
 
@@ -94,8 +102,33 @@ class ilExamAdminParam
             case self::TYPE_ROLE:
                 $this->value = (integer) $value;
                 break;
+            case self::TYPE_SELECT:
+                $this->value = $value;
+                break;
+            case self::TYPE_MULTISELECT:
+                $this->value = $value;
+                break;
+
         }
     }
+
+    /**
+     * @param ilPropertyFormGUI $form
+     * @return mixed
+     */
+    public function getFormValue($form)
+    {
+        switch ($this->type) {
+            case self::TYPE_MULTISELECT:
+                /** @var ilMultiSelectInputGUI $item */
+                $item = $form->getItemByPostVar($this->name);
+                return implode(',', $item->getValue());
+
+            default:
+                return $form->getInput($this->name);
+        }
+    }
+
 
     /**
      * Get a form item for setting the parameter
@@ -150,7 +183,16 @@ class ilExamAdminParam
                 $item->setOptions($options);
                 $item->setValue($this->value);
                 break;
-
+            case self::TYPE_SELECT:
+                $item = new ilSelectInputGUI($title, $postvar);
+                $item->setOptions($this->options);
+                $item->setValue($this->value);
+                break;
+            case self::TYPE_MULTISELECT:
+                $item = new ilMultiSelectInputGUI($title, $postvar);
+                $item->setOptions($this->options);
+                $item->setValue(explode(',', $this->value));
+                break;
         }
 
         if (strpos($description, '-') !== 0)

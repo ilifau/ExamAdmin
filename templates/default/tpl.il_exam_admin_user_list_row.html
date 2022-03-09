@@ -1,7 +1,7 @@
 <tr class="{CSS_ROW}">
     <td class="std">
         <!-- BEGIN checkbox -->
-        <input type="checkbox" name="{ID_PARAMETER}[]" value = "{ID_VALUE}" checked = "checked" />
+        <input type="checkbox" id="{ID_PARAMETER}[]" name="{ID_PARAMETER}[]" value = "{ID_VALUE}"  />
         <!-- END checkbox -->
     </td>
 	<td class="std">{NAME}</td>
@@ -12,11 +12,19 @@
         <!-- END linked_login -->
         {LOGIN}
     </td>
+    <!-- BEGIN col_matriculation -->
     <td class="std">{MATRICULATION}</td>
+    <!-- END matriculation -->
+    <!-- BEGIN col_email -->
     <td class="std">{E_MAIL}</td>
+    <!-- END col_email -->
     <td class="std">{ACTIVE}</td>
+    <!-- BEGIN col_time_limit -->
     <td class="std">{TIME_LIMIT}</td>
+    <!-- END col_time_limit -->
+    <!-- BEGIN col_change -->
     <td class="std">{CHANGE}</td>
+    <!-- END col_change -->
     <!-- BEGIN actions -->
     <td class="std">{ACTIONS}</td>
     <!-- END actions -->

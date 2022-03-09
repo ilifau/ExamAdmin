@@ -70,10 +70,14 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
         $this->addColumn($this->lng->txt("name"), "name");
         $this->addColumn($this->lng->txt('login'), 'login');
         $this->addColumn($this->lng->txt('matriculation'), 'matriculation');
-        $this->addColumn($this->lng->txt('email'), 'email');
+        if ($this->plugin->hasAdminAccess()) {
+            $this->addColumn($this->lng->txt('email'), 'email');
+        }
         $this->addColumn($this->lng->txt('active'), 'active');
-        $this->addColumn($this->lng->txt('time_limit_until'), 'time_limit_until');
-        $this->addColumn($this->plugin->txt('password_change'), 'last_password_change');
+        if ($this->plugin->hasAdminAccess()) {
+            $this->addColumn($this->lng->txt('time_limit_until'), 'time_limit_until');
+            $this->addColumn($this->plugin->txt('password_change'), 'last_password_change');
+        }
 
         $this->setRowTemplate("tpl.il_exam_admin_user_list_row.html", $this->plugin->getDirectory());
         $this->setFormAction($this->ctrl->getFormAction($a_parent_obj, $a_parent_cmd));
@@ -103,7 +107,10 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
     public function setShowCheckboxes($a_show)
     {
         $this->show_checkboxes = $a_show;
-        $this->setSelectAllCheckbox($this->id_parameter);
+        if ($a_show) {
+            $this->setSelectAllCheckbox($this->id_parameter);
+            $this->enable('select_all');
+        }
     }
 
 	/**
@@ -158,13 +165,14 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
 		else {
 			$this->tpl->setVariable('LOGIN', $a_set['login']);
 		}
-
-		$this->tpl->setVariable('NAME', $a_set['name']);
-        $this->tpl->setVariable('MATRICULATION', $a_set['matriculation']);
-        $this->tpl->setVariable('E_MAIL', $a_set['email']);
-        $this->tpl->setVariable('TIME_LIMIT', ilDatePresentation::formatDate(new ilDateTime($a_set['time_limit_until'], IL_CAL_UNIX)));
-        $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
-        $this->tpl->setVariable('ACTIVE', $a_set['active']);
+		$this->tpl->setVariable('NAME', $a_set['name']. '&nbsp;');
+        $this->tpl->setVariable('MATRICULATION', $a_set['matriculation'] . '&nbsp;');
+        if ($this->plugin->hasAdminAccess()) {
+            $this->tpl->setVariable('E_MAIL', $a_set['email']. '&nbsp;');
+            $this->tpl->setVariable('TIME_LIMIT', ilDatePresentation::formatDate(new ilDateTime($a_set['time_limit_until'], IL_CAL_UNIX)). '&nbsp;');
+            $this->tpl->setVariable('CHANGE', ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)). '&nbsp;');
+        }
+        $this->tpl->setVariable('ACTIVE', $a_set['active'] . '&nbsp;');
 
         if (count($this->row_commands) > 0)
         {

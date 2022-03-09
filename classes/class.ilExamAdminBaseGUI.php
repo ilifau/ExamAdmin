@@ -7,6 +7,9 @@
  */
 class ilExamAdminBaseGUI
 {
+    /** @var ilObjUser */
+    protected $user;
+
 	/** @var  ilAccessHandler $access */
 	protected $access;
 
@@ -28,14 +31,19 @@ class ilExamAdminBaseGUI
 	/** @var ilExamAdminPlugin $plugin */
 	protected $plugin;
 
+    /** @var ilExamAdminMainGUI */
+	protected $mainGUI;
+
 
 	/**
 	 * ilExamAdminBaseGUI constructor
+     * @param ilExamAdminMainGUI $mainGUI
 	 */
-	public function __construct()
+	public function __construct($mainGUI = null)
 	{
 		global $DIC;
 
+		$this->user = $DIC->user();
 		$this->access = $DIC->access();
 		$this->ctrl = $DIC->ctrl();
 		$this->lng = $DIC->language();
@@ -43,11 +51,27 @@ class ilExamAdminBaseGUI
 		$this->toolbar = $DIC->toolbar();
 		$this->tpl = $DIC['tpl'];
 
-		$this->plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'UIComponent', 'uihk', 'ExamAdmin');
+		if (isset($mainGUI)) {
+		    $this->mainGUI = $mainGUI;
+		    $this->plugin = $mainGUI->getPlugin();
+        }
+		else {
+            $this->plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'UIComponent', 'uihk', 'ExamAdmin');
+            $this->plugin->init();
+        }
 	}
 
+    /**
+     * Get the plugin object
+     * @return ilExamAdminPlugin|null
+     */
+    public function getPlugin()
+    {
+        return $this->plugin;
+    }
 
-	/**
+
+    /**
 	 * Get the link target for a command using the ui plugin router
 	 * @param string $a_cmd
 	 * @return string

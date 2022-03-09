@@ -2,6 +2,7 @@
 // Copyright (c) 2019 Institut fuer Lern-Innovation, Friedrich-Alexander-Universitaet Erlangen-Nuernberg, GPLv3, see LICENSE
 
 require_once(__DIR__ . '/../abstract/class.ilExamAdminUserQuery.php');
+require_once(__DIR__ . '/class.ilExamAdminConnectorDB.php');
 
 /**
  * Connector to the main LMS
@@ -16,6 +17,9 @@ class ilExamAdminConnector extends ilExamAdminUserQuery
     /** @var ilExamAdminPlugin */
     protected $plugin;
 
+    /** @var ilExamAdminConfig */
+    protected $config;
+
     /** @var ilExamAdminConnectorDB | null */
     protected $db;
 
@@ -28,7 +32,7 @@ class ilExamAdminConnector extends ilExamAdminUserQuery
     protected function __construct($plugin)
     {
         $this->plugin = $plugin;
-        $this->plugin->includeClass('connector/class.ilExamAdminConnectorDB.php');
+        $this->config = $this->plugin->getConfig();
         $this->db = ilExamAdminConnectorDB::getInstance();
     }
 
@@ -130,6 +134,48 @@ class ilExamAdminConnector extends ilExamAdminUserQuery
         }
 
         return '';
+    }
+
+
+    /**
+     * Get the relevant orga objects from the learning platform
+     * @return array    obj_id => title
+     */
+    public function getOrgaObjects()
+    {
+        $query = "
+            SELECT o.obj_id, o.title, 
+            d1.param_value AS `online`, 
+            d2.param_value AS `testdata`,
+            d3.param_value as `semester`
+            FROM object_data o
+            INNER JOIN object_reference r ON r.obj_id = o.obj_id AND r.deleted IS NULL
+            LEFT JOIN xamo_data d1 ON d1.obj_id = o.obj_id AND d1.param_name = 'online'
+            LEFT JOIN xamo_data d2 ON d2.obj_id = o.obj_id AND d2.param_name = 'testdata'
+            LEFT JOIN xamo_data d3 ON d3.obj_id = o.obj_id AND d3.param_name = 'semester'
+            WHERE o.`type` = 'xamo'
+            ";
+
+        $result = $this->db->query($query);
+
+        $testdata = (bool) $this->config->get('testdata');
+        $semester = (string) $this->config->get('semester');
+        
+        $objects = [];
+        while ($row = $this->db->fetchAssoc($result)) {
+            if (!isset($row['online']) || !$row['online']) {
+                continue;
+            }
+            if (!isset($row['testdata']) || $row['testdata'] != $testdata) {
+                continue;
+            }
+            if (!isset($row['semester']) || $row['semester'] != $semester) {
+                continue;
+            }
+            $objects[$row['obj_id']] = $row['title'];
+
+        }
+        return $objects;
     }
 
 }

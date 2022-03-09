@@ -16,8 +16,11 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     /** @var ilExamAdminConnector */
     protected $connector;
 
+    /** @var self */
+    protected static $instance;
 
-	public function getPluginName()
+
+    public function getPluginName()
 	{
 		return "ExamAdmin";
 	}
@@ -33,13 +36,25 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     }
 
     /**
+     * Get the plugin instance
+     * @return ilExamAdminPlugin
+     */
+    public static function getInstance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+
+    /**
      * Get the data set for an object
      * @param $obj_id
      * @return ilExamAdminData
      */
 	public function getData($obj_id)
     {
-        $this->includeClass('class.ilExamAdminData.php');
+        require_once(__DIR__ . '/param/class.ilExamAdminData.php');
         return new ilExamAdminData($this, $obj_id);
     }
 
@@ -52,7 +67,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     {
         if (!isset($this->config))
         {
-            $this->includeClass('param/class.ilExamAdminConfig.php');
+            require_once(__DIR__ . '/param/class.ilExamAdminConfig.php');
             $this->config = new ilExamAdminConfig($this);
         }
         return $this->config;
@@ -66,7 +81,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     {
         if (!isset($this->connector))
         {
-            $this->includeClass('connector/class.ilExamAdminConnector.php');
+            require_once(__DIR__ . '/connector/class.ilExamAdminConnector.php');
             try
             {
                 $this->connector = ilExamAdminConnector::getInstance($this);
@@ -81,11 +96,44 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     }
 
     /**
+     * Do initialisations
+     */
+    public function init()
+    {
+        require_once (__DIR__ . '/connector/class.ilExamAdminArConnectorDB.php');
+        ilExamAdminArConnectorDB::register();
+    }
+
+    /**
      * Check if the object type is allowed
      */
     public function isAllowedType($type)
     {
-        return in_array($type, array('grp'));
+        return in_array($type, array('crs', 'grp'));
+    }
+
+
+    /**
+     * Get the ref_id of the course for a repository position
+     * @param int $ref_id
+     * @return int|false
+     */
+    public function getCourseRefId($ref_id)
+    {
+        global $DIC;
+
+        if (ilObject::_lookupType($ref_id, true) == 'crs') {
+            return $ref_id;
+        }
+
+        $path = $DIC->repositoryTree()->getNodePath($ref_id);
+        foreach ($path as $node) {
+            if ($node['type'] == 'crs') {
+                return $node['child'];
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -130,6 +178,29 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
 		global $ilUser;
 		$ilUser->writePref($this->getId().'_'.$name, $value);
 	}
-}
 
-?>
+
+    /**
+     * Handle a call by the cron job plugin
+     * @return	int		Number of created archives
+     * @throws	Exception
+     */
+    public function handleCronJob()
+    {
+        if (!ilContext::usesHTTP()) {
+            echo "ExamAdmin: handle cron job...\n";
+        }
+
+        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
+        $handler = new ilExamAdminCronHandler($this);
+        // $handler->syncUserData();
+        $courses = $handler->installCourses();
+        $handled = count($courses);
+
+        if (!ilContext::usesHTTP()) {
+            echo "ExamAdmin: finished.\n";
+        }
+
+        return $handled;
+    }
+}

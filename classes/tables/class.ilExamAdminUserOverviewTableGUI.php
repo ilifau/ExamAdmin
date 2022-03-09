@@ -41,13 +41,14 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
         parent::__construct($a_parent_obj, $a_parent_cmd);
 
         $this->setFormName('user_overview');
-        $this->setTitle($this->plugin->txt('user_overview'));
         $this->setStyle('table', 'fullwidth');
         $this->addColumn($this->plugin->txt("category"));
         $this->addColumn($this->plugin->txt("active"));
         $this->addColumn($this->plugin->txt('inactive'));
-        $this->addColumn($this->plugin->txt('password_change'));
-        $this->addColumn($this->plugin->txt('actions'));
+        if ($this->plugin->hasAdminAccess()) {
+            $this->addColumn($this->plugin->txt('password_change'));
+        }
+        $this->addColumn('');
 
         $this->setRowTemplate("tpl.il_exam_admin_user_overview_row.html", $this->plugin->getDirectory());
         $this->setFormAction($this->ctrl->getFormAction($a_parent_obj, $a_parent_cmd));
@@ -70,19 +71,23 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
         $list->setItemLinkClass('small');
         $list->setId('actl_'. rand(0, 999999));
         $list->setListTitle($this->lng->txt('actions'));
+        $list->addItem($this->lng->txt('edit'), '', $this->ctrl->getLinkTarget($this->parent_obj, 'listUsers'));
         foreach ($a_set['commands'] as $command)
         {
             $list->addItem($this->plugin->txt($command), '', $this->ctrl->getLinkTarget($this->parent_obj, $command));
         }
 
         $title = $this->plugin->txt($a_set['category']);
+        $info = $this->plugin->txt($a_set['category']. '_info');
         $link = $this->ctrl->getLinkTarget($this->parent_obj, 'listUsers');
-        $title = '<a href="' . $link . '">' .$title . '</a>';
+        $title = '<a href="' . $link . '">' .$title . '</a><p class="small">' . $info . '</p>';
 
         $this->tpl->setVariable('CATEGORY', $title);
         $this->tpl->setVariable('ACTIVE', empty($a_set['active']) ? '' : $a_set['active']);
         $this->tpl->setVariable('INACTIVE', empty($a_set['inactive']) ? '' : $a_set['inactive']);
-        $this->tpl->setVariable('CHANGE', empty($a_set['last_password_change']) ? '' : ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)));
+        if ($this->plugin->hasAdminAccess()) {
+            $this->tpl->setVariable('CHANGE', empty($a_set['last_password_change']) ? '&nbsp;' : ilDatePresentation::formatDate(new ilDateTime($a_set['last_password_change'], IL_CAL_UNIX)) . '&nbsp;');
+        }
         $this->tpl->setVariable('ACTIONS', $list->getHTML());
     }
 }

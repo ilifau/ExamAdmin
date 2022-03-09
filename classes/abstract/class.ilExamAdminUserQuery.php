@@ -7,7 +7,7 @@
  */
 abstract class ilExamAdminUserQuery
 {
-    /** @var ilDB */
+    /** @var ilDBInterface */
     protected $db;
 
 
@@ -52,9 +52,19 @@ abstract class ilExamAdminUserQuery
         return $this->queryUserData($this->getTestaccountCond($login));
     }
 
+    /**
+     * Get the data of accounts found by an input of matriculation numbers
+     * @param string[] $list
+     * @return array
+     */
+    public function getUserDataByLoginList($list)
+    {
+        return $this->queryUserData($this->getCondByLoginList($list));
+    }
+
 
     /**
-     * Get the daty of accountd found by an input of matriculation numbers
+     * Get the data of accounts found by an input of matriculation numbers
      * @param string[] $list
      * @return array
      */
@@ -132,6 +142,7 @@ abstract class ilExamAdminUserQuery
 
     /**
      * Get the search condition according to a pattern
+     * @param string $pattern
      * @return string
      */
     protected function getSearchCond($pattern)
@@ -149,25 +160,35 @@ abstract class ilExamAdminUserQuery
         {
             if (is_numeric($parts[0]))
             {
-                return 'matriculation = ' . $this->db->quote($parts[0]);
+                return 'matriculation = ' . $this->db->quote($parts[0], 'text');
             }
             else
             {
-                return 'login = ' . $this->db->quote($parts[0]) . ' OR lastname = ' .  $this->db->quote($parts[0]);
+                return 'login = ' . $this->db->quote($parts[0], 'text') . ' OR lastname = ' .  $this->db->quote($parts[0], 'text');
             }
         }
         elseif (count($parts) == 2 && !$flip_names)
         {
-            return 'firstname = ' . $this->db->quote($parts[0]) . ' AND lastname = ' .  $this->db->quote($parts[1]);
+            return 'firstname = ' . $this->db->quote($parts[0], 'text') . ' AND lastname = ' .  $this->db->quote($parts[1], 'text');
         }
         elseif (count($parts) == 2 && $flip_names)
         {
-            return 'lastname = ' . $this->db->quote($parts[0]) . ' AND firstname = ' .  $this->db->quote($parts[1]);
+            return 'lastname = ' . $this->db->quote($parts[0], 'text') . ' AND firstname = ' .  $this->db->quote($parts[1], 'text');
         }
         else
         {
             return '';
         }
+    }
+
+    /**
+     * Get a search condition for a login list
+     * @param string[] $list
+     * @return string
+     */
+    protected function getCondByLoginList($list)
+    {
+        return $this->db->in('login', $list, false, 'text');
     }
 
 
