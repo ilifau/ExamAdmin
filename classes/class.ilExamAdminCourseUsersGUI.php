@@ -94,7 +94,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 					default:
 					    $this->mainGUI->prepareObjectOutput();
 					    $this->tpl->setContent($cmd);
-					    $this->tpl->show();
+					    $this->tpl->printToStdout();
 						break;
 				}
 		}
@@ -115,7 +115,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         $this->mainGUI->prepareObjectOutput();
         $this->tpl->setContent($table->getHTML());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
 
@@ -174,7 +174,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         }
 
         $this->tpl->setContent($explanation . $table->getHTML());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
     /**
@@ -350,7 +350,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         }
 
         $this->tpl->setContent($content);
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
     /**
@@ -426,7 +426,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         $form = $this->initUserImportForm();
         $this->tpl->setContent($form->getHTML());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
     /**
@@ -528,7 +528,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         ilUtil::sendInfo(implode('<br />', $info));
 
         $this->tpl->setContent($table->getHTML());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
     /**
@@ -728,7 +728,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 			.'<p class="small">'.$this->plugin->txt('rewrite_transfer_info').'</p>');
 
 		$this->tpl->setContent($confGui->getHTML());
-		$this->tpl->show();
+		$this->tpl->printToStdout();
 	}
 
 	/**
@@ -791,7 +791,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         }
 
 		$this->tpl->setContent($confGui->getHTML());
-		$this->tpl->show();
+		$this->tpl->printToStdout();
     }
 
 

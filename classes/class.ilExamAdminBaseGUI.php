@@ -25,7 +25,7 @@ class ilExamAdminBaseGUI
 	/** @var  ilToolbarGUI $toolbar */
 	protected $toolbar;
 
-	/** @var ilTemplate $tpl */
+	/** @var ilGlobalTemplate $tpl */
 	protected $tpl;
 
 	/** @var ilExamAdminPlugin $plugin */
@@ -56,7 +56,7 @@ class ilExamAdminBaseGUI
 		    $this->plugin = $mainGUI->getPlugin();
         }
 		else {
-            $this->plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'UIComponent', 'uihk', 'ExamAdmin');
+            $this->plugin = ilExamAdminPlugin::getInstance();
             $this->plugin->init();
         }
 	}

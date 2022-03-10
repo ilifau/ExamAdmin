@@ -371,7 +371,8 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
         $DIC->rbac()->admin()->assignUser($this->role_ids[$new_role], $usr_id);
         $this->assignments[$new_role][] = $usr_id;
 
-        ilObjUser::_addDesktopItem($usr_id, $this->course->getRefId(), $this->course->getType());
+        $favourites = new ilFavouritesManager();
+        $favourites->add($usr_id, $this->course->getRefId());
 
         // raise event like in ilParticipants::add()
         $DIC->event()->raise(

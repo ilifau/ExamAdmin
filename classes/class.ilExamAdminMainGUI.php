@@ -79,7 +79,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 			    else {
                     $this->prepareObjectOutput();
                     ilUtil::sendInfo($this->plugin->txt('function not_available'),false);
-                    $this->tpl->show();
+                    $this->tpl->printToStdout();
                 }
                 break;
 
@@ -110,7 +110,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 					default:
 					    $this->prepareObjectOutput();
 					    $this->tpl->setContent('invalid command:' . $cmd);
-                        $this->tpl->show();
+                        $this->tpl->printToStdout();
 						break;
 				}
 		}
@@ -157,7 +157,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         }
         $this->prepareObjectOutput();
         ilUtil::sendInfo($this->plugin->txt('function_not_available'),false);
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
     /**
@@ -183,7 +183,6 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         $ilLocator->addRepositoryItems($this->parent->getRefId());
         //$ilLocator->addItem($this->parent->getTitle(), ilLink::_getLink($this->parent->getRefId(), $this->parent->getType()));
 
-        $this->tpl->getStandardTemplate();
         $this->tpl->setLocator();
         $this->tpl->setTitle($this->parent->getPresentationTitle());
         $this->tpl->setDescription($this->parent->getLongDescription());
@@ -221,7 +220,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 
         $form = $this->initAdminDataForm();
         $this->tpl->setContent($form->getHtml());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
 
@@ -249,7 +248,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             $form->setValuesByPost();
             $this->prepareObjectOutput();
             $this->tpl->setContent($form->getHtml());
-            $this->tpl->show();
+            $this->tpl->printToStdout();
         }
     }
 
@@ -332,7 +331,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         }
 
         $this->tpl->setContent($tpl->get());
-        $this->tpl->show();
+        $this->tpl->printToStdout();
     }
 
 

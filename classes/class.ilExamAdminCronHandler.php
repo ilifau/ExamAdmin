@@ -225,7 +225,8 @@ class ilExamAdminCronHandler
 
         // cron context creates no data in the session
         // but existing session data is needed for ilSession::_duplicate() in ilContainer::cloneAllObject()
-        // otherwise subsequent ilSoapUtil::ilClone calls will not work correctly due to missing sessison id
+        // otherwise subsequent ilSoapUtil::ilClone calls will not work correctly due to missing session id
+        // IMPORTANT: customize setting ilias_copy_by_soap must be set to 0!
 
         $session_id = $DIC['ilAuthSession']->getId();
         ilSession::_writeData($session_id,'examAdmin');
@@ -250,7 +251,8 @@ class ilExamAdminCronHandler
      */
     public function updateCourse($record, $ref_id)
     {
-        $course = new ilObjCourse($ref_id);
+        /** @var ilObjCourse $course */
+        $course = ilObjectFactory::getInstanceByRefId($ref_id);
         $title = $record->exam_date . ' ' . $record->exam_title;
         $description = $record->fau_lecturer . " | " . $record->fau_chair . " | " . $record->exam_runs;
 
