@@ -256,10 +256,19 @@ class ilExamAdminCronHandler
         $title = $record->exam_date . ' ' . $record->exam_title;
         $description = $record->fau_lecturer . " | " . $record->fau_chair . " | " . $record->exam_runs;
 
+        // set title in object data
         $course->setTitle($title);
         $course->setDescription(nl2br($description));
         $course->setOfflineStatus(false);
         $course->update();
+
+        // set title for all translations
+        $object_translation = $course->getObjectTranslation();
+        foreach ($object_translation->getLanguages() as $l => $trans) {
+            $object_translation->addLanguage($l, $title, nl2br($description), $trans['lang_default'], true);
+        }
+        $object_translation->save();
+
 
         $this->updateCourseManagers($record, $course);
         $this->updateCourseMembers($record, $course);
