@@ -89,6 +89,14 @@ class ilExamAdminConfig
             $options
         );
 
+        $params[] = ilExamAdminParam::_create(
+            'max_date',
+            $this->plugin->txt('max_date'),
+            $this->plugin->txt('max_date_info'),
+            ilExamAdminParam::TYPE_TEXT,
+        );
+
+
         // test data
         $params[] = ilExamAdminParam::_create(
             'testdata',

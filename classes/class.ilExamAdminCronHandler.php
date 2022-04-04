@@ -63,10 +63,18 @@ class ilExamAdminCronHandler
         $is_presence = in_array('presence', $formats);
 
         $today =  (new ilDate(time(), IL_CAL_UNIX))->get(IL_CAL_DATE);
+        $limit = $this->config->get('max_date');
+        if (!empty($limit)) {
+            $limit = $limit . " 23:59:59";
+        }
+        else {
+            $limit = '3000-01-01';
+        }
 
         $collection = ilExamAdminOrgaRecord::getCollection()
             ->where(['obj_id' => array_keys($objects)])
             ->where(['exam_date' => $today], '>')
+            ->where(['exam_date' => $limit], '<=')
             ->orderBy('exam_date');
 
         $courses = [];
