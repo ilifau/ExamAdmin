@@ -42,7 +42,7 @@ class ilExamAdminCronHandler
         $this->config = $plugin->getConfig();
         $this->connector = $plugin->getConnector();
 
-        $this->logfile = ILIAS_DATA_DIR . '/ExamAdmin.log';
+        $this->logfile = ILIAS_DATA_DIR . '/' . CLIENT_ID . '/ExamAdmin.log';
 
 
         // prepare remote db access
