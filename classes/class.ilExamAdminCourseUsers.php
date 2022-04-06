@@ -45,6 +45,12 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
 
     /**
+     * @var ilRecommendedContentManager
+     */
+    protected $recommended_content_manager;
+
+
+    /**
      * constructor.
      * @param ilExamAdminPlugin $plugin
      * @param ilObjCourse $course
@@ -55,6 +61,8 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
         parent::__construct($plugin);
         $this->course = $course;
+        $this->recommended_content_manager = new ilRecommendedContentManager();
+
 
         foreach($DIC->rbac()->review()->getRolesOfObject($this->course->getRefId(), true) as $role_id) {
             $title = ilObject::_lookupTitle($role_id);
@@ -434,7 +442,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
         // cleanup if user is finally removed from the course (not role moved)
         if ($finally && $removed) {
-            ilObjUser::_dropDesktopItem($usr_id, $this->course->getRefId(), $this->course->getType());
+            $this->recommended_content_manager->removeObjectRecommendation($usr_id, $this->course->getRefId());
 
             $DIC->event()->raise(
                'Modules/Course',

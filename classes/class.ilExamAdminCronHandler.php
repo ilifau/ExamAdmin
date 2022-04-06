@@ -55,7 +55,7 @@ class ilExamAdminCronHandler
      */
     public function installCourses()
     {
-        file_put_contents($this->logfile, date('Y-m-d H:i.s') . "\n", FILE_APPEND);
+        file_put_contents($this->logfile, date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 
         $objects = $this->connector->getOrgaObjects();
 
