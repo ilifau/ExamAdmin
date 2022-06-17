@@ -154,16 +154,6 @@ class ilExamAdminConfig
             0
         );
 
-        // calpus soaü url
-        $params[] = ilExamAdminParam::_create(
-            'campus_soap_url',
-            $this->plugin->txt('campus_soap_url'),
-            $this->plugin->txt('campus_soap_url_info'),
-            ilExamAdminParam::TYPE_TEXT,
-            ''
-        );
-
-
         foreach ($params as $param)
         {
             $this->params[$param->name] = $param;

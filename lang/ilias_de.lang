@@ -42,11 +42,11 @@ cat_local_admin_lecturer_info#:#Hauptverantwortliche für die Prüfung. Haben Vo
 cat_local_tutor_corrector#:#Korrektor/innen
 cat_local_tutor_corrector_info#:#Unterstützen bei der Erstellung und Korrektur der Prüfung. Haben Vollzugriff auf die Inhalte der Prüfungswerkstatt. Außerhalb der Werkstatt können sie in Tests und Übungen die Ergebnisse einsehen und bewerten.
 cat_local_member_testaccount#:#Test-Accounts
-cat_local_member_testaccount_info#:#Können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch in der Prüfungswerkstatt Tests und Übungen durchführen.
+cat_local_member_testaccount_info#:#Sie können zum Testen aus Teilnehmersicht verwendet werden. Dürfen im Gegensatz zu Teilnehmer/innen auch in der Prüfungswerkstatt Tests und Übungen durchführen.
 cat_local_member_standard#:#Standard-Teilnehmer/innen
-cat_local_member_standard_info#:#Normale Prüflinge, sehen die Prüfungswerkstatt nicht. Außerhalb der Werkstatt können an Tests und Übungen teilnehmen. Können automatisch aus den Anmeldungen in mein campus oder per Import einer Matrikelnummerliste angelegt werden, müssen dazu aber einen StudOn-Account besitzen.
+cat_local_member_standard_info#:#Normale Prüflinge, sehen die Prüfungswerkstatt nicht. Außerhalb der Werkstatt können sie an Tests und Übungen teilnehmen. Sie können automatisch aus den Anmeldungen in campo oder per Import einer Matrikelnummerliste angelegt werden, müssen dazu aber einen StudOn-Account besitzen.
 cat_local_member_registered#:#Spezielle Teilnehmer/innen
-cat_local_member_registered_info#:#Prüflinge, die über einen Selbstregistrierungs-Code angelegt wurden. Können nachträglich auf einen vorhandenen StudOn-Account umgeschrieben werden.
+cat_local_member_registered_info#:#Prüflinge, die über einen Selbstregistrierungs-Code angelegt wurden. Sie können nachträglich auf einen vorhandenen StudOn-Account umgeschrieben werden.
 cat_global_admin_role#:#Globale Administratoren-Rolle
 cat_global_admin_info#:#Die Administratoren haben Vollzugriff auf alles.
 cat_global_lecturer_role#:#Globale Dozenten-Rolle
@@ -129,11 +129,9 @@ manage_users#:#Nutzerverwaltung
 base_url#:#Basis-URL
 base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generierung der Kurslinks verwendet
 function_not_available#:#Diese Funktion ist für Ihren Account nicht verfügbar.
-campus_soap_url#:#URL des mein campus Services
-campus_soap_url_info#:#Von dieser URL werden per SOAP die Prüfungen und ihre Teilnehmer abgefragt
 exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
-source_exams#:#Prüfungen in mein campus
-exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>mein campus</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
+source_exams#:#Prüfungen in campo
+exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>campo</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
 orga_id#:#Id in Prüfungs-Organisation
 update_course#:#Kurs aktualisieren
 course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
@@ -152,7 +150,7 @@ reg_code#:#Registrierungs-Code
 run_links#:#Zoom-Links
 save_exam_ids#:#IDs übernehmen
 save_exam_ids_info#:#Aktualiert die IDs in der Anmeldung der Prüfung auf StudOn. Damit kann die Teilnehmerliste automatisch täglich aktualisiert werden.
-campus_exams#:#Prüfungen im mein campus
+campus_exams#:#Prüfungen in campo
 list_users_info#:#Hinweis: dieser Reiter ist im Prüfungskurs und in der Wekstatt verfügbar und bezieht sich immer auf den Kurs. Teilnehmer/innen die Sie hier hinzufügen haben keinen Zugriff auf die Werkstatt.
 max_date#:#Maximales Datum
 max_date_info#:#Maximales Datum, bis zu dem Prüfungskurse angelegt werden im Format 2022-04-01 (ohne Uhrzeit). Leer, wenn es keine Grenze geben soll.

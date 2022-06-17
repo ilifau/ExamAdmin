@@ -1,22 +1,13 @@
 <?php
 
 
-class ilExamAdminCampusParticipants extends ilSaxParser
+class ilExamAdminCampusParticipants
 {
-    /** @var string */
-    protected $cdata;
-
     /** @var string[] */
     protected $active_matriculations = [];
 
     /** @var string[] */
     protected $resigned_matriculations = [];
-
-    /** @var string */
-    protected $matriculation;
-
-    /** @var bool */
-    protected $resign;
 
 
     /**
@@ -30,22 +21,26 @@ class ilExamAdminCampusParticipants extends ilSaxParser
         $this->active_matriculations = [];
         $this->resigned_matriculations = [];
 
-        $xml= sprintf('
-            <SOAPDataService active="y">
-                <general>
-                    <object>getParticipants</object>
-                </general>
-                <condition>
-                    <porg.porgnr>%s</porg.porgnr>
-                </condition>
-            </SOAPDataService> 
-        ', $exam_id);
+        $db = ilDBIdm::getInstance();
+        $query = "
+            SELECT p.porgnr, p.prueck, i.schac_personal_unique_code
+            FROM campo_exam_participants p
+            INNER JOIN identities i ON p.person_id = i.fau_campo_person_id
+            WHERE porgnr = " . $db->quote($exam_id, 'integer');
+        $result = $db->query($query);
 
-        $client = new SoapClient($plugin->getConfig()->get('campus_soap_url') . '?wsdl');
-        $result = $client->__call('getDataXML', ['xmlParams' => $xml]);
-
-        $this->setXMLContent($result);
-        $this->startParsing();
+        while ($row = $db->fetchAssoc($result)) {
+            $pos = strpos($row['schac_personal_unique_code'], 'Matrikelnummer:');
+            if ($pos > 0) {
+                $matriculation = substr($row['schac_personal_unique_code'], $pos + strlen('Matrikelnummer:'));
+                if ($row['prueck'] > 0) {
+                    $this->resigned_matriculations[] = $matriculation;
+                }
+                else {
+                    $this->active_matriculations[] = $matriculation;
+                }
+            }
+        }
     }
 
     /**
@@ -62,78 +57,5 @@ class ilExamAdminCampusParticipants extends ilSaxParser
     public function getResignedMatriculations()
     {
         return $this->resigned_matriculations;
-    }
-
-
-    /**
-     * set event handlers
-     *
-     * @param	resource	reference to the xml parser
-     * @access	private
-     */
-    public function setHandlers($a_xml_parser)
-    {
-        xml_set_object($a_xml_parser, $this);
-        xml_set_element_handler($a_xml_parser, 'handlerBeginTag', 'handlerEndTag');
-        xml_set_character_data_handler($a_xml_parser, 'handlerCharacterData');
-    }
-
-    /**
-     * handler for begin of element
-     *
-     * @param	resource	$a_xml_parser		xml parser
-     * @param	string		$a_name				element name
-     * @param	array		$a_attribs			element attributes array
-     */
-    public function handlerBeginTag($a_xml_parser, $a_name, $a_attribs)
-    {
-        // Reset cdata
-        $this->cdata = '';
-    }
-
-    /**
-     * handler for end of element
-     *
-     * @param	resource	$a_xml_parser		xml parser
-     * @param	string		$a_name				element name
-     * @throws	ilSaxParserException	if invalid xml structure is given
-     * @throws	ilWebLinkXMLParserException	missing elements
-     */
-    public function handlerEndTag($a_xml_parser, $a_name)
-    {
-        switch ($a_name) {
-
-            case 'lab.mtknr':
-                $this->matriculation = $this->cdata;
-                break;
-
-            case 'prueck':
-                $this->resign = (bool) $this->cdata;
-                break;
-
-            case 'Participant':
-                if ($this->resign) {
-                    $this->resigned_matriculations[] = $this->matriculation;
-                }
-                else {
-                    $this->active_matriculations[] = $this->matriculation;
-                }
-                break;
-        }
-
-        // Reset cdata
-        $this->cdata = '';
-    }
-
-
-    /**
-     * handler for character data
-     *
-     * @param	resource	$a_xml_parser		xml parser
-     * @param	string		$a_data				character data
-     */
-    public function handlerCharacterData($a_xml_parser, $a_data)
-    {
-        $this->cdata .= trim($a_data);
     }
 }
