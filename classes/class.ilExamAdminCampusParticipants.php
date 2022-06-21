@@ -18,10 +18,12 @@ class ilExamAdminCampusParticipants
      */
     public function fetchParticipants($plugin, $exam_id)
     {
+        global $DIC;
+        $db = $DIC->fau()->staging()->database();
+
         $this->active_matriculations = [];
         $this->resigned_matriculations = [];
 
-        $db = ilDBIdm::getInstance();
         $query = "
             SELECT p.porgnr, p.prueck, i.schac_personal_unique_code
             FROM campo_exam_participants p
