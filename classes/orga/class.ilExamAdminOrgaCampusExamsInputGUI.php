@@ -9,7 +9,7 @@
  * @ilCtrl_Calls ilExamAdminOrgaCampusExamsInputGUI: ilRepositorySearchGUI
  *
  */
-class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
+class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
 {
     /**
      * @var string
@@ -26,6 +26,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
     {
         parent::__construct($a_title, $a_postvar);
         $this->setMulti(true);
+        $this->setInlineStyle('width: 90%;');
     }
 
     /**
@@ -70,6 +71,9 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
      */
     public function doAutoComplete()
     {
+        global $DIC;
+        $db = $DIC->database();
+
         require_once (__DIR__ . '/../class.ilExamAdminPlugin.php');
         ilExamAdminPlugin::getInstance()->init();
 
@@ -79,19 +83,25 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
 
         require_once (__DIR__ . '/class.ilExamAdminOrgaCampusExam.php');
         $exams = ilExamAdminOrgaCampusExam::getCollection()
-            ->where(['nachname' => $term . '%'] ,'LIKE')
-            ->limit(0, $fetchall ? 1000 : 10);
+            ->where(
+                '(nachname LIKE ' . $db->quote($term . '%', 'text')
+                . ' OR titel LIKE ' . $db->quote($term . '%', 'text')
+                . ' OR veranstaltung LIKE ' . $db->quote($term . '%', 'text')
+                . ')'
+            );
 
         if (!empty($semester)) {
-            $exams->where(['psem' => $semester]);
+            $exams->where($db->in('psem', ilExamOrgaCampusExam::getNearSemesters($semester), false, 'text'));
         }
+
+        $exams->orderBy('nachname, titel, psem, ptermin, veranstaltung')->limit(0, $fetchall ? 1000 : 10);
 
         $items = [];
 
         /** @var  ilExamAdminOrgaCampusExam $exam */
         foreach($exams->get() as $exam) {
             $items[] = [
-                'value'=> $exam->porgnr,
+                'value'=> $exam->getLabel(),
                 'label' => $exam->getLabel(),
                 'id' => 'porgnr_' . $exam->porgnr
             ];
@@ -123,9 +133,9 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
             }
 
             $exams = ilExamAdminOrgaCampusExam::where(['porgnr' => (int) $value]);
-            if (!empty($this->semester)) {
-                $exams->where(['psem' => $this->semester]);
-            }
+//            if (!empty($this->semester)) {
+//                $exams->where(['psem' => $this->semester]);
+//            }
 
             if (!$exams->hasSets()) {
                 $this->setAlert(sprintf(ilExamAdminPlugin::getInstance()->txt('exam_not_found'), $value));
@@ -137,15 +147,38 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilDclTextInputGUI
     }
 
     /**
-     * Set the value by string
-     * @param string $string
+     * Get the array representation from a string value
+     *
+     * @param string $value
+     * @return array
      */
-    public function setValueByString($string)
+    public static function _getArray($value)
     {
-        $ids = [];
-        foreach (explode(',', $string) as $entry) {
-            $ids[] = trim($entry);
+        $exams = [];
+        foreach (explode(',', (string) $value) as $exam) {
+            if (!empty(trim($exam))) {
+                /** @var ilExamOrgaCampusExam $examRecord */
+                $examRecord = ilExamOrgaCampusExam::findOrGetInstance($exam);
+                $exams[] = $examRecord->getLabel();
+            }
         }
-        $this->setValue($ids);
+        return $exams;
     }
+
+
+    /**
+     * Get the string representation from an array
+     *
+     * @param $value
+     * @return string
+     */
+    public static function _getString($labels)
+    {
+        $keys = [];
+        foreach ((array) $labels as $label) {
+            $keys[] = ilExamOrgaCampusExam::getKeyFromLabel($label);
+        }
+        return implode(', ', $keys);
+    }
+
 }

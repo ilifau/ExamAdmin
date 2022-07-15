@@ -379,7 +379,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $se = new ilRadioOption($this->plugin->txt('source_exams'), 'exam_ids');
         $examsgui = new ilExamAdminOrgaCampusExamsInputGUI('', 'exam_ids');
         $examsgui->setInfo($this->plugin->txt('exam_ids_desc'));
-        $examsgui->setValueByString($exam_ids);
+        $examsgui->setValueByArray(['exam_ids' => ilExamOrgaExamsInputGUI::_getArray($exam_ids)]);
         $examsgui->setAutocomplete($this->plugin->getConfig()->getCampusSemester());
         $se->addSubItem($examsgui);
 
@@ -456,7 +456,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 $this->data->set(ilExamAdminData::PARAM_IMPORT_SOURCE_TYPE, 'exam_ids');
                 $this->data->write();
 
-                $exam_ids = (array) $_POST['exam_ids'];
+                $exam_ids = ilExamAdminOrgaCampusExamsInputGUI::_getString((array) $_POST['exam_ids']);
+
                 $save_exam_ids = (bool)  $_POST['save_exam_ids'];
                 $_SESSION['ilExamAdminExamIds_' . $orga_id] = implode(', ', $exam_ids);
                 $_SESSION['ilExamAdminSaveExamIds_' . $orga_id] = $save_exam_ids;

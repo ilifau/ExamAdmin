@@ -131,7 +131,7 @@ base_url_info#:#Basis-URL dieser Plattform (ohne / am Ende), wird bei der Generi
 function_not_available#:#Diese Funktion ist für Ihren Account nicht verfügbar.
 exam_not_found#:#Zur eingegebenen Nummer %s wurde keine Prüfung gefunden
 source_exams#:#Prüfungen in campo
-exam_ids_desc#:#Geben Sie hier die "ID für Organisation elektronischer Prüfungen" die Ihnen in <em>campo</em> im Bereich "Prüfungsorganisation" angezeigt wird an.<p><strong>Tipp: Geben Sie den Nachnamen des Prüfers/der Prüferin ein, um eine Auswahlliste zu erhalten.</strong></p>
+exam_ids_desc#:#Wählen Sie hier die Prüfungseinträge in Campo aus. Damit können wir die Prüfungs-Teilnehmer/innen automatisch abfragen und die richtigen Dateien zur Ergebnisverbuchung generieren. <p><strong>Geben Sie den Nachnamen des Prüfers/der Prüferin oder den Titel der Prüfung/Veranstaltung ein, um eine Liste zu erhalten.</strong></p>
 orga_id#:#Id in Prüfungs-Organisation
 update_course#:#Kurs aktualisieren
 course_updated#:#Der Kurs wurde mit den Daten aus der Prüfungs-Organisation aktualisiert.
