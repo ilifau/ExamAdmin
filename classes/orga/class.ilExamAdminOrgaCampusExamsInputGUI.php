@@ -167,7 +167,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
 
 
     /**
-     * Get the string representation from an array
+     * Get the string representation from an array of labels
      *
      * @param $value
      * @return string
