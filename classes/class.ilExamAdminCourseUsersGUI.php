@@ -379,7 +379,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $se = new ilRadioOption($this->plugin->txt('source_exams'), 'exam_ids');
         $examsgui = new ilExamAdminOrgaCampusExamsInputGUI('', 'exam_ids');
         $examsgui->setInfo($this->plugin->txt('exam_ids_desc'));
-        $examsgui->setValueByArray(['exam_ids' => ilExamOrgaExamsInputGUI::_getArray($exam_ids)]);
+        $examsgui->setValueByArray(['exam_ids' => ilExamAdminOrgaExamsInputGUI::_getArray($exam_ids)]);
         $examsgui->setAutocomplete($this->plugin->getConfig()->getCampusSemester());
         $se->addSubItem($examsgui);
 
@@ -457,24 +457,25 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 $this->data->write();
 
                 $exam_ids = ilExamAdminOrgaCampusExamsInputGUI::_getString((array) $_POST['exam_ids']);
+                $exam_ids_array = explode(', ', $exam_ids);
 
                 $save_exam_ids = (bool)  $_POST['save_exam_ids'];
-                $_SESSION['ilExamAdminExamIds_' . $orga_id] = implode(', ', $exam_ids);
+                $_SESSION['ilExamAdminExamIds_' . $orga_id] = $exam_ids_array;
                 $_SESSION['ilExamAdminSaveExamIds_' . $orga_id] = $save_exam_ids;
 
                 if ($save_exam_ids) {
                     require_once(__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
                     /** @var  ilExamAdminOrgaRecord $record */
                     $record = ilExamAdminOrgaRecord::find($this->data->get(ilExamAdminData::PARAM_ORGA_ID));
-                    if (isset($record)) {
-                        $record->exam_ids = implode(', ', $exam_ids);
+                    if (isset($record) && isset($record->obj_id)) {
+                        $record->exam_ids = $exam_ids;
                         $record->save();
                     }
                 }
 
                 require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
                 $matriculations = [];
-                foreach ($exam_ids as $id) {
+                foreach ($exam_ids_array as $id) {
                     if (!empty($id)) {
                         $campus = new ilExamAdminCampusParticipants();
                         $campus->fetchParticipants($this->plugin, $id);

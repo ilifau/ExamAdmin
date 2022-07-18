@@ -18,7 +18,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
 
 
     /**
-     * ilExamOrgaExamsInputGUI constructor.
+     * constructor.
      * @param string $a_title
      * @param string $a_postvar
      */
@@ -91,7 +91,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
             );
 
         if (!empty($semester)) {
-            $exams->where($db->in('psem', ilExamOrgaCampusExam::getNearSemesters($semester), false, 'text'));
+            $exams->where($db->in('psem', ilExamAdminOrgaCampusExam::getNearSemesters($semester), false, 'text'));
         }
 
         $exams->orderBy('nachname, titel, psem, ptermin, veranstaltung')->limit(0, $fetchall ? 1000 : 10);
@@ -157,8 +157,8 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
         $exams = [];
         foreach (explode(',', (string) $value) as $exam) {
             if (!empty(trim($exam))) {
-                /** @var ilExamOrgaCampusExam $examRecord */
-                $examRecord = ilExamOrgaCampusExam::findOrGetInstance($exam);
+                /** @var ilExamAdminOrgaCampusExam $examRecord */
+                $examRecord = ilExamAdminOrgaCampusExam::findOrGetInstance($exam);
                 $exams[] = $examRecord->getLabel();
             }
         }
@@ -176,7 +176,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
     {
         $keys = [];
         foreach ((array) $labels as $label) {
-            $keys[] = ilExamOrgaCampusExam::getKeyFromLabel($label);
+            $keys[] = ilExamAdminOrgaCampusExam::getKeyFromLabel($label);
         }
         return implode(', ', $keys);
     }

@@ -54,6 +54,7 @@ class ilExamAdminBaseGUI
 		if (isset($mainGUI)) {
 		    $this->mainGUI = $mainGUI;
 		    $this->plugin = $mainGUI->getPlugin();
+            $this->plugin->init();
         }
 		else {
             $this->plugin = ilExamAdminPlugin::getInstance();
