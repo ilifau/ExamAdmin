@@ -58,6 +58,11 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                     $this->restoreTabs($this->parent_type);
                     $this->tabs->activateTab('examad');
                 }
+                else if ($this->ctrl->getCmdClass() == 'iltestexportgui')
+                {
+                    $this->saveTabs('iltestexportgui');
+                    $this->modifyExportToolbar();
+                }
                 else {
 
                     // object must be a course or in a course
@@ -158,4 +163,25 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
             }
         }
     }
+
+    /**
+	 * Modify the toolbar of the meta data editor
+	*/
+	protected function modifyExportToolbar()
+	{
+        global $DIC;
+        $toolbar = $DIC->toolbar();
+        if (empty($toolbar->getItems()))
+		{
+			// e.g delete confirmation is shown
+			return;
+		}
+		$toolbar->addSeparator();
+
+        $button = ilLinkButton::getInstance();
+        $button->setCaption($this->plugin_object->txt('export_for_campo'), false);
+        $button->setUrl('https://studon.fau.de');
+        $toolbar->addButtonInstance($button);
+	}
+
 }

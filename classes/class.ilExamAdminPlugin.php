@@ -109,7 +109,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      */
     public function isAllowedType($type)
     {
-        return in_array($type, array('crs', 'grp'));
+        return in_array($type, array('crs', 'grp', 'tst'));
     }
 
 
