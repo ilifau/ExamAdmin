@@ -60,7 +60,6 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                 }
                 else if ($this->ctrl->getCmdClass() == 'iltestexportgui')
                 {
-                    $this->saveTabs('iltestexportgui');
                     $this->modifyExportToolbar();
                 }
                 else {
@@ -177,11 +176,9 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
 			return;
 		}
 		$toolbar->addSeparator();
-
         $button = ilLinkButton::getInstance();
         $button->setCaption($this->plugin_object->txt('export_for_campo'), false);
-        $button->setUrl('https://studon.fau.de');
+        $button->setUrl('http://localhost/studon7/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ExamAdmin/campoexport.php?ref_id='.$this->parent_ref_id.'&token='.$DIC->user()->getId());
         $toolbar->addButtonInstance($button);
 	}
-
 }
