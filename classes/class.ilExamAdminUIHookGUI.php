@@ -57,6 +57,11 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                 if (in_array($this->ctrl->getCmdClass(), ['ilexamadminmaingui', 'ilexamadmincourseusersgui'])) {
                     $this->restoreTabs($this->parent_type);
                     $this->tabs->activateTab('examad');
+
+                    if($this->ctrl->getCmdClass() == 'ilexamadmincourseusersgui')
+                    {
+                        $this->addSyncCourseMembersWithCampoButton();
+                    }
                 }
                 else {
 
@@ -158,4 +163,23 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
             }
         }
     }
+
+    /**
+	 * Add synchronize course members with campo button 
+	*/
+	protected function addSyncCourseMembersWithCampoButton()
+	{
+        global $DIC;
+        $toolbar = $DIC->toolbar();
+        if (empty($toolbar->getItems()))
+		{
+			// e.g delete confirmation is shown
+			return;
+		}
+		$toolbar->addSeparator();
+
+        $button = ilLinkButton::getInstance();
+        $button->setCaption($this->plugin_object->txt('sync_course_members_with_campo'), false);
+        $toolbar->addButtonInstance($button);
+	}
 }
