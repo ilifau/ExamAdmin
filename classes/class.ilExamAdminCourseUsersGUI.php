@@ -88,6 +88,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                     case 'importUsersByList':
                     case 'removeUser':
                     case 'removeUserConfirmed':
+                    case 'showSyncCourseMembersWithCampoForm':
+                    case 'syncCourseMembersWithCampo':
                         $this->$cmd();
                         break;
 
@@ -147,6 +149,12 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 $button = ilLinkButton::getInstance();
                 $button->setUrl($this->ctrl->getLinkTarget($this,'showUserImportForm'));
                 $button->setCaption($this->plugin->txt('import_members_list'), false);
+                $this->toolbar->addButtonInstance($button);
+
+                $this->toolbar->addSeparator();
+                $button = ilLinkButton::getInstance();
+                $button->setUrl($this->ctrl->getLinkTarget($this,'showSyncCourseMembersWithCampoForm'));
+                $button->setCaption($this->plugin->txt('sync_course_members_with_campo'), false);
                 $this->toolbar->addButtonInstance($button);
                 break;
         }
@@ -417,6 +425,24 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
     }
 
     /**
+     * Init the the form to sync course members with campo
+     * @return ilPropertyFormGUI
+     */
+    protected function initSyncCourseMembersWithCampoForm()
+    {
+        $form = new ilPropertyFormGUI();
+        $form->setFormAction($this->ctrl->getFormAction($this));
+      //  $form->setTitle($this->plugin->txt('sync_course_members_with_campo'));
+      //  $form->setDescription($this->plugin->txt('sync_course_members_with_campo_desc'));
+
+        $form->addCommandButton('syncCourseMembersWithCampo', $this->plugin->txt('update_from_campo'));
+        $form->addCommandButton('listUsers', $this->lng->txt('cancel'));
+
+        return $form;
+
+    }    
+
+    /**
      * Show the form to import users by a list
      */
     protected function showUserImportForm()
@@ -428,6 +454,22 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $this->tpl->setContent($form->getHTML());
         $this->tpl->printToStdout();
     }
+
+    /**
+     * Show the form to sync course members with campo
+     */
+    protected function showSyncCourseMembersWithCampoForm()
+    {
+        $this->mainGUI->prepareObjectOutput();
+        $this->ctrl->saveParameter($this, 'category');
+
+        $form = $this->initSyncCourseMembersWithCampoForm();
+
+        ilUtil::sendFailure($this->plugin->txt('warning_update_from_campo'));
+
+        $this->tpl->setContent($form->getHTML());
+        $this->tpl->printToStdout();
+    }    
 
     /**
      * Show the list of users
@@ -556,6 +598,21 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $this->ctrl->redirect($this, 'listUsers');
     }
 
+    /**
+     * Import the users by a posted list of ids
+     */
+    protected function syncCourseMembersWithCampo()
+    {
+        global $DIC;
+        $service = $DIC->fau()->user();
+        if (1)
+        {
+            ilUtil::sendSuccess($this->plugin->txt('updated_members_from_campo'), true);
+        }
+
+        $this->ctrl->saveParameter($this, 'category');
+        $this->ctrl->redirect($this, 'listUsers');
+    }    
 
     /**
      * Add a participant
