@@ -599,17 +599,21 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
     }
 
     /**
-     * Import the users by a posted list of ids
+     * Update course members from campo
      */
     protected function syncCourseMembersWithCampo()
     {
-        global $DIC;
-        $service = $DIC->fau()->user();
-        if (1)
-        {
-            ilUtil::sendSuccess($this->plugin->txt('updated_members_from_campo'), true);
-        }
+        // delete all course participants
+        $part = ilParticipants::getInstanceByObjId($this->course->getId());
+        $usr_ids = $part->getMembers(); // admins and tutors not included
+        $part->deleteParticipants($usr_ids);
 
+        // get participants from campus
+        $campus = new ilExamAdminCampusParticipants();
+        $campus->fetchParticipants($this->plugin, $this->course->getId());
+
+        ilUtil::sendSuccess($this->plugin->txt('updated_members_from_campo'), true);
+        
         $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
     }    
