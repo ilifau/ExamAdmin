@@ -609,7 +609,8 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $part->deleteParticipants($usr_ids);
 
         $record = ilExamAdminOrgaRecord::findOrGetInstance($this->data->get(ilExamAdminData::PARAM_ORGA_ID));
-        $this->updateCourseMembers($record, $this->course);
+        $campus = new ilExamAdminCampusParticipants();
+        $campus->updateCourseMembers($record, $this->course, $this->plugin);
 
         ilUtil::sendSuccess($this->plugin->txt('updated_members_from_campo'), true);
 
@@ -892,43 +893,5 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
     {
         return $this->ctrl->getLinkTargetByClass(['ilrepositorygui','ilobjcoursegui','ilcoursemembershipgui', 'ilrepositorysearchgui'],
             'doUserAutoComplete', '', true,false);
-    }
-
-    /**
-     * Update the course members from campo
-     * @param ilExamAdminOrgaRecord $record
-     * @param ilObjCourse $course
-     */
-    protected function updateCourseMembers($record, $course)
-    {
-        require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
-        require_once (__DIR__ . '/class.ilExamAdminCourseUsers.php');
-
-        $connObj = $this->plugin->getConnector();
-        $usersObj = new ilExamAdminCourseUsers($this->plugin, $course);
-
-        // get the matriculation numbers from campus
-        $active_matriculations = [];
-        $resigned_matriculations = [];
-        foreach ($record->getExamIds() as $id) {
-            if (!empty($id)) {
-                $campus = new ilExamAdminCampusParticipants();
-                $campus->fetchParticipants($this->plugin, $id);
-                $active_matriculations = array_merge($active_matriculations, $campus->getActiveMatriculations());
-                $resigned_matriculations = array_merge($resigned_matriculations, $campus->getResignedMatriculations());
-            }
-        }
-
-        // resign matching local users (only those that are not active for another exam_id)
-        $resigned_matriculations = array_diff($resigned_matriculations, $active_matriculations);
-        foreach( $usersObj->getUserDataByMatriculationList($resigned_matriculations) as $resigned_data) {
-           $usersObj->removeParticipant($resigned_data['usr_id'], true);
-        }
-
-        // add matching remote users (create local users, if necessary)
-        foreach ($connObj->getUserDataByMatriculationList($active_matriculations) as $active_data) {
-            $local_data = $usersObj->getMatchingUser($active_data, true, $this->plugin->getConfig()->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE));
-            $usersObj->addParticipant($local_data['usr_id'], ilExamAdminCourseUsers::ROLE_MEMBER);
-        }
     }
 }
