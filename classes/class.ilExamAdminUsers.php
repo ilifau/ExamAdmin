@@ -164,11 +164,16 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
 	 */
     protected function isSelfRegisteredLogin($login) {
 
-    	if (substr($login, 0, 3) == 'gsr' && is_numeric(substr($login, 3))) {
+        $prefix = ilCust::get("regbycode_prefix");
+
+	    if($prefix == '')
+        	$prefix = "gsr";
+
+    	if (substr($login, 0, strlen($prefix)) == $prefix && is_numeric(substr($login, strlen($prefix)))) {
     		return true;
     	}
     	return false;
-	}
+    }
 
 
     /**
