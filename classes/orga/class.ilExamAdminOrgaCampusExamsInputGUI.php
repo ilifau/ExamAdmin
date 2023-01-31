@@ -103,7 +103,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
             $items[] = [
                 'value'=> $exam->getLabel(),
                 'label' => $exam->getLabel(),
-                'id' => 'porgnr_' . $exam->porgnr
+                'id' => 'xamo_campus_id_' . $exam->id
             ];
         }
 
@@ -133,10 +133,6 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
             }
 
             $exams = ilExamAdminOrgaCampusExam::where(['porgnr' => (int) $value]);
-//            if (!empty($this->semester)) {
-//                $exams->where(['psem' => $this->semester]);
-//            }
-
             if (!$exams->hasSets()) {
                 $this->setAlert(sprintf(ilExamAdminPlugin::getInstance()->txt('exam_not_found'), $value));
                 return false;
@@ -158,11 +154,11 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
         foreach (explode(',', (string) $value) as $exam) {
             if (!empty(trim($exam))) {
                 /** @var ilExamAdminOrgaCampusExam $examRecord */
-                $examRecord = ilExamAdminOrgaCampusExam::findOrGetInstance($exam);
+                foreach(ilExamAdminOrgaCampusExam::where(['porgnr' => trim($exam)])->get() as $examRecord)
                 $exams[] = $examRecord->getLabel();
             }
         }
-        return $exams;
+        return array_unique($exams);
     }
 
 
