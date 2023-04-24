@@ -60,7 +60,7 @@ class ilExamAdminCronHandler
         $objects = $this->connector->getOrgaObjects();
 
         $formats = explode(',', $this->config->get('exam_format'));
-        $is_presence = in_array('presence', $formats);
+        $is_presence = in_array('presence', $formats) || in_array('presence_self', $formats);
 
         $today =  (new ilDate(time(), IL_CAL_UNIX))->get(IL_CAL_DATE);
         $limit = $this->config->get('max_date');

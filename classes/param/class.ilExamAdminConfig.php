@@ -71,6 +71,7 @@ class ilExamAdminConfig
             'presence',
             [
                 'presence' =>  $this->plugin->txt('exam_format_presence'),
+                'presence_self' =>  $this->plugin->txt('exam_format_presence_self'),
                 'open' =>  $this->plugin->txt('exam_format_open'),
                 'monitored' => $this->plugin->txt('exam_format_monitored'),
             ]

@@ -98,6 +98,7 @@ semester_info#:#Prüfungen dieses Semesters aus StudOn abfragen
 exam_format#:#Prüfungsformat
 exam_format_info#:#Prüfungen dieses Formats aus StudOn abfragen
 exam_format_presence#:#E-Prüfung in Präsenz
+exam_format_presence_self#:#E-Prüfung in Präsenz (selbstorganisiert)
 exam_format_open#:#Open-Book-Prüfung mit Zeitbegrenzung
 exam_format_monitored#:#Fernklausur mit Videoaufsicht
 testdata#:#Testdaten
