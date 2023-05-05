@@ -383,6 +383,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 'matriculation' => ['text', $data['matriculation']],
                 'approve_date' => ['text', $data['approve_date']],
                 'agree_date' => ['text', $data['agree_date']],
+                'auth_mode' => ['text', $data['auth_mode']],
                 'ext_account' => ['text', $data['ext_account']],
                 'passwd' => ['text', $data['passwd']],
                 'passwd_enc_type' => ['text', $data['passwd_enc_type']],
