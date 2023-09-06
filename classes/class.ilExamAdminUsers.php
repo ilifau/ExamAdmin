@@ -128,6 +128,9 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         		continue;
 			}
             $data = $connObj->getSingleUserDataByLogin($user['login']);
+            $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
+            if($langPref)
+                $data['language_pref'] = $langPref;
             if (isset($data))
             {
                 $this->applyUserData($user['usr_id'], $data);
@@ -149,6 +152,9 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         {
             $connObj = $this->plugin->getConnector();
             $data = $connObj->getSingleUserDataByLogin($user['login']);
+            $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
+            if($langPref)
+                $data['language_pref'] = $langPref;
             if (isset($data))
             {
                 $this->applyUserData($user['usr_id'], $data);
@@ -342,6 +348,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
 
         $this->applyUserData($usr_id, $data);
         $this->addGlobalRole($usr_id, $role_id);
+        $this->synchronizeByUserId($usr_id);
         return $usr_id;
     }
 
@@ -399,6 +406,9 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 'usr_id' => ['integer', $usr_id]
             ]
         );
+
+        $userObj = new ilObjUser($usr_id);
+        $userObj->writePref('language', $data['language_pref']);
     }
 
 	/**
