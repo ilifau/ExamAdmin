@@ -195,7 +195,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
         $handler = new ilExamAdminCronHandler($this);
         
         // not needed if local_auth_remote is 1
-        //$handler->syncUserData();
+        $handler->syncUserData();
         
         $courses = $handler->installCourses();
         $handled = count($courses);

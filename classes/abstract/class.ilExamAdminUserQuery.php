@@ -43,6 +43,25 @@ abstract class ilExamAdminUserQuery
     }
 
     /**
+     * Get User language pref by user id
+     * @param integer $id
+     * @return string language
+     */
+    public function getSingleUserLangPrefById($id)
+    {
+        $q = "SELECT value FROM usr_pref WHERE usr_id= " .
+            $this->db->quote($id, "integer") . " AND keyword = " .
+            $this->db->quote('language', "text");
+        $r = $this->db->query($q);
+
+        while ($row = $this->db->fetchAssoc($r)) {
+            return $row['value'];
+        }
+
+        return 'de';
+    }
+
+    /**
      * Get the data of testaccounts for a login
      * @param string $login
      * @return array
