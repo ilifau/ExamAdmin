@@ -7,112 +7,93 @@
 //
 
 <!-- language file start -->
-basic_configuration#:#basic configurations
-config_base#:#basic functions
+basic_configuration#:#Basic configurations
+config_base#:#Basic functions
 config_base_info#:#Here you set the basic functions of the plugin
-exam_admin_tab#:#Examination organisation 
-overview#:#overview
-user_overview#:#persons
-category#:#person group
-active#:#active
-inactive#:#inactive
-addLecturer#:#Add examiner
-addCorrector#:#Add corrector
-addTestaccount#:#Add testaccount
-addMember#:#Add participant
-activateUsers#:#Activate accounts
-deactivateUsers#:#Deactivate accounts
-synchronizeUsers#:#Update account data
-activateUser#:#Activate accounts
-deactivateUser#:#Deactivate accounts
-synchronizeUser#:#Update account data
+exam_admin_tab#:#Examination organisation
+overview#:#Overview
+user_overview#:#Persons
+category#:#Person group
+active#:#Active
+inactive#:#Inactive
+addLecturer#:#Add Examiner
+addCorrector#:#Add Corrector
+addTestaccount#:#Add Testaccount
+addMember#:#Add Participant
+activateUsers#:#Activate Accounts
+deactivateUsers#:#Deactivate Accounts
+synchronizeUsers#:#Update Account data
+activateUser#:#Activate Accounts
+deactivateUser#:#Deactivate Accounts
+synchronizeUser#:#Update Account data
 removeUser#:#Remove from course
 removeUserConfirmation#:#Do you want to remove the following users from the course?
 rewriteUser#:#Rewrite User
 rewriteUserConfirm#:#Use this one
-rewrite_user_x#:#"Rewrite User ""%s"""
-actions#:#actions
-cat_global_admin#:#admins
-cat_global_lecturer#:#examiners
-cat_global_participant#:#participants
-cat_global_testaccounts#:#testaccounts
-cat_global_registered#:#self-registered users
-cat_local_admin_lecturer#:#examiners
+rewrite_user_x#:#Rewrite User "%s"
+actions#:#Actions
+cat_global_admin#:#Admins
+cat_global_lecturer#:#Examiners
+cat_global_participant#:#Participants
+cat_global_testaccounts#:#Test accounts
+cat_global_registered#:#Self-registered Users
+cat_local_admin_lecturer#:#Examiners
 cat_local_admin_lecturer_info#:#Main person with responsibility for the exam. Have full access to all course content and can manage access for other people here.
-cat_local_tutor_corrector#:#Correctors 
-cat_local_tutor_corrector_info#:#"Support in the preparation and correction
- of the exam. Have full access to the contents of the examination workshop. Outside the workshop, they can view and assess results in tests and exercises."
-cat_local_member_testaccount#:#Testaccounts
-cat_local_member_testaccount_info#:#"They can be used for testing from the
-participant's point of view. Are also allowed to do tests and exercises in the examination workshop, in contrast to participants."
+cat_local_tutor_corrector#:#Correctors
+cat_local_tutor_corrector_info#:#Support in the preparation and correction of the exam. Have full access to the contents of the examination workshop. Outside the workshop, they can view and assess results in tests and exercises.
+cat_local_member_testaccount#:#Test accounts
+cat_local_member_testaccount_info#:#They can be used for testing from the participant's point of view. Are also allowed to do tests and exercises in the examination workshop, in contrast to participants.
 cat_local_member_standard#:#Standard participants
-cat_local_member_standard_info#:#"Normal examinees, they do not see the
-examination workshop. Outside the workshop, they can take part in tests and exercises. They can be created automatically from the registrations in campo or by importing a list of matriculation numbers, but must have a StudOn account for this."
+cat_local_member_standard_info#:#Normal examinees, they do not see the examination workshop. Outside the workshop, they can take part in tests and exercises. They can be created automatically from the registrations in campo or by importing a list of matriculation numbers, but must have a StudOn account for this.
 cat_local_member_registered#:#Special participants
-cat_local_member_registered_info#:#"Examinees created via 
-a self-registration code. They can be subsequently rewritten to an existing StudOn account."
-cat_global_admin_role#:#global administrator role
+cat_local_member_registered_info#:#Examinees created via a self-registration code. They can be subsequently rewritten to an existing StudOn account.
+cat_global_admin_role#:#Global administrator role
 cat_global_admin_info#:#The administrators have full access to everything.
-cat_global_lecturer_role#:#global lecturer role
+cat_global_lecturer_role#:#Global lecturer role
 cat_global_lecturer_info#:#The lectures will not be activated.
-cat_global_participant_role#:#global participant role
+cat_global_participant_role#:#Global participant role
 cat_global_participant_info#:#The participants should be activated for their examination.
-local_testaccount_role#:#local testaccount role
+local_testaccount_role#:#Local test account role
 local_testaccount_role_info#:#Name of a local role in courses used for test accounts.
-password_change#:#password change
+password_change#:#Password change
 addParticipant#:#Add
 login_or_name#:#Login, name or matriculation number
-internal#:#examination platform
-external#:#learning platform (StudOn)
-lecturer_added_to_course#:#"The examiner account was included in the course 
-along with test acounts."
-tutor_added_to_course#:#"The corrector account was included in the course 
-along with test acounts."
+internal#:#Examination platform
+external#:#Learning platform (StudOn)
+lecturer_added_to_course#:#The examiner account was included in the course along with test acounts.
+tutor_added_to_course#:#The corrector account was included in the course along with test acounts.
 member_added_to_course#:#The participant account was included in the course.
 testaccount_added_to_course#:#The test account was included in the course.
 import_members#:#Import participants
 import_members_list#:#Import participant list
-import_members_desc#:#"The participants are imported from the learning 
-platform on the basis of a list."
+import_members_desc#:#The participants are imported from the learning platform on the basis of a list.
 source#:#Source user import
 source_matriculations#:#List of Matriculation numbers
 matriculations#:#Matriculation numbers
-matriculations_format#:#"Enter the numbers separated by comma, 
-semicolon or line break. Spaces are ignored."
+matriculations_format#:#Enter the numbers separated by comma, semicolon or line break. Spaces are ignored.
 list_users#:#List Users
-x_users_found#:#Found users: %s
+x_users_found#:#Found users: "%s"
 members_added_to_course#:#The participant accounts were included in the course.
 source_ref_id#:#Course members or group members in StudOn
 ref_id#:#StudOn ID
-ref_id_info#:#"StudOn ID of the course or group whose members are to be imported. You can find the ID on the info
-page of the StudOn course or as ref_id in its 
-address bar."
-x_matrikulations_searched#:#Searched matriculation numbers: %s
-members_of_crs#:#"Members of the course: ""%s"""
-members_of_grp#:#"Members of the group:""%s"""
-no_membership_object#:#"The Ref-ID does not correspond to any course or 
-to any group."
+ref_id_info#:#StudOn ID of the course or group whose members are to be imported. You can find the ID on the info page of the StudOn course or as ref_id in its address bar.
+x_matrikulations_searched#:#Searched matriculation numbers: "%s"
+members_of_crs#:#Members of the course: "%s"
+members_of_grp#:#Members of the group: "%s"
+no_membership_object#:#The Ref-ID does not correspond to any course or to any group.
 x_users_synchronized#:#%s users synchronized.
 no_users_synchronized#:#No users have been synchronized.
-rewrite_transfer#:#"Should the test participations of the account 
-""%s"" be transferred to the account ""%s""?"
-rewrite_transfer_info#:#"Only the tests of this course will be rewritten. The 
-new account becomes a member of the course. 
-The old account remains, but is removed from 
-the course. Both will receive a comment in the 
-profile. The transfer is noted in the test log."
+rewrite_transfer#:#Should the Test participations of the account "%s" be transferred to the account "%s"?
+rewrite_transfer_info#:#Only the tests of this course will be rewritten. The new account becomes a member of the course. The old account remains, but is removed from the course. Both will receive a comment in the profile. The transfer is noted in the test log.
 rewrite_not_found#:#The new account was not found!
-rewrite_conflict#:#"The test participations cannot be transferred, 
-because the account ""%s"" has written the 
-following tests as well:"
-transfered_from#:#"Test participation transferred from ""%s"""
-transfered_to#:#"Test participation transferred to ""%s"""
-rewrite_failed#:#"The rewrite of ""%s"" failed."
-rewrite_done#:#"Test participations were transferred from ""%s""
-to ""%s""."
-summer_term#:#summer semester
-winter_term#:#winter semester
-semester#:#semester
+rewrite_conflict#:#The test participations cannot be transferred, because the account "%s" has written the following tests as well:
+transfered_from#:#Test participation transferred from "%s"
+transfered_to#:#Test participation transferred to "%s"
+rewrite_failed#:#The rewrite of "%s" failed.
+rewrite_done#:#Test participations were transferred from "%s" to "%s".
+summer_term#:#Summer semester
+winter_term#:#Winter semester
+semester#:#Semester
 semester_info#:#Query examinations of this semester from StudOn
 exam_format#:#Examination format
 exam_format_info#:#Query exams of this format from StudOn
@@ -123,48 +104,38 @@ exam_format_monitored#:#Remote examination with video supervision
 testdata#:#Testdata
 testdata_info#:#Query test data from StudOn
 master_course#:#Course template
-master_course_info#:#"Ref_id of a course that is used as default template 
-for copying."
+master_course_info#:#Ref_id of a course that is used as default template for copying.
 master_course_presence#:#Course template on-campus
-master_course_presence_info#:#"Ref_id of a course that is used as a template 
-for copying of on-campus examinations."
+master_course_presence_info#:#Ref_id of a course that is used as a template for copying of on-campus examinations.
 master_course_open#:#Course template open book
-master_course_open_info#:#"Ref_id of a course that is used as default template 
-for copying of open book examinations."
+master_course_open_info#:#Ref_id of a course that is used as default template for copying of open book examinations.
 master_course_monitored#:#Course template remote examination
-master_course_monitored_info#:#"Ref_id of a course that is used as default template 
-for copying of remote examinations."
+master_course_monitored_info#:#Ref_id of a course that is used as default template for copying of remote examinations.
 update_languages#:#Reload languages
 install_courses#:#Install courses
 parent_category#:#Main area
-parent_category_info#:#"Ref_ID of the area in which the areas for 
-examinations are to be created"
+parent_category_info#:#Ref_ID of the area in which the areas for examinations are to be created
 failure_no_entry_selected#:#Please select an entry!
 failure_remove_self#:#You cannot remove yourself from the course!
 participants_removed_from_course#:#The following users have been removed from the course:
 search_and_add#:#Search and add
 search_pattern#:#Search input
-explain_user_admin#:#"Enter a name, login or matriculation number
-in the search field and click on ""Search and add"" to list accounts that can be added. "
+explain_user_admin#:#Enter a name, login or matriculation number in the search field and click on "Search and add" to list accounts that can be added.
 explain_auto_testaccounts#:#If you add examiners or correctors who have test accounts (ending in .test1 or .test2) in StudOn, these will automatically be added to the exam course as test accounts.
 explain_user_actions#:#Using the actions on the right of the table, you can remove individual users, update their user data and password from the StudOn platform, or activate inactive student accounts.Formularbeginn
-found_users_internal#:#"Already existing accounts in this Examination platform. 
-Can be added directly to the exam course."
-found_users_external#:#"Accounts found in StudOn. If necessary, they are 
-in the examination platform and added to the examination course."
+found_users_internal#:#Already existing accounts in this Examination platform. Can be added directly to the exam course.
+found_users_external#:#Accounts found in StudOn. If necessary, they are in the examination platform and added to the examination course.
 admin_data#:#Admin data
 manage_users#:#Users management
 base_url#:#Base URL
-base_url_info#:#"Base URL of this platform (without / at the end), is used
-when generating the course links"
+base_url_info#:#Base URL of this platform (without / at the end), is used when generating the course links
 function_not_available#:#This function is not available for your account.
 exam_not_found#:#For the entered number %s no examination was found.
 source_exams#:#Examinations in campo
 exam_ids_desc#:#Select here the examination entries in campo from the list. This will allow us to automatically query the exam participants and generate the correct files for posting results.  <p><strong>Enter the examiner's last name or the title of the exam/event to get a list</strong></p>.
 orga_id#:#ID in the examination organization
 update_course#:#Update course
-course_updated#:#"The course was updated with the data from the 
-examination organization."
+course_updated#:#The course was updated with the data from the examination organization.
 orga_record_not_found#:#In the learning platform no matching record for the exam organization was found!
 view_orga_details#:#Examination details
 exam_title#:#Title of the examination
@@ -175,24 +146,16 @@ exam_type_exam#:#Examination
 exam_type_review#:#Examination review
 exam_type_retry#:#Examination retry
 exam_runs#:#Runs of the examination
-run_minutes#:#Minutes of the runination
-reg_code#:#registration code
-run_links#:#zoom links
+run_minutes#:#Examination duration
+reg_code#:#Registration code
+run_links#:#Zoom links
 save_exam_ids#:#Examination ids
-save_exam_ids_info#:#Info of the save_exam_idsination
+save_exam_ids_info#:#Updates the selected exams in the registration system on StudOn with the list specified here. This allows the list of participants to be updated automatically on a daily basis.
 campus_exams#:#Examinations in campo
-list_users_info#:#Note: this tab is available in the examination course and in the workshop and always refers to the course. Participants you add here will not have access to the examination workshop
+list_users_info#:#Note: this tab is available in the examination course and in the workshop and always refers to the course. Participants you add here will not have access to the examination workshop.
 max_date#:#Maximum date
-max_date_info#:#"Maximum date until which exam courses will be 
-are created in the format 2022-04-01 (without time). 
-Empty if there is to be no limit."
+max_date_info#:#Maximum date until which exam courses will be created in the format 2022-04-01 (without time). Empty if there is to be no limit.
 sync_course_members_with_campo#:#Update the course members from campo
 update_from_campo#:#Update from campo
-warning_update_from_campo#:#"Attention: If you continue by clicking on the 
-button <b>Update from campo</b>, all course 
-participants not present in campo will be removed from 
-the participant list. The participant list will then be 
-identical to the course participants registered in 
-campo.<br/> Please do not execute this function after 
-an examination."
+warning_update_from_campo#:#Attention: If you continue by clicking on the button <b>Update from campo</b>, all course participants, who are not presented in campo will be removed from the participant list. The participant list will then be identical to the course participants registered in campo.<br/> Please do not execute this function after an examination.
 updated_members_from_campo#:#Course members were updated from campo.
