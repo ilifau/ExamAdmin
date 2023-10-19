@@ -427,7 +427,7 @@ class ilExamAdminCronHandler
         $codeObj->title = $course->getTitle();
         $codeObj->reg_enabled = true;
         $codeObj->ext_enabled = false;
-        $codeObj->use_limit = 1000;
+        $codeObj->use_limit = 5000;
         $codeObj->login_generation_type = 'guestselfreg';
         $codeObj->password_generation = 0;  //manual entry (will be shown afterwards)
         $codeObj->captcha_required = false;
