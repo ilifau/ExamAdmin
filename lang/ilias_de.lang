@@ -112,7 +112,7 @@ master_course_open#:#Kursvorlage Open-Book
 master_course_open_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Open-Book-Prüfungen verwendet wird.
 master_course_monitored#:#Kursvorlage Fernklausur
 master_course_monitored_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Fernklausuren verwendet wird.
-master_course_admission:#Kursvorlage Zulassungstest
+master_course_admission#:#Kursvorlage Zulassungstest
 master_course_admission_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Zulassungstest verwendet wird.
 update_languages#:#Sprachen neu laden
 install_courses#:#Kurse installieren
