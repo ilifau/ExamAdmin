@@ -111,6 +111,8 @@ master_course_open#:#Course template open book
 master_course_open_info#:#Ref_id of a course that is used as default template for copying of open book examinations.
 master_course_monitored#:#Course template remote examination
 master_course_monitored_info#:#Ref_id of a course that is used as default template for copying of remote examinations.
+master_course_admission#:#Course template admission test
+master_course_admission_info#:#Ref_id of a course that is used as default template for copying of admission tests.
 update_languages#:#Reload languages
 install_courses#:#Install courses
 parent_category#:#Main area

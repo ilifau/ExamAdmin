@@ -74,6 +74,7 @@ class ilExamAdminConfig
                 'presence_self' =>  $this->plugin->txt('exam_format_presence_self'),
                 'open' =>  $this->plugin->txt('exam_format_open'),
                 'monitored' => $this->plugin->txt('exam_format_monitored'),
+                'admission' => $this->plugin->txt('exam_format_admission'),
             ]
         );
 
@@ -136,6 +137,13 @@ class ilExamAdminConfig
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
+        $params[] = ilExamAdminParam::_create(
+            'master_course_admission',
+            $this->plugin->txt('master_course_admission'),
+            $this->plugin->txt('master_course_admission_info'),
+            ilExamAdminParam::TYPE_REF_ID,
+            0
+        );        
 
         // parent category
         $params[] = ilExamAdminParam::_create(

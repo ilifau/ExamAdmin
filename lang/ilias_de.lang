@@ -101,6 +101,7 @@ exam_format_presence#:#E-Prüfung in Präsenz
 exam_format_presence_self#:#E-Prüfung in Präsenz (selbstorganisiert)
 exam_format_open#:#Open-Book-Prüfung mit Zeitbegrenzung
 exam_format_monitored#:#Fernklausur mit Videoaufsicht
+exam_format_admission#:#Zulassungstest
 testdata#:#Testdaten
 testdata_info#:#Testdaten aus StudOn abfragen
 master_course#:#Kursvorlage
@@ -111,6 +112,8 @@ master_course_open#:#Kursvorlage Open-Book
 master_course_open_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Open-Book-Prüfungen verwendet wird.
 master_course_monitored#:#Kursvorlage Fernklausur
 master_course_monitored_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Fernklausuren verwendet wird.
+master_course_admission:#Kursvorlage Zulassungstest
+master_course_admission_info#:#Ref_id eines Kurses der als Vorlage zum Kopieren für Zulassungstest verwendet wird.
 update_languages#:#Sprachen neu laden
 install_courses#:#Kurse installieren
 parent_category#:#Haupt-Bereich
