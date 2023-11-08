@@ -25,6 +25,7 @@ deactivateUsers#:#Accounts deaktivieren
 synchronizeUsers#:#Account-Daten aktualisieren
 activateUser#:#Account aktivieren
 deactivateUser#:#Account deaktivieren
+logoutUser#:#Ausloggen
 synchronizeUser#:#Account-Daten aktualisieren
 removeUser#:#Aus Kurs entfernen
 removeUserConfirmation#:#Möchten Sie die folgenden Nutzer aus dem Kurs entfernen?

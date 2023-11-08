@@ -90,6 +90,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                     case 'removeUserConfirmed':
                     case 'showSyncCourseMembersWithCampoForm':
                     case 'syncCourseMembersWithCampo':
+                    case 'logoutUser':
                         $this->$cmd();
                         break;
 
@@ -673,7 +674,16 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $this->ctrl->redirect($this, 'listUsers');
     }
 
-
+    /**
+     * Logout a user of a category
+     */
+    protected function logoutUser()
+    {
+        $this->ctrl->saveParameter($this, 'category');
+        ilSession::_destroyByUserId($_GET['usr_id']);
+        $this->ctrl->redirect($this, 'listUsers');
+    }
+    
     /**
      * Deactivate the users of a category
      */

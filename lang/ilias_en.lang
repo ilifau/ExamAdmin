@@ -25,6 +25,7 @@ deactivateUsers#:#Deactivate Accounts
 synchronizeUsers#:#Update Account data
 activateUser#:#Activate Accounts
 deactivateUser#:#Deactivate Accounts
+logoutUser#:#Logout
 synchronizeUser#:#Update Account data
 removeUser#:#Remove from course
 removeUserConfirmation#:#Do you want to remove the following users from the course?

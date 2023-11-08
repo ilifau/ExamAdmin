@@ -210,9 +210,9 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
                 case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                     return ['synchronizeUser', 'removeUser'];
                 case self::CAT_LOCAL_MEMBER_STANDARD:
-                    return ['activateUser', 'deactivateUser', 'synchronizeUser', 'removeUser'];
+                    return ['activateUser', 'deactivateUser', 'synchronizeUser', 'removeUser', 'logoutUser'];
                 case self::CAT_LOCAL_MEMBER_REGISTERED:
-                    return ['activateUser', 'deactivateUser', 'rewriteUser', 'removeUser'];
+                    return ['activateUser', 'deactivateUser', 'rewriteUser', 'removeUser', 'logoutUser'];
                 default:
                     return parent::getUserCommands($category);
             }
@@ -224,9 +224,9 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
                 case self::CAT_LOCAL_MEMBER_TESTACCOUNT:
                     return ['synchronizeUser', 'removeUser'];
                 case self::CAT_LOCAL_MEMBER_STANDARD:
-                    return ['activateUser', 'synchronizeUser', 'removeUser'];
+                    return ['activateUser', 'synchronizeUser', 'removeUser', 'logoutUser'];
                 case self::CAT_LOCAL_MEMBER_REGISTERED:
-                    return ['removeUser'];
+                    return ['removeUser', 'logoutUser'];
                 default:
                     return parent::getUserCommands($category);
             }

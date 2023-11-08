@@ -290,13 +290,13 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
                 return ['activateUser', 'deactivateUser', 'synchronizeUser'];
 
             case self::CAT_GLOBAL_PARTICIPANT:
-                return ['activateUser', 'deactivateUser', 'synchronizeUser'];
+                return ['activateUser', 'deactivateUser', 'synchronizeUser', 'logoutUser'];
 
             case self::CAT_GLOBAL_TESTACCOUNT:
                 return ['activateUser', 'deactivateUser', 'synchronizeUser'];
 
             case self::CAT_GLOBAL_REGISTERED:
-                return ['activateUser', 'deactivateUser', 'rewriteUser'];
+                return ['activateUser', 'deactivateUser', 'rewriteUser', 'logoutUser'];
 
             default:
                 return [];
