@@ -163,3 +163,4 @@ sync_course_members_with_campo#:#Kursmitglieder aus Campo aktualisieren
 update_from_campo#:#Aus campo aktualisieren
 warning_update_from_campo#:#Achtung: Wenn Sie mit Klick auf den Button <b>Aus campo aktualisieren</b> fortfahren, werden alle in campo nicht vorhandenen Kursteilnehmer aus der Teilnehmerliste entfernt. Die Teilnehmerliste ist anschließend identisch mit den in campo angemeldeten Kursteilnehmern.<br/> Führen Sie diese Funktion bitte nicht mehr nach einer Klausur aus. 
 updated_members_from_campo#:#Kursmitglieder wurden aus campo aktualisiert.
+user_logged_out#:#Nutzer ausgeloggt

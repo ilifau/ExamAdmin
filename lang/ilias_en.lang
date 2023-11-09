@@ -162,3 +162,4 @@ sync_course_members_with_campo#:#Update the course members from campo
 update_from_campo#:#Update from campo
 warning_update_from_campo#:#Attention: If you continue by clicking on the button <b>Update from campo</b>, all course participants, who are not presented in campo will be removed from the participant list. The participant list will then be identical to the course participants registered in campo.<br/> Please do not execute this function after an examination.
 updated_members_from_campo#:#Course members were updated from campo.
+user_logged_out#:#User logged out

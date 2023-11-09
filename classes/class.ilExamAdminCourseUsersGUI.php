@@ -681,6 +681,9 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
     {
         $this->ctrl->saveParameter($this, 'category');
         ilSession::_destroyByUserId($_GET['usr_id']);
+        $infoText = $this->plugin->txt('user_logged_out');
+        $user =$this->users->getSingleUserDataById( $_GET['usr_id']);
+        ilUtil::sendSuccess($infoText. ': ' . $user['login'], true);
         $this->ctrl->redirect($this, 'listUsers');
     }
     
