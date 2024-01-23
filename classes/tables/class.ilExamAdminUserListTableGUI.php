@@ -7,12 +7,12 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
 	/**
 	 * @var ilExamAdminGroupGUI $parent_obj
 	 */
-	protected $parent_obj;
+	protected ?object $parent_obj;
 
 	/**
 	 * @var string $parent_cmd
 	 */
-	protected $parent_cmd;
+	protected string $parent_cmd;
 
 	/**
 	 * @var ilExamAdminPlugin|null
@@ -121,7 +121,7 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
 		$this->link_user = $a_link;
 	}
 
-    protected function fillRow($a_set)
+    protected function fillRow(array $a_set): void
     {
         $this->ctrl->setParameter($this->parent_obj, $this->id_parameter, $a_set['usr_id']);
         if (count($this->row_commands) > 1)

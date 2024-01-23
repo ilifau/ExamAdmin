@@ -118,7 +118,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
      *
      * @return bool|void
      */
-    public function checkInput()
+    public function checkInput(): bool
     {
         // fault tolerance (field is multi, see constructor)
         if (!is_array($_POST[$this->getPostVar()])) {

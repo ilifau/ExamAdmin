@@ -20,7 +20,7 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
     protected $tabs;
 
     /** @var  ilExamAdminPlugin $plugin_object */
-    protected $plugin_object;
+    protected ?ilUserInterfaceHookPlugin $plugin_object;
 
     /** @var int */
     protected $parent_ref_id;
@@ -34,9 +34,10 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
      * @param string $a_part string that identifies the part of the UI that is handled
      * @param array  $a_par  array of parameters (depend on $a_comp and $a_part)
      */
-    public function modifyGUI($a_comp, $a_part, $a_par = array())
+    public function modifyGUI(string $a_comp, string $a_part, array $a_par = []): void
     {
-        $this->parent_ref_id = $_GET['ref_id'];
+        
+        $this->parent_ref_id = isset($_GET['ref_id']) ? $_GET['ref_id'] : 0;
         $this->parent_type = ilObject::_lookupType($this->parent_ref_id, true);
         if (!$this->plugin_object->isAllowedType($this->parent_type)) {
             return;

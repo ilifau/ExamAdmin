@@ -20,12 +20,12 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     protected static $instance;
 
 
-    public function getPluginName()
+    public function getPluginName(): string
 	{
 		return "ExamAdmin";
 	}
 
-    protected function afterUninstall()
+    protected function afterUninstall(): void
     {
         global $DIC;
 
@@ -98,7 +98,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     /**
      * Do initialisations
      */
-    public function init()
+    public function init(): void
     {
         require_once (__DIR__ . '/connector/class.ilExamAdminArConnectorDB.php');
         ilExamAdminArConnectorDB::register();
@@ -118,7 +118,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      * @param int $ref_id
      * @return int|false
      */
-    public function getCourseRefId($ref_id)
+    public function getCourseRefId(int $ref_id = 0)
     {
         global $DIC;
 

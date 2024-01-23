@@ -10,7 +10,7 @@ class ilExamAdminOrgaRecord extends ActiveRecord
      * @return string
      * @description Return the Name of your Database Table
      */
-    public static function returnDbTableName()
+    public static function returnDbTableName(): string
     {
         return 'xamo_record';
     }
@@ -430,7 +430,7 @@ class ilExamAdminOrgaRecord extends ActiveRecord
     /**
      * Set creation info and create record
      */
-    public function create()
+    public function create(): void
     {
         global $DIC;
 

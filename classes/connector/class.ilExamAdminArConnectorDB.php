@@ -5,7 +5,7 @@ class ilExamAdminArConnectorDB extends arConnectorDB
     /**
      * @return ilDBInterface
      */
-    protected function returnDB()
+    protected function returnDB(): ilDBInterface
     {
         require_once(__DIR__ . '/class.ilExamAdminConnectorDB.php');
         return ilExamAdminConnectorDB::getInstance();

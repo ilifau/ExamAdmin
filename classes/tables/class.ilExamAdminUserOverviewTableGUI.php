@@ -7,12 +7,12 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
 	/**
 	 * @var ilExamAdminGroupGUI $parent_obj
 	 */
-	protected $parent_obj;
+	protected ?object $parent_obj;
 
 	/**
 	 * @var string $parent_cmd
 	 */
-	protected $parent_cmd;
+	protected string $parent_cmd;
 
 	/**
 	 * @var ilExamAdminPlugin|null
@@ -61,7 +61,7 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
 	}
 
 
-    protected function fillRow($a_set)
+    protected function fillRow(array $a_set): void
     {
         $this->ctrl->setParameter($this->parent_obj, 'category', $a_set['category']);
 

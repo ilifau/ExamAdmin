@@ -26,37 +26,37 @@ class ilExamAdminConfig
 	 */
 	public function __construct($a_plugin_object = "")
 	{
-		$this->plugin = $a_plugin_object;
-		$this->plugin->includeClass('param/class.ilExamAdminParam.php');
+		//$this->plugin = $a_plugin_object;
+		//$this->plugin->includeClass('param/class.ilExamAdminParam.php');
 
 		/** @var ilExamAdminParam[] $params */
 		$params = array();
 
         $params[] = ilExamAdminParam::_create(
             self::GLOBAL_ADMIN_ROLE,
-            $this->plugin->txt('cat_global_admin_role'),
-            $this->plugin->txt('cat_global_admin_info'),
+            $a_plugin_object->txt('cat_global_admin_role'),
+            $a_plugin_object->txt('cat_global_admin_info'),
             ilExamAdminParam::TYPE_ROLE
         );
 
         $params[] = ilExamAdminParam::_create(
             self::GLOBAL_LECTURER_ROLE,
-            $this->plugin->txt('cat_global_lecturer_role'),
-            $this->plugin->txt('cat_global_lecturer_info'),
+            $a_plugin_object->txt('cat_global_lecturer_role'),
+            $a_plugin_object->txt('cat_global_lecturer_info'),
             ilExamAdminParam::TYPE_ROLE
         );
 
         $params[] = ilExamAdminParam::_create(
             self::GLOBAL_PARTICIPANT_ROLE,
-            $this->plugin->txt('cat_global_participant_role'),
-            $this->plugin->txt('cat_global_participant_info'),
+            $a_plugin_object->txt('cat_global_participant_role'),
+            $a_plugin_object->txt('cat_global_participant_info'),
             ilExamAdminParam::TYPE_ROLE
         );
 
         $params[] = ilExamAdminParam::_create(
             self::LOCAL_TESTACCOUNT_ROLE,
-            $this->plugin->txt('local_testaccount_role'),
-            $this->plugin->txt('local_testaccount_role_info'),
+            $a_plugin_object->txt('local_testaccount_role'),
+            $a_plugin_object->txt('local_testaccount_role_info'),
             ilExamAdminParam::TYPE_TEXT,
             'Testaccount'
         );
@@ -65,36 +65,36 @@ class ilExamAdminConfig
         // format
         $params[] = ilExamAdminParam::_create(
             'exam_format',
-            $this->plugin->txt('exam_format'),
-            $this->plugin->txt('exam_format_info'),
+            $a_plugin_object->txt('exam_format'),
+            $a_plugin_object->txt('exam_format_info'),
             ilExamAdminParam::TYPE_MULTISELECT,
             'presence',
             [
-                'presence' =>  $this->plugin->txt('exam_format_presence'),
-                'presence_self' =>  $this->plugin->txt('exam_format_presence_self'),
-                'open' =>  $this->plugin->txt('exam_format_open'),
-                'monitored' => $this->plugin->txt('exam_format_monitored'),
-                'admission' => $this->plugin->txt('exam_format_admission'),
+                'presence' =>  $a_plugin_object->txt('exam_format_presence'),
+                'presence_self' =>  $a_plugin_object->txt('exam_format_presence_self'),
+                'open' =>  $a_plugin_object->txt('exam_format_open'),
+                'monitored' => $a_plugin_object->txt('exam_format_monitored'),
+                'admission' => $a_plugin_object->txt('exam_format_admission'),
             ]
         );
 
         // semester
         for ($y = 2020; $y <= 2030; $y++) {
-            $options[$y . 's'] = $this->plugin->txt('summer_term') . ' ' . $y;
-            $options[$y . 'w'] = $this->plugin->txt('winter_term') . ' ' . $y . '/' . ($y + 1);
+            $options[$y . 's'] = $a_plugin_object->txt('summer_term') . ' ' . $y;
+            $options[$y . 'w'] = $a_plugin_object->txt('winter_term') . ' ' . $y . '/' . ($y + 1);
         }
         $params[] = ilExamAdminParam::_create(
             'semester',
-            $this->plugin->txt('semester'),
-            $this->plugin->txt('semester_info'),
+            $a_plugin_object->txt('semester'),
+            $a_plugin_object->txt('semester_info'),
             ilExamAdminParam::TYPE_SELECT, '2020w',
             $options
         );
 
         $params[] = ilExamAdminParam::_create(
             'max_date',
-            $this->plugin->txt('max_date'),
-            $this->plugin->txt('max_date_info'),
+            $a_plugin_object->txt('max_date'),
+            $a_plugin_object->txt('max_date_info'),
             ilExamAdminParam::TYPE_TEXT,
         );
 
@@ -102,8 +102,8 @@ class ilExamAdminConfig
         // test data
         $params[] = ilExamAdminParam::_create(
             'testdata',
-            $this->plugin->txt('testdata'),
-            $this->plugin->txt('testdata_info'),
+            $a_plugin_object->txt('testdata'),
+            $a_plugin_object->txt('testdata_info'),
             ilExamAdminParam::TYPE_BOOLEAN,
             0
         );
@@ -111,36 +111,36 @@ class ilExamAdminConfig
         // master courses
         $params[] = ilExamAdminParam::_create(
             'master_course',
-            $this->plugin->txt('master_course'),
-            $this->plugin->txt('master_course_info'),
+            $a_plugin_object->txt('master_course'),
+            $a_plugin_object->txt('master_course_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
         $params[] = ilExamAdminParam::_create(
             'master_course_presence',
-            $this->plugin->txt('master_course_presence'),
-            $this->plugin->txt('master_course_presence_info'),
+            $a_plugin_object->txt('master_course_presence'),
+            $a_plugin_object->txt('master_course_presence_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
         $params[] = ilExamAdminParam::_create(
             'master_course_open',
-            $this->plugin->txt('master_course_open'),
-            $this->plugin->txt('master_course_open_info'),
+            $a_plugin_object->txt('master_course_open'),
+            $a_plugin_object->txt('master_course_open_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
         $params[] = ilExamAdminParam::_create(
             'master_course_monitored',
-            $this->plugin->txt('master_course_monitored'),
-            $this->plugin->txt('master_course_monitored_info'),
+            $a_plugin_object->txt('master_course_monitored'),
+            $a_plugin_object->txt('master_course_monitored_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
         $params[] = ilExamAdminParam::_create(
             'master_course_admission',
-            $this->plugin->txt('master_course_admission'),
-            $this->plugin->txt('master_course_admission_info'),
+            $a_plugin_object->txt('master_course_admission'),
+            $a_plugin_object->txt('master_course_admission_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );        
@@ -148,8 +148,8 @@ class ilExamAdminConfig
         // parent category
         $params[] = ilExamAdminParam::_create(
             'parent_category',
-            $this->plugin->txt('parent_category'),
-            $this->plugin->txt('parent_category_info'),
+            $a_plugin_object->txt('parent_category'),
+            $a_plugin_object->txt('parent_category_info'),
             ilExamAdminParam::TYPE_REF_ID,
             0
         );
@@ -157,8 +157,8 @@ class ilExamAdminConfig
         // base url
         $params[] = ilExamAdminParam::_create(
             self::BASE_URL,
-            $this->plugin->txt('base_url'),
-            $this->plugin->txt('base_url_info'),
+            $a_plugin_object->txt('base_url'),
+            $a_plugin_object->txt('base_url_info'),
             ilExamAdminParam::TYPE_TEXT,
             0
         );

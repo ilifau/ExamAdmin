@@ -5,6 +5,7 @@
  * ExamAdmin configuration user interface class
  *
  * @ilCtrl_Calls: ilExamAdminConfigGUI: ilPropertyFormGUI
+*  @ilCtrl_IsCalledBy ilExamAdminConfigGUI: ilObjComponentSettingsGUI
  *
  * @author Fred Neumann <fred.neumann@fau.de>
  */
@@ -31,23 +32,28 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
     /** @var  ilToolbarGUI $toolbar */
     protected $toolbar;
 
+	public function __construct()
+	{
+		global $DIC;
+
+        $this->lng = $DIC->language();
+        $this->tabs = $DIC->tabs();
+        $this->ctrl = $DIC->ctrl();
+        $this->toolbar = $DIC->toolbar();
+        $this->tpl = $DIC->ui()->mainTemplate();
+	}
 
     /**
 	 * Handles all commands, default is "configure"
      * @throws Exception
 	 */
-	public function performCommand($cmd)
+	public function performCommand(string $cmd): void
 	{
         global $DIC;
 
         // this can't be in constructor
         $this->plugin = $this->getPluginObject();
         $this->config = $this->plugin->getConfig();
-        $this->lng = $DIC->language();
-        $this->tabs = $DIC->tabs();
-        $this->ctrl = $DIC->ctrl();
-        $this->toolbar = $DIC->toolbar();
-        $this->tpl = $DIC->ui()->mainTemplate();
 
         $this->tabs->addTab('basic', $this->plugin->txt('basic_configuration'), $this->ctrl->getLinkTarget($this, 'configure'));
         $this->setToolbar();
