@@ -64,6 +64,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
 	*/
 	public function executeCommand()
 	{
+        global $DIC;
         $this->ctrl->saveParameter($this, 'ref_id');
         $this->setSubTabs();
 
@@ -78,7 +79,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
                 }
 			    else {
                     $this->prepareObjectOutput();
-                    ilUtil::sendInfo($this->plugin->txt('function not_available'),false);
+                    $DIC->ui()->mainTemplate()->setOnScreenMessage('info',$this->plugin->txt('function not_available'),false);
                     $this->tpl->printToStdout();
                 }
                 break;
@@ -152,11 +153,12 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
      */
 	protected function redirectDefault()
     {
+        global $DIC;
         if ($this->canManageParticipants()) {
             $this->ctrl->redirectByClass('ilExamAdminCourseUsersGUI');
         }
         $this->prepareObjectOutput();
-        ilUtil::sendInfo($this->plugin->txt('function_not_available'),false);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('info', $this->plugin->txt('function_not_available'),false);
         $this->tpl->printToStdout();
     }
 
@@ -229,6 +231,8 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
      */
     protected function saveAdminData()
     {
+        global $DIC;
+
         $form = $this->initAdminDataForm();
         if ($form->checkInput())
         {
@@ -240,7 +244,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             }
             $data->write();
 
-            ilUtil::sendSuccess($this->lng->txt("settings_saved"), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $this->lng->txt("settings_saved"), true);
             $this->ctrl->redirect($this, 'editAdminData');
         }
         else
@@ -257,6 +261,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
      */
     protected function UpdateCourse()
     {
+        global $DIC;
         require_once (__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
         $data = $this->plugin->getData($this->course->getId());
 
@@ -266,10 +271,10 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
             require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
             $handler = new ilExamAdminCronHandler($this->plugin);
             $handler->updateCourse($record, $this->course->getRefId());
-            ilUtil::sendSuccess($this->plugin->txt("course_updated"), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $this->plugin->txt("course_updated"), true);
         }
         else {
-            ilUtil::sendFailure($this->plugin->txt("orga_record_not_found"), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt("orga_record_not_found"), true);
         }
         $this->ctrl->redirect($this, 'editAdminData');
     }

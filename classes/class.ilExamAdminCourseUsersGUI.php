@@ -109,12 +109,12 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function showOverview()
     {
-        $this->plugin->includeClass('tables/class.ilExamAdminUserOverviewTableGUI.php');
+        global $DIC;
 
         $table = new ilExamAdminUserOverviewTableGUI($this, 'showOverview');
         $table->setData($this->users->getOverviewData());
 
-        ilUtil::sendInfo($this->plugin->txt('list_users_info'));
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('info',$this->plugin->txt('list_users_info'));
 
         $this->mainGUI->prepareObjectOutput();
         $this->tpl->setContent($table->getHTML());
@@ -461,12 +461,13 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function showSyncCourseMembersWithCampoForm()
     {
+        global $DIC;
         $this->mainGUI->prepareObjectOutput();
         $this->ctrl->saveParameter($this, 'category');
 
         $form = $this->initSyncCourseMembersWithCampoForm();
 
-        ilUtil::sendFailure($this->plugin->txt('warning_update_from_campo'));
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('warning_update_from_campo'));
 
         $this->tpl->setContent($form->getHTML());
         $this->tpl->printToStdout();
@@ -478,6 +479,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function showUserImportList()
     {
+        global $DIC;
         $this->mainGUI->prepareObjectOutput();
         $this->ctrl->saveParameter($this, 'category');
 
@@ -552,7 +554,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 }
                 else
                 {
-                    ilUtil::sendFailure($this->plugin->txt('no_membership_object'), true);
+                    $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('no_membership_object'), true);
                     $this->ctrl->redirect($this, 'showUserImportForm');
                 }
                 break;
@@ -570,7 +572,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $table->addMultiCommand('importUsersByList', $this->plugin->txt('import_members'));
 
         $info[] = sprintf($this->plugin->txt('x_users_found'), count($external));
-        ilUtil::sendInfo(implode('<br />', $info));
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('info',implode('<br />', $info));
 
         $this->tpl->setContent($table->getHTML());
         $this->tpl->printToStdout();
@@ -582,6 +584,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function importUsersByList()
     {
+        global $DIC;
         unset($_SESSION['showUserImportList']);
 
         $added = [];
@@ -592,7 +595,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         if ($added)
         {
-            ilUtil::sendSuccess($this->plugin->txt('members_added_to_course'). '<br />' . implode('<br />', $added), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $this->plugin->txt('members_added_to_course'). '<br />' . implode('<br />', $added), true);
         }
 
         $this->ctrl->saveParameter($this, 'category');
@@ -604,6 +607,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function syncCourseMembersWithCampo()
     {
+        global $DIC;
         // delete all course participants
         $part = ilParticipants::getInstanceByObjId($this->course->getId());
         $usr_ids = $part->getMembers(); // admins and tutors not included
@@ -613,7 +617,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $campus = new ilExamAdminCampusParticipants();
         $campus->updateCourseMembers($record, $this->course, $this->plugin);
 
-        ilUtil::sendSuccess($this->plugin->txt('updated_members_from_campo'), true);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $this->plugin->txt('updated_members_from_campo'), true);
 
         $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
@@ -625,6 +629,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function addParticipant()
     {
+        global $DIC;
         $added = [];
         if ($_GET['usr_id']) {
             $added = $this->users->addParticipants([$_GET['usr_id']], true, $_GET['category']);
@@ -648,7 +653,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                     $info = $this->plugin->txt('testaccount_added_to_course');
                     break;
             }
-            ilUtil::sendSuccess($info. '<br />' . implode('<br />', $added), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $info. '<br />' . implode('<br />', $added), true);
         }
         $this->ctrl->saveParameter($this, 'category');
         $this->ctrl->redirect($this, 'listUsers');
@@ -679,11 +684,12 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function logoutUser()
     {
+        global $DIC;
         $this->ctrl->saveParameter($this, 'category');
         ilSession::_destroyByUserId($_GET['usr_id']);
         $infoText = $this->plugin->txt('user_logged_out');
         $user =$this->users->getSingleUserDataById( $_GET['usr_id']);
-        ilUtil::sendSuccess($infoText. ': ' . $user['login'], true);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $infoText. ': ' . $user['login'], true);
         $this->ctrl->redirect($this, 'listUsers');
     }
     
@@ -713,12 +719,14 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function synchronizeUsers()
     {
+        global $DIC;
+
         $count = $this->users->synchronizeByCategory($_GET['category']);
         if ($count > 0) {
-        	ilUtil::sendSuccess(sprintf($this->plugin->txt('x_users_synchronized'), $count), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', sprintf($this->plugin->txt('x_users_synchronized'), $count), true);
 		}
 		else {
-			ilUtil::sendFailure($this->plugin->txt('no_users_synchronized'), true);
+			$DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('no_users_synchronized'), true);
 		}
         $this->ctrl->redirect($this, 'showOverview');
     }
@@ -767,6 +775,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 	 */
 	protected function rewriteUserConfirm()
 	{
+        global $DIC;
 		$this->ctrl->saveParameter($this, 'category');
 
 		if ($_GET['usr_id']) {
@@ -777,7 +786,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 		}
 
 		if (empty($check['new'])) {
-			ilUtil::sendFailure($this->plugin->txt('rewrite_not_found'), true);
+			$DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('rewrite_not_found'), true);
 			$this->ctrl->redirect($this, 'listUsers');
 		}
 
@@ -786,7 +795,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 			foreach ($check['conflicts'] as $ref_id => $title) {
 				$message .= '<br /><a href="' . ilLink::_getLink($ref_id). '">'. $title.'</a>';
 			}
-			ilUtil::sendFailure($message, true);
+			$DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $message, true);
 			$this->ctrl->redirect($this, 'listUsers');
 		}
 
@@ -813,6 +822,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 	 */
 	protected function rewriteUserConfirmed()
 	{
+        global $DIC;
 		$this->ctrl->saveParameter($this, 'category');
 
 		if ($_GET['usr_id']) {
@@ -823,11 +833,12 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 		}
 
 		if (!$check['done']) {
-			ilUtil::sendFailure(sprintf($this->plugin->txt('rewrite_failed'),
+			$DIC->ui()->mainTemplate()->setOnScreenMessage('failure',sprintf($this->plugin->txt('rewrite_failed'),
 				$this->users->getUserDisplay($check['orig'])), true);
 		}
 		else {
-			ilUtil::sendSuccess(sprintf($this->plugin->txt('rewrite_done'),
+                global $DIC;
+			    $DIC->ui()->mainTemplate()->setOnScreenMessage('success', sprintf($this->plugin->txt('rewrite_done'),
 				$this->users->getUserDisplay($check['orig']), $this->users->getUserDisplay($check['new'])), true);
 		}
 
@@ -840,15 +851,16 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
 	protected function removeUser()
     {
+        global $DIC;
         $this->ctrl->saveParameter($this, 'category');
 
         $usr_ids = (array) $_REQUEST['usr_id'];
         if (empty($usr_ids)) {
-            ilUtil::sendFailure($this->plugin->txt('failure_no_entry_selected'), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('failure_no_entry_selected'), true);
             $this->ctrl->redirect($this, 'listUsers');
         }
         if (in_array($this->user->getId(), $usr_ids)) {
-            ilUtil::sendFailure($this->plugin->txt('failure_remove_self'), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('failure_remove_self'), true);
             $this->ctrl->redirect($this, 'listUsers');
         }
 
@@ -876,22 +888,23 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
      */
     protected function removeUserConfirmed()
     {
+        global $DIC;
         $this->ctrl->saveParameter($this, 'category');
 
         $usr_ids = (array) $_REQUEST['usr_id'];
         if (empty($usr_ids)) {
-            ilUtil::sendFailure($this->plugin->txt('failure_no_entry_selected'), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('failure_no_entry_selected'), true);
             $this->ctrl->redirect($this, 'listUsers');
         }
         if (in_array($this->user->getId(), $usr_ids)) {
-            ilUtil::sendFailure($this->plugin->txt('failure_remove_self'), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->plugin->txt('failure_remove_self'), true);
             $this->ctrl->redirect($this, 'listUsers');
         }
 
         $removed = $this->users->removeParticipants($usr_ids);
         if (!empty($removed)) {
             $info = $this->plugin->txt('participants_removed_from_course');
-            ilUtil::sendSuccess($info. '<br />' . implode('<br />', $removed), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $info. '<br />' . implode('<br />', $removed), true);
         }
         $this->ctrl->redirect($this, 'listUsers');
 

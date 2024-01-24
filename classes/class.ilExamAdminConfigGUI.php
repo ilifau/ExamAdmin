@@ -144,6 +144,8 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 	 */
 	protected function saveBasicSettings()
 	{
+        global $DIC;
+
 		$form = $this->initBasicConfigurationForm();
 		if ($form->checkInput())
 		{
@@ -154,7 +156,7 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
             }
             $this->config->write();
 
-			ilUtil::sendSuccess($this->lng->txt("settings_saved"), true);
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $this->lng->txt('settings_saved'), true);
 			$this->ctrl->redirect($this, 'configure');
 		}
 		else
@@ -180,12 +182,13 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
      */
 	protected function installCourses()
     {
+        global $DIC;
         $this->plugin->init();
         require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
         $handler = new ilExamAdminCronHandler($this->plugin);
         $courses = $handler->installCourses();
 
-        ilUtil::sendSuccess(implode('<br />', $courses), false);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', implode('<br />', $courses), true);
         $this->configure();
     }
 
@@ -199,7 +202,7 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
         $handler = new ilExamAdminCronHandler($this->plugin);
         $count = $handler->syncUserData();
 
-        ilUtil::sendSuccess(sprintf($this->plugin->txt('x_users_synchronized'), $count), false);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', sprintf($this->plugin->txt('x_users_synchronized'), $count), false);
         $this->configure();
     }
 }
