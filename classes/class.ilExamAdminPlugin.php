@@ -40,8 +40,9 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
      * @return ilExamAdminPlugin
      */
     public static function getInstance() {
+        global $DIC;
         if (!isset(self::$instance)) {
-            self::$instance = new self();
+            self::$instance = new self($DIC->database(), $DIC["component.repository"], "examad");
         }
         return self::$instance;
     }
