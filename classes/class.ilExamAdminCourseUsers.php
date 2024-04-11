@@ -513,7 +513,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 
 			// switch the group membership
 			$this->course->getMembersObject()->delete($orig_id);
-			$this->course->getMembersObject()->add($new_id, IL_CRS_MEMBER);
+			$this->course->getMembersObject()->add($new_id, ilParticipants::IL_CRS_MEMBER);
 
 			// deactivate the old user
 			$this->setActiveByUserId($orig_id, false);

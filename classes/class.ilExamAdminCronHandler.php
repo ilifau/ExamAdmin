@@ -433,7 +433,7 @@ class ilExamAdminCronHandler
         $codeObj->captcha_required = false;
         $codeObj->email_verification = false;
         $codeObj->global_role = $this->plugin->getConfig()->get(ilExamAdminConfig::GLOBAL_PARTICIPANT_ROLE);
-        $codeObj->local_roles = [$course->getMembersObject()->getRoleId(IL_CRS_MEMBER)];
+        $codeObj->local_roles = [$course->getMembersObject()->getRoleId(ilParticipants::IL_CRS_MEMBER)];
         $codeObj->limit_type = "unlimited";
         $codeObj->limit_date = new ilDateTime();
         $codeObj->limit_duration = array();
