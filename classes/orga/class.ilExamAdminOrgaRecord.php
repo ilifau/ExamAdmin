@@ -458,7 +458,7 @@ class ilExamAdminOrgaRecord extends ActiveRecord
     /**
      * Set modification info and update record
      */
-    public function update()
+    public function update(): void
     {
         global $DIC;
 
