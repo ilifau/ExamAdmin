@@ -75,7 +75,6 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
                 {
                     case "configure":
                     case "saveBasicSettings":
-                    case "updateLanguages":
                     case "installCourses":
                     case "syncUserData":
                         $this->tabs->activateTab('basic');
@@ -100,11 +99,6 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
     protected function setToolbar()
     {
         $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
-
-        $button = ilLinkButton::getInstance();
-        $button->setUrl($this->ctrl->getLinkTarget($this, 'updateLanguages'));
-        $button->setCaption($this->plugin->txt('update_languages'), false);
-        $this->toolbar->addButtonInstance($button);
 
         $button = ilLinkButton::getInstance();
         $button->setUrl($this->ctrl->getLinkTarget($this, 'installCourses'));
@@ -165,17 +159,6 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
 			$this->tpl->setContent($form->getHtml());
 		}
 	}
-
-
-    /**
-     * Update Languages
-     */
-    protected function updateLanguages()
-    {
-        $this->plugin->updateLanguages();
-       $this->ctrl->redirect($this, 'configure');
-    }
-
 
     /**
      * Install Courses
