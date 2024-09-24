@@ -167,7 +167,6 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
     {
         global $DIC;
         $this->plugin->init();
-        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
         $handler = new ilExamAdminCronHandler($this->plugin);
         $courses = $handler->installCourses();
 
@@ -180,8 +179,8 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
      */
     protected function syncUserData()
     {
+        global $DIC;
         $this->plugin->init();
-        require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
         $handler = new ilExamAdminCronHandler($this->plugin);
         $count = $handler->syncUserData();
 
