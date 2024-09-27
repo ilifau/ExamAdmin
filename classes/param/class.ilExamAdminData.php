@@ -37,8 +37,6 @@ class ilExamAdminData
 		$this->plugin = $a_plugin_object;
 		$this->obj_id = $a_obj_id;
 
-        $this->plugin->includeClass('param/class.ilExamAdminParam.php');
-
         /** @var ilExamAdminParam[] $params */
         $params = [];
 

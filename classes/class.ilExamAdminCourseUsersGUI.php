@@ -160,7 +160,6 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
                 break;
         }
 
-        $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'listUsers');
         $table->setFormAction($this->ctrl->getFormAction($this));
         $table->setTitle($this->plugin->txt($_GET['category']. ''));
@@ -334,7 +333,6 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 //            }
 
             // show results of internal search
-            $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
             $table1 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
             $table1->setTitle($this->plugin->txt('internal'));
             $table1->setDescription($this->plugin->txt('found_users_internal'));
@@ -485,7 +483,6 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
 
         $connObj = $this->plugin->getConnector();
 
-        $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'showUserImportList');
         $table->setTitle($this->plugin->txt('external'));
         $table->setShowCheckboxes(true);
