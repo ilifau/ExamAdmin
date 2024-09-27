@@ -35,7 +35,7 @@ class ilExamAdminUserOverviewTableGUI extends ilTable2GUI
 		$this->parent_cmd = $a_parent_cmd;
 		$this->plugin = $a_parent_obj->getPlugin();
 
-        $this->setId('ilExamAdminUserOverviewTableGUI');
+        $this->setId('ilExamAdminUserOverviewTableG');
         $this->setPrefix('ilExamAdminUserOverview');
 
         parent::__construct($a_parent_obj, $a_parent_cmd);
