@@ -16,6 +16,9 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     /** @var ilExamAdminConnector */
     protected $connector;
 
+    /** @var ilExamAdminConnector2 */
+    protected $connector2;
+
     /** @var self */
     protected static $instance;
 
@@ -95,6 +98,27 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
         return $this->connector;
     }
 
+   /**
+    * Get the connector object
+    * @return ilExamAdminConnector2|null
+    */
+   public function getConnector2()
+   {
+       if (!isset($this->connector2))
+       {
+           try
+           {
+               $this->connector2 = ilExamAdminConnector2::getInstance($this);
+           }
+           catch (Exception $e)
+           {
+               return null;
+           }
+
+       }
+       return $this->connector2;
+   }    
+
     /**
      * Do initialisations
      */
@@ -102,6 +126,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     {
         require_once (__DIR__ . '/connector/class.ilExamAdminArConnectorDB.php');
         ilExamAdminArConnectorDB::register();
+        ilExamAdminArConnectorDB2::register();
     }
 
     /**

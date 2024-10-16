@@ -347,7 +347,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
             // show results of external search
 			// clear the usr_id parmeter of the previous table
 			$this->ctrl->setParameter($this, 'usr_id', '');
-            $connObj = $this->plugin->getConnector();
+            $connObj = $this->plugin->getConnector2();
             $external = $connObj->getUserDataByPattern($pattern, $withTestAccounts);
             $table2 = new ilExamAdminUserListTableGUI($this, 'showUserSearch');
             $table2->setDescription($this->plugin->txt('found_users_external'));
@@ -481,7 +481,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         $this->mainGUI->prepareObjectOutput();
         $this->ctrl->saveParameter($this, 'category');
 
-        $connObj = $this->plugin->getConnector();
+        $connObj = $this->plugin->getConnector2();
 
         $this->plugin->includeClass('tables/class.ilExamAdminUserListTableGUI.php');
         $table = new ilExamAdminUserListTableGUI($this, 'showUserImportList');
