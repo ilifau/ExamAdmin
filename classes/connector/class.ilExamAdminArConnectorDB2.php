@@ -15,8 +15,5 @@ class ilExamAdminArConnectorDB2 extends arConnectorDB
      */
     public static function register()
     {
-        arConnectorMap::register(new ilExamAdminOrgaRecord(), new self());
-        arConnectorMap::register(new ilExamAdminOrgaLink(), new self());
-        arConnectorMap::register(new ilExamAdminOrgaCampusExam(), new self());
     }
 }
