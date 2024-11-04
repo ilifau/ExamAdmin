@@ -106,6 +106,8 @@ class ilExamAdminCronHandler
                         echo $mess;
                     }
                     $this->updateCourse($record, $ref_id);
+                    $this->removeRootParticipant($ref_id);
+                    $this->removeCronParticipant($ref_id);
                 }
                 else {
                     $mess = "CREATE " . $record->exam_date . " " . $record->exam_title . "...\n";
@@ -116,6 +118,7 @@ class ilExamAdminCronHandler
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
                     $this->removeRootParticipant($ref_id);
+                    $this->removeCronParticipant($ref_id);
                 }
             }
          }
@@ -315,7 +318,7 @@ class ilExamAdminCronHandler
         $users = new ilExamAdminCourseUsers($this->plugin, $course);
 
         // add owner as admin (with test accounts)
-        $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
+        $users->addParticipants([$record->owner_id], true, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
 
         // add admins (with test accounts)
         $admins = $this->connector2->getUserDataByLoginList($record->getAdminsLogins());
@@ -347,6 +350,28 @@ class ilExamAdminCronHandler
             $part->delete($root_id);
         }
     }
+ 
+    /**
+     * Remove the cron account from groups in the course
+     * @param $ref_id
+     */
+    protected function removeCronParticipant($ref_id)
+    {
+        global $DIC;
+        $tree = $DIC->repositoryTree();
+
+        $root_id = ilObjUser::_lookupId('cron');
+
+        // remove from course
+        $part = new ilCourseParticipants(ilObject::_lookupObjectId($ref_id));
+        $part->delete($root_id);
+
+        // remove from group
+        foreach ($tree->getChildsByType($ref_id, 'grp') as $node) {
+            $part = new ilGroupParticipants($node['obj_id']);
+            $part->delete($root_id);
+        }
+    }    
 
     /**
      * Update the LOM metadata of the course (used for standard search)
