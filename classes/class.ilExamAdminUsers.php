@@ -121,7 +121,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
     public function synchronizeByCategory($category)
     {
     	$count = 0;
-        $connObj = $this->plugin->getConnector();
+        $connObj = $this->plugin->getConnector2();
         foreach ($this->getCategoryUserData($category) as $user)
         {
         	if ($this->isSelfRegisteredLogin($user['login'])) {
@@ -151,7 +151,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         $user = $this->getSingleUserDataById($usr_id);
         if (isset($user))
         {
-            $connObj = $this->plugin->getConnector();
+            $connObj = $this->plugin->getConnector2();
             $data = $connObj->getSingleUserDataByLogin($user['login']);
             $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
             if ($langPref) {

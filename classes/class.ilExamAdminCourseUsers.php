@@ -311,7 +311,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
             }
         }
         else {
-            $connObj = $this->plugin->getConnector();
+            $connObj = $this->plugin->getConnector2();
             foreach ($connObj->getUserDataByIds($usr_ids) as $user) {
                 $user = $this->getMatchingUser($user, true, $global_role_id);
                 if ($this->addParticipant($user['usr_id'], $local_role, $change_existing)) {
@@ -479,7 +479,7 @@ class ilExamAdminCourseUsers extends ilExamAdminUsers
 			$new = $this->getSingleUserDataById($new_id);
 		}
 		else {
-			$new = $this->plugin->getConnector()->getSingleUserDataById($new_id);
+			$new = $this->plugin->getConnector2()->getSingleUserDataById($new_id);
 			$matching = $this->getMatchingUser($new, false);
 			if ($matching) {
 				$new = $matching;
