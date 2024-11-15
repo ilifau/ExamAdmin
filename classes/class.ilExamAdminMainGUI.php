@@ -299,7 +299,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
         foreach ($record->getPropertiesToShow() as $prop) {
             $tpl->setCurrentBlock('property');
             $tpl->setVariable('PROP_TITLE', $this->plugin->txt($prop['title']));
-            if ($prop['translate']) {
+            if (isset($prop['translate']) && $prop['translate']) {
                 $tpl->setVariable('PROP_CONTENT', $this->plugin->txt((string) $prop['content']));
             }
             else {
