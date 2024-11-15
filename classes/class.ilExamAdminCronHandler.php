@@ -22,7 +22,8 @@ class ilExamAdminCronHandler
 
     /** @var ilExamAdminConnector */
     protected $connector;
-
+    /** @var ilExamAdminConnector2 */
+    protected $connector2;
     /** @var string */
     protected $logfile;
 
@@ -41,6 +42,7 @@ class ilExamAdminCronHandler
         $this->plugin = $plugin;
         $this->config = $plugin->getConfig();
         $this->connector = $plugin->getConnector();
+        $this->connector2 = $plugin->getConnector2();
 
         $this->logfile = ILIAS_DATA_DIR . '/' . CLIENT_ID . '/ExamAdmin.log';
 
@@ -316,11 +318,11 @@ class ilExamAdminCronHandler
         $users->addParticipants([$record->owner_id], false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
 
         // add admins (with test accounts)
-        $admins = $this->connector->getUserDataByLoginList($record->getAdminsLogins());
+        $admins = $this->connector2->getUserDataByLoginList($record->getAdminsLogins());
         $users->addParticipants($users->extractUserIds($admins), false, ilExamAdminCourseUsers::CAT_LOCAL_ADMIN_LECTURER, false);
 
         // add correctors as tutors (with test accounts)
-        $correctors = $this->connector->getUserDataByLoginList($record->getCorrectorLogins());
+        $correctors = $this->connector2->getUserDataByLoginList($record->getCorrectorLogins());
         $users->addParticipants($users->extractUserIds($correctors), false, ilExamAdminCourseUsers::CAT_LOCAL_TUTOR_CORRECTOR, false);
     }
 
@@ -363,10 +365,10 @@ class ilExamAdminCronHandler
 
         // collect the user names for authors
         $authors = [];
-        foreach($this->connector->getUserDataByIds($record->owner_id) as $user) {
+        foreach($this->connector2->getUserDataByIds($record->owner_id) as $user) {
             $authors[] = trim($user['firstname'] . ' ' . $user['lastname']);
         }
-        foreach($this->connector->getUserDataByLoginList($record->getAdminsLogins()) as $user) {
+        foreach($this->connector2->getUserDataByLoginList($record->getAdminsLogins()) as $user) {
             $authors[] = trim($user['firstname'] . ' ' . $user['lastname']);
         }
 
