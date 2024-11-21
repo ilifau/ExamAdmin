@@ -278,7 +278,7 @@ class ilExamAdminCronHandler
         // set title for all translations
         $object_translation = $course->getObjectTranslation();
         foreach ($object_translation->getLanguages() as $l => $trans) {
-            $object_translation->addLanguage($l, $title, nl2br($description), $trans['lang_default'], true);
+            $object_translation->addLanguage($l, $title, nl2br($description), $trans->isDefault(), true);
         }
         $object_translation->save();
 
@@ -390,7 +390,7 @@ class ilExamAdminCronHandler
 
         // collect the user names for authors
         $authors = [];
-        foreach($this->connector2->getUserDataByIds($record->owner_id) as $user) {
+        foreach($this->connector2->getUserDataByIds(array($record->owner_id)) as $user) {
             $authors[] = trim($user['firstname'] . ' ' . $user['lastname']);
         }
         foreach($this->connector2->getUserDataByLoginList($record->getAdminsLogins()) as $user) {
