@@ -70,7 +70,7 @@ class ilExamAdminCampusParticipants
     {
         require_once (__DIR__ . '/class.ilExamAdminCourseUsers.php');
 
-        $connObj = $plugin->getConnector();
+        $connObj = $plugin->getConnector2();
         $usersObj = new ilExamAdminCourseUsers($plugin, $course);
 
         // get the matriculation numbers from campus
