@@ -303,7 +303,7 @@ class ilExamAdminMainGUI extends ilExamAdminBaseGUI
                 $tpl->setVariable('PROP_CONTENT', $this->plugin->txt((string) $prop['content']));
             }
             else {
-                $tpl->setVariable('PROP_CONTENT', nl2br($prop['content']));
+                $tpl->setVariable('PROP_CONTENT', nl2br($prop['content'] ?? ""));
             }
             $tpl->parseCurrentBlock();
         }
