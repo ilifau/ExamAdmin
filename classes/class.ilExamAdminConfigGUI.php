@@ -170,7 +170,8 @@ class ilExamAdminConfigGUI extends ilPluginConfigGUI
         $handler = new ilExamAdminCronHandler($this->plugin);
         $courses = $handler->installCourses();
 
-        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', implode('<br />', $courses), true);
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('success', "Kurse installiert:<br />".implode('<br />', $courses), true);
+
         $this->configure();
     }
 

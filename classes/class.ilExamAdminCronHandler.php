@@ -362,14 +362,17 @@ class ilExamAdminCronHandler
 
         $root_id = ilObjUser::_lookupId('cron');
 
-        // remove from course
-        $part = new ilCourseParticipants(ilObject::_lookupObjectId($ref_id));
-        $part->delete($root_id);
-
-        // remove from group
-        foreach ($tree->getChildsByType($ref_id, 'grp') as $node) {
-            $part = new ilGroupParticipants($node['obj_id']);
+        if($root_id != null)
+        {
+            // remove from course
+            $part = new ilCourseParticipants(ilObject::_lookupObjectId($ref_id));
             $part->delete($root_id);
+
+            // remove from group
+            foreach ($tree->getChildsByType($ref_id, 'grp') as $node) {
+                $part = new ilGroupParticipants($node['obj_id']);
+                $part->delete($root_id);
+            }
         }
     }
 
