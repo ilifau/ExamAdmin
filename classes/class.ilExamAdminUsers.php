@@ -128,12 +128,13 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         		continue;
 			}
             $data = $connObj->getSingleUserDataByLogin($user['login']);
-            $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
-            if ($langPref) {
-                $data['language_pref'] = $langPref;
-            }
             if (isset($data))
             {
+                $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
+                if ($langPref) {
+                    $data['language_pref'] = $langPref;
+                }
+
                 $this->applyUserData($user['usr_id'], $data);
                 $count++;
             }
@@ -153,13 +154,16 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         {
             $connObj = $this->plugin->getConnector2();
             $data = $connObj->getSingleUserDataByLogin($user['login']);
-            $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
-            if ($langPref) {
-                $data['language_pref'] = $langPref;
-            }
             if (isset($data))
             {
-                $this->applyUserData($user['usr_id'], $data);
+                $langPref = $connObj->getSingleUserLangPrefById($data['usr_id']);
+                if ($langPref) {
+                    $data['language_pref'] = $langPref;
+                }
+                if (isset($data))
+                {
+                    $this->applyUserData($user['usr_id'], $data);
+                }
             }
         }
     }
