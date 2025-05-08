@@ -243,7 +243,7 @@ class ilExamAdminCronHandler
    
         if(ilContext::getType() == ilContext::CONTEXT_WEB)
         {
-            $session_id = $_COOKIE[session_name()];
+          //  $session_id = $_COOKIE[session_name()];
 
             $ret = $source_object->cloneAllObject(
                 $session_id,
