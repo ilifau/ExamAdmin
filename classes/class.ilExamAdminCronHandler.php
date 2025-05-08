@@ -235,26 +235,54 @@ class ilExamAdminCronHandler
                 $options[$node['ref_id']] = array("type" => ilCopyWizardOptions::COPY_WIZARD_COPY);
             }
         }
-
-        // cron context creates no data in the session
-        // but existing session data is needed for ilSession::_duplicate() in ilContainer::cloneAllObject()
-        // otherwise subsequent ilSoapUtil::ilClone calls will not work correctly due to missing session id
+        
         // IMPORTANT: customize setting ilias_copy_by_soap must be set to 0!
 
         $session_id = $DIC['ilAuthSession']->getId();
-        ilSession::_writeData($session_id,'examAdmin');
-
         $source_object = ilObjectFactory::getInstanceByRefId($sourceRefId);
-        $ret = $source_object->cloneAllObject(
-            $session_id,
-            CLIENT_ID,
-            $source_object->getType(),
-            $targetRefId,
-            $sourceRefId,
-            $options,
-            false
-        );
-        return $ret['ref_id'];
+   
+        if(ilContext::getType() == ilContext::CONTEXT_WEB)
+        {
+            $session_id = $_COOKIE[session_name()];
+
+            $ret = $source_object->cloneAllObject(
+                $session_id,
+                CLIENT_ID,
+                $source_object->getType(),
+                $targetRefId,
+                $sourceRefId,
+                $options,
+                false
+            );
+            return $ret['ref_id'];
+        }
+        else //CONTEXT_CRON
+        {
+            // cron context creates no data in the session
+            // but existing session data is needed for ilSession::_duplicate() in ilContainer::cloneAllObject()
+            // old implementation for ilias 7 doesn't work any longer, reimplemented for soap context for ilias 9 without ilSession::_duplicate()
+
+            // Save wizard options
+            $copy_id = ilCopyWizardOptions::_allocateCopyId();
+            $wizard_options = ilCopyWizardOptions::_getInstance($copy_id);
+            $wizard_options->saveOwner($DIC['ilAuthSession']->getUserId());
+            $wizard_options->saveRoot($sourceRefId); 
+    
+            // add entry for source container
+            $wizard_options->initContainer($sourceRefId, $targetRefId);
+    
+            foreach ($options as $source_id => $option) {
+                $wizard_options->addEntry($source_id, $option);
+            }
+            $wizard_options->read();
+            $wizard_options->storeTree($sourceRefId);    
+
+            $wizard_options->disableSOAP();
+            $wizard_options->read();
+            $ret = ilSoapFunctions::ilClone($session_id . '::' . CLIENT_ID, $copy_id);
+
+            return $ret['ref_id'];
+        }
     }
 
     /**
