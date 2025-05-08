@@ -281,7 +281,7 @@ class ilExamAdminCronHandler
             $wizard_options->read();
             $ret = ilSoapFunctions::ilClone($session_id . '::' . CLIENT_ID, $copy_id);
 
-            return $ret['ref_id'];
+            return $ret;
         }
     }
 
