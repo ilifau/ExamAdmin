@@ -628,10 +628,10 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
     {
         global $DIC;
         $added = [];
-        if ($_GET['usr_id']) {
+        if (isset($_GET['usr_id']) && $_GET['usr_id']) {
             $added = $this->users->addParticipants([$_GET['usr_id']], true, $_GET['category']);
         }
-        elseif ($_GET['conn_usr_id']) {
+        elseif (isset($_GET['conn_usr_id']) && $_GET['conn_usr_id']) {
             $added = $this->users->addParticipants([$_GET['conn_usr_id']], false, $_GET['category']);
         }
 
