@@ -377,11 +377,13 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         require_once(__DIR__ . '/orga/class.ilExamAdminOrgaCampusExamsInputGUI.php');
         require_once(__DIR__ . '/orga/class.ilExamAdminOrgaRecord.php');
         $orga_id = (int) $this->data->get(ilExamAdminData::PARAM_ORGA_ID);
-        if (empty($exam_ids = $_SESSION['ilExamAdminExamIds_' . $orga_id])) {
+	    $exam_ids = $_SESSION['ilExamAdminExamIds_' . $orga_id] ?? "";
+        if (empty($exam_ids)) {
             /** @var  ilExamAdminOrgaRecord $record */
             $record = ilExamAdminOrgaRecord::findOrGetInstance($this->data->get(ilExamAdminData::PARAM_ORGA_ID));
             $exam_ids = $record->exam_ids;
         }
+
 
         $se = new ilRadioOption($this->plugin->txt('source_exams'), 'exam_ids');
         $examsgui = new ilExamAdminOrgaCampusExamsInputGUI('', 'exam_ids');
