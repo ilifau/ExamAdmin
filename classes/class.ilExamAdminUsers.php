@@ -349,8 +349,8 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         // $userObj->setActive($role_id == $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
         $usr_id = $userObj->create();
 
-        $userObj->updateOwner();
         $userObj->saveAsNew();
+        $userObj->updateOwner();
 
         $this->applyUserData($usr_id, $data);
         $this->addGlobalRole($usr_id, $role_id);
@@ -414,7 +414,11 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         );
 
         $userObj = new ilObjUser($usr_id);
-        $userObj->writePref('language', $data['language_pref']);
+        if(isset($data['language_pref']))
+        {
+                $userObj->writePref('language', $data['language_pref']);
+        }
+
     }
 
 	/**
