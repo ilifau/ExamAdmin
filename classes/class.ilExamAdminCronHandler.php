@@ -45,8 +45,6 @@ class ilExamAdminCronHandler
         $this->connector2 = $plugin->getConnector2();
 
         $this->logfile = ILIAS_DATA_DIR . '/' . CLIENT_ID . '/ExamAdmin.log';
-
-
         // prepare remote db access
         $this->plugin->init();
     }
@@ -103,7 +101,7 @@ class ilExamAdminCronHandler
                     $mess = "UPDATE " . $record->exam_date . " " . $record->exam_title . "...\n";
                     file_put_contents($this->logfile, $mess, FILE_APPEND);
                     if (!ilContext::usesHTTP()) {
-                        echo $mess;
+          //              echo $mess;
                     }
                     $this->updateCourse($record, $ref_id);
                     $this->removeRootParticipant($ref_id);
@@ -113,7 +111,7 @@ class ilExamAdminCronHandler
                     $mess = "CREATE " . $record->exam_date . " " . $record->exam_title . "...\n";
                     file_put_contents($this->logfile, $mess, FILE_APPEND);
                     if (!ilContext::usesHTTP()) {
-                        echo $mess;
+              //          echo $mess;
                     }
                     $ref_id = $this->createCourse($record);
                     $this->updateCourse($record, $ref_id);
@@ -167,7 +165,6 @@ class ilExamAdminCronHandler
 
         return $this->copyCourse($master_course, $cat_ref_id);
     }
-
     /**
      * Find a category by its title
      * @param string $title
@@ -235,56 +232,43 @@ class ilExamAdminCronHandler
                 $options[$node['ref_id']] = array("type" => ilCopyWizardOptions::COPY_WIZARD_COPY);
             }
         }
-        
-        // IMPORTANT: customize setting ilias_copy_by_soap must be set to 0!
-
-        $session_id = $DIC['ilAuthSession']->getId();
-        $source_object = ilObjectFactory::getInstanceByRefId($sourceRefId);
-   
-        if(ilContext::getType() == ilContext::CONTEXT_WEB)
-        {
-          //  $session_id = $_COOKIE[session_name()];
-
-            $ret = $source_object->cloneAllObject(
-                $session_id,
-                CLIENT_ID,
-                $source_object->getType(),
-                $targetRefId,
-                $sourceRefId,
-                $options,
-                false
-            );
-            return $ret['ref_id'];
-        }
-        else //CONTEXT_CRON
-        {
-            // cron context creates no data in the session
-            // but existing session data is needed for ilSession::_duplicate() in ilContainer::cloneAllObject()
-            // old implementation for ilias 7 doesn't work any longer, reimplemented for soap context for ilias 9 without ilSession::_duplicate()
-
-            // Save wizard options
-            $copy_id = ilCopyWizardOptions::_allocateCopyId();
-            $wizard_options = ilCopyWizardOptions::_getInstance($copy_id);
-            $wizard_options->saveOwner($DIC['ilAuthSession']->getUserId());
-            $wizard_options->saveRoot($sourceRefId); 
-    
-            // add entry for source container
-            $wizard_options->initContainer($sourceRefId, $targetRefId);
-    
-            foreach ($options as $source_id => $option) {
-                $wizard_options->addEntry($source_id, $option);
-            }
-            $wizard_options->read();
-            $wizard_options->storeTree($sourceRefId);    
-
-            $wizard_options->disableSOAP();
-            $wizard_options->read();
-            $ret = ilSoapFunctions::ilClone($session_id . '::' . CLIENT_ID, $copy_id);
-
-            return $ret;
-        }
+        $ret = $this->cloneAllObject(
+            $targetRefId,
+            $sourceRefId,
+            $options
+        );
+        return $ret;
     }
 
+     public function cloneAllObject(int $parent_ref_id, int $clone_source, array $options): int
+    {
+        // Save wizard options
+	    global $DIC;
+        $copy_id = ilCopyWizardOptions::_allocateCopyId();
+        $wizard_options = ilCopyWizardOptions::_getInstance($copy_id);
+        $wizard_options->saveOwner($DIC->user()->getId());
+        $wizard_options->saveRoot($clone_source);
+
+        // add entry for source container
+        $wizard_options->initContainer($clone_source, $parent_ref_id);
+
+        foreach ($options as $source_id => $option) {
+            $wizard_options->addEntry($source_id, $option);
+        }
+        $wizard_options->read();
+        $wizard_options->storeTree($clone_source);
+
+        session_start();
+        $session_id = session_id();
+        ilSession::_writeData($session_id,'examAdmin');
+
+        $wizard_options->disableSOAP();
+        $wizard_options->read();
+
+        return ilSoapFunctions::ilClone($session_id . '::' . CLIENT_ID, $copy_id);    
+    }
+
+     
     /**
      * Update a course with the data from the orga record
      * @param ilExamAdminOrgaRecord $record

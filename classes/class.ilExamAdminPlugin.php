@@ -214,7 +214,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
     public function handleCronJob()
     {
         if (!ilContext::usesHTTP()) {
-            echo "ExamAdmin: handle cron job...\n";
+            //echo "ExamAdmin: handle cron job...\n";
         }
 
         require_once (__DIR__ . '/class.ilExamAdminCronHandler.php');
@@ -227,7 +227,7 @@ class ilExamAdminPlugin extends ilUserInterfaceHookPlugin
         $handled = count($courses);
 
         if (!ilContext::usesHTTP()) {
-            echo "ExamAdmin: finished.\n";
+            //echo "ExamAdmin: finished.\n";
         }
 
         return $handled;
