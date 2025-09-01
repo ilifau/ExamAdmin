@@ -88,11 +88,11 @@ class ilExamAdminUIHookGUI extends ilUIHookPluginGUI
                     // save the shown tabs when the object is called
                     $classes = ['ilobjcoursegui', 'ilcoursemembershipgui',
                                 'ilobjgroupgui', 'ilgroupmembershipgui',
-                                'ilinfoscreengui', 'ilexportgui', 'ilpermissiongui'];
+                                'ilinfoscreengui', 'ilexportgui', 'ilpermissiongui', 'iluipluginroutergui', 'ilrepositorygui'];
 
-                    if (in_array($this->ctrl->getCmdClass(), $classes)) {
+               //     if (in_array($this->ctrl->getCmdClass(), $classes)) {
                         $this->saveTabs($this->parent_type);
-                    }
+               //     }
                 }
                 break;
 
