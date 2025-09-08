@@ -79,7 +79,7 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
 
         $term = $_REQUEST['term'];
         $semester = $_REQUEST['semester'];
-        $fetchall = $_REQUEST['fetchall'];
+        $fetchall = isset($_REQUEST['fetchall']) ? $_REQUEST['fetchall'] : true;
 
         require_once (__DIR__ . '/class.ilExamAdminOrgaCampusExam.php');
         $exams = ilExamAdminOrgaCampusExam::getCollection()
@@ -94,7 +94,8 @@ class ilExamAdminOrgaCampusExamsInputGUI extends ilTextInputGUI
             $exams->where($db->in('psem', ilExamAdminOrgaCampusExam::getNearSemesters($semester), false, 'text'));
         }
 
-        $exams->orderBy('nachname, titel, psem, ptermin, veranstaltung')->limit(0, $fetchall ? 1000 : 10);
+        $exams->orderBy('nachname')->orderBy('titel')->orderBy('psem')->orderBy('ptermin')->orderBy('veranstaltung')->limit(0, $fetchall ? 1000 : 10);
+
 
         $items = [];
 
