@@ -587,7 +587,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         unset($_SESSION['showUserImportList']);
 
         $added = [];
-        if (is_array($_POST['usr_id']))
+        if (isset($_POST['usr_id']) && is_array($_POST['usr_id']))
         {
 			$added = $this->users->addParticipants($_POST['usr_id'], false, $_GET['category']);
         }
