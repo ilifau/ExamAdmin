@@ -343,7 +343,7 @@ class ilExamAdminUsers extends ilExamAdminUserQuery
         $userObj->setLogin($data['login']);
         $userObj->setFirstname($data['firstname']);
         $userObj->setLastname($data['lastname']);
-        $userObj->setTitle($data['title']);
+        $userObj->setTitle($data['title']?? "") ;
         // new: activate global participants when they are created
         $userObj->setActive(true);
         // $userObj->setActive($role_id == $this->config->get(ilExamAdminConfig::GLOBAL_LECTURER_ROLE));
