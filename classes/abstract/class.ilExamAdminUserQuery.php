@@ -166,6 +166,7 @@ abstract class ilExamAdminUserQuery
      */
     protected function getSearchCond($pattern)
     {
+        $flip_names = false;
         $pattern = trim($pattern);
         if (strpos($pattern, ',') > 0)
         {
