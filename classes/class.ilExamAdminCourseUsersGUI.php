@@ -777,7 +777,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         global $DIC;
 		$this->ctrl->saveParameter($this, 'category');
 
-		if ($_GET['usr_id']) {
+		if (isset($_GET['usr_id']) && $_GET['usr_id']) {
 			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, false);
 		}
 		elseif ($_GET['conn_usr_id']) {
@@ -824,7 +824,7 @@ class ilExamAdminCourseUsersGUI extends ilExamAdminBaseGUI
         global $DIC;
 		$this->ctrl->saveParameter($this, 'category');
 
-		if ($_GET['usr_id']) {
+		if (isset($_GET['usr_id']) && $_GET['usr_id']) {
 			$check = $this->users->rewriteUser($_GET['orig_usr_id'], $_GET['usr_id'], true, true);
 		}
 		elseif ($_GET['conn_usr_id']) {
