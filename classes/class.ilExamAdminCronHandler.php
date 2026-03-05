@@ -295,7 +295,11 @@ class ilExamAdminCronHandler
         $object_translation->save();
 
 
-        $this->updateCourseManagers($record, $course);
+        $this->updateCourseManagers($record, $course); // no longer used in the orga record form
+
+        $campusExaminers = new ilExamAdminCampusExaminers();
+        $campusExaminers->updateCourseExaminers($record, $course, $this->plugin);
+
         require_once (__DIR__ . '/class.ilExamAdminCampusParticipants.php');
         $campus = new ilExamAdminCampusParticipants();
         $campus->updateCourseMembers($record, $course, $this->plugin);

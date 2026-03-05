@@ -93,6 +93,16 @@ abstract class ilExamAdminUserQuery
     }
 
     /**
+     * Get the data of accounts found by an input of external accounts
+     * @param string[] $list
+     * @return array
+     */
+    public function getUserDataByExternalAccountList($list)
+    {
+        return $this->queryUserData($this->getCondByExternalAccountList($list));
+    }    
+
+    /**
      * Get the data of users by a list of user IDs
      * @param int[] $ids
      * @return array
@@ -222,6 +232,15 @@ abstract class ilExamAdminUserQuery
         return $this->db->in('matriculation', $list, false, 'text');
     }
 
+    /**
+     * Get a search condition for a external account list
+     * @param string[] $list
+     * @return string
+     */
+    protected function getCondByExternalAccountList($list)
+    {
+        return $this->db->in('ext_account', $list, false, 'text');
+    }    
 
     /**
      * Get an array from comma or newline separated input
