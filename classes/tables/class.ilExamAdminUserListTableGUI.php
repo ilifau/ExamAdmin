@@ -154,6 +154,10 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
             $this->tpl->setVariable('ID_PARAMETER', $this->id_parameter);
             $this->tpl->setVariable('ID_VALUE', $a_set['usr_id']);
         }
+        else   
+        {
+            $this->tpl->setVariable('DISPLAY', 'display:none;');
+        }
 
 		if ($this->link_user) {
 			$this->ctrl->setParameterByClass("ilobjusergui", "ref_id", 7);
