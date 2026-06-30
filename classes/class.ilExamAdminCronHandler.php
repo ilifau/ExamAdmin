@@ -314,6 +314,9 @@ class ilExamAdminCronHandler
         if (empty($record->reg_code)) {
             $record->reg_code = $this->createRegistrationCode($record, $course);
         }
+        else {
+            $record->reg_code = $this->updateRegistrationCode($record->reg_code, $course);
+        }
 
         // write back the course link
         $url = $this->plugin->getConfig()->get(ilExamAdminConfig::BASE_URL);
@@ -487,6 +490,21 @@ class ilExamAdminCronHandler
 
         return $codeObj->code;
     }
+
+    /**
+     * update a registration code for the course
+     * @param ilRegistrationCode $code
+     * @param ilObjCourse $course
+     * @return string
+     */
+    public function updateRegistrationCode($code, $course)
+    {
+        $codeObj = new ilRegistrationCode($code);
+        $codeObj->title = $course->getTitle();
+        $codeObj->write();
+
+        return $codeObj->code;
+    }    
 
     /**
      * Synchronize the data of users (incl. passwords)
