@@ -108,7 +108,7 @@ class ilExamAdminUserListTableGUI extends ilTable2GUI
     {
         $this->show_checkboxes = $a_show;
         if ($a_show) {
-            $this->setSelectAllCheckbox($this->id_parameter);
+            $this->setSelectAllCheckbox($this->id_parameter, true);
             $this->enable('select_all');
         }
     }
